@@ -1,0 +1,45 @@
+{
+  "name": "anglemx/sat-cfdi",
+  "description": "Parse and validate CFDIs against SAT México",
+  "type": "git",
+  "keywords": [
+    "angle",
+    "sat",
+    "cfdi"
+  ],
+  "homepage": "https://github.com/Angle/sat-cfdi",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Edmundo Fuentes",
+      "email": "me@edmundofuentes.com",
+      "homepage": "http://www.edmundofuentes.com",
+      "role": "creator,manager,architect,developer"
+    },
+    {
+      "name": "Alejandro Hernández Guerrero",
+      "email": "me@alexhdz.com",
+      "homepage": "http://www.alexhdz.com",
+      "role": "creator,manager,architect,developer"
+    },
+    {
+      "name": "Angle Consulting",
+      "email": "email@angle.mx",
+      "homepage": "http://www.angle.mx",
+      "role": "owner"
+    }
+  ],
+  "require": {
+    "php": ">=5.3",
+    "ext-simplexml": "*"
+  },
+  "suggest": {
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Angle\\SatCfdi\\": "src"
+    }
+  }
+}
