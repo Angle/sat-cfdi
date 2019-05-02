@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\SatCfdi;
+namespace Angle\CFDI;
 
 class Parser
 {

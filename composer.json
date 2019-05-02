@@ -30,8 +30,9 @@
     }
   ],
   "require": {
-    "php": ">=5.3",
-    "ext-simplexml": "*"
+    "php": ">=7.1",
+    "ext-simplexml": "*",
+    "ext-dom": "*"
   },
   "suggest": {
   },
@@ -39,7 +40,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Angle\\SatCfdi\\": "src"
+      "Angle\\CFDI\\": "src"
     }
   }
 }
