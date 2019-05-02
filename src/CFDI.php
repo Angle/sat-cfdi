@@ -4,6 +4,8 @@ namespace Angle\CFDI;
 
 use DOMDocument;
 
+use Angle\CFDI\Invoice\Invoice;
+
 class CFDI
 {
     #########################
@@ -29,18 +31,39 @@ class CFDI
 
 
 
-
     ## Properties
     /**
      * @var DOMDocument
      */
-    private $document;
+    protected $document;
+
+    /**
+     * @var Invoice
+     */
+    protected $invoice;
 
     public function __construct()
     {
         $this->document = new DOMDocument('1.0', 'UTF-8');
         $this->document->preserveWhiteSpace = false;
+
+
     }
+
+    public function toDOMDocument(): DOMDocument
+    {
+        $elem = $this->invoice->toDOMElement();
+        $this->document->appendChild($elem);
+
+        return $this->document;
+    }
+
+    public function toXML(): string
+    {
+        return $this->toDOMDocument()->saveXML();
+    }
+
+
 
     public static function CreateFromData(array $data)
     {
