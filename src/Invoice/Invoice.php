@@ -30,15 +30,20 @@ class Invoice
 
     /**
      * Display Label = Version
+     * Required
+     * Value Fixed = "3.3"
+     * No whitespace
      * @var string
      */
     protected $version = CFDI::VERSION;
 
     /**
      * Display Label = Serie
-     * MaxLength = 25
+     * Optional
+     * MinLength = 1, MaxLength = 25
      * RegExp = ^[a-zA-Z0-0]$
-     * @var string
+     * No whiteSpace
+     * @var string|null
      */
     protected $series;
 
@@ -239,8 +244,22 @@ class Invoice
 
     private static $translationMap = [
         // PropertyName => [english, spanish (official SAT)]
-        'version'   => ['version', 'Version'],
-        'series'    => ['series', 'Serie'],
+        'version'           => ['version', 'Version'],
+        'series'            => ['series', 'Serie'],
+        'folio'             => ['folio', 'Folio'],
+        'date'              => ['date', 'Fecha'],
+        'paymentMethod'     => ['paymentMethod', 'FormaPago'],
+        'subTotal'          => ['subTotal', 'SubTotal'],
+        'currency'          => ['currency', 'Moneda'],
+        'exchangeRate'      => ['exchangeRate', 'TipoCambio'],
+        'total'             => ['total', 'Total'],
+        'invoiceType'       => ['invoiceType', 'TipoDeComprobante'],
+        'paymentType'       => ['paymentType', 'MetodoPago'],
+        'postalCode'        => ['postalCode', 'LugarExpedicion'],
+        'signature'         => ['signature', 'Sello'],
+        'certificateNumber' => ['certificateNumber', 'NoCertificado'],
+        'certificate'       => ['certificate', 'Certificado']
+
     ];
 
     private function findPropertyName($prop): ?string
