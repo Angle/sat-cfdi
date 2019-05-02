@@ -100,8 +100,6 @@ class Invoice
     public function __construct(array $data)
     {
         // Lookup each element in the given array, attempt to find the corresponding property even if the input is in english or spanish
-
-
         foreach ($data as $key => $value) {
             // If the property is in the "base attributes" list, ignore it.
             if (array_key_exists($key, $this->baseAttributes())) {
@@ -174,7 +172,21 @@ class Invoice
 
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
+        $node = $dom->createElement(self::NODE_NAME);
 
+        foreach ($this->getAttributes() as $attr => $value) {
+            $node->setAttribute($attr, $value);
+        }
+
+        // Issuer Node
+        $issuerNode = $this->issuer->toDOMElement($dom);
+        $node->appendChild($issuerNode);
+
+        // Recipient Node
+        $recipientNode = $this->recipient->toDOMElement($dom);
+        $node->appendChild($recipientNode);
+
+        return $node;
     }
 
 
