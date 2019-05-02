@@ -5,6 +5,9 @@ namespace Angle\CFDI\Invoice;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
+use DOMDocument;
+use DOMElement;
+
 class Recipient
 {
     const NODE_NAME = "cfdi:Receptor";
@@ -18,5 +21,12 @@ class Recipient
      * @var string
      */
     protected $name;
+
+
+
+    public function toDOMElement(DOMDocument $dom): DOMElement
+    {
+
+    }
 
 }

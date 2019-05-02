@@ -44,16 +44,16 @@ class CFDI
 
     public function __construct()
     {
-        $this->document = new DOMDocument('1.0', 'UTF-8');
-        $this->document->preserveWhiteSpace = false;
-
 
     }
 
     public function toDOMDocument(): DOMDocument
     {
-        $elem = $this->invoice->toDOMElement();
-        $this->document->appendChild($elem);
+        $this->document = new DOMDocument('1.0', 'UTF-8');
+        $this->document->preserveWhiteSpace = false;
+
+        $invoiceNode = $this->invoice->toDOMElement($this->document);
+        $this->document->appendChild($invoiceNode);
 
         return $this->document;
     }

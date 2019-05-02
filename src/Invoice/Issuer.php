@@ -5,6 +5,7 @@ namespace Angle\CFDI\Invoice;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
+use DOMDocument;
 use DOMElement;
 
 class Issuer
@@ -23,7 +24,7 @@ class Issuer
     protected $name;
 
 
-    public function toDOMElement(): DOMElement
+    public function toDOMElement(DOMDocument $dom): DOMElement
     {
 
     }

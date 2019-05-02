@@ -16,3 +16,17 @@ A continuación la lista de Keywords que fueron utilizados:
 | Impuestos Retenidos | Retained Tax |
 | Información Aduanera | Customs Information |
 | Predial | Property Tax |
+
+
+
+## PHPUnit
+
+Install dev dependencies
+```bash
+compose install
+```
+
+Run tests
+```bash
+php vendor/bin/phpunit tests
+```
