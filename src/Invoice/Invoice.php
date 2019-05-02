@@ -29,26 +29,44 @@ class Invoice
 
 
     /**
-     * Display Label = Version
+     * Display Label: Version
      * Required
-     * Value Fixed = "3.3"
+     * Fixed Value: "3.3"
      * No whitespace
      * @var string
      */
     protected $version = CFDI::VERSION;
 
     /**
-     * Display Label = Serie
+     * Display Label: Serie
      * Optional
      * MinLength = 1, MaxLength = 25
-     * RegExp = ^[a-zA-Z0-0]$
-     * No whiteSpace
+     * XSD Pattern: [^|]{1,25}
+     * RegExp = ^[a-zA-Z0-9]$
+     * No whitespace
      * @var string|null
      */
     protected $series;
 
+    /**
+     * Display Label: Folio
+     * Optional
+     * MinLength = 1, MaxLength = 40
+     * XSD Pattern: [^|]{1,40}
+     * RegExp = ^[a-zA-Z0-0]$
+     * No whitespace
+     * @var string|null
+     */
     protected $folio;
 
+    /**
+     * Display Label: Fecha
+     * Required
+     * XSD Pattern: ((19|20)[0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])
+     * RegExp =
+     * No whitespace
+     * @var string
+     */
     protected $date;
 
     protected $paymentMethod; // Forma de Pago
