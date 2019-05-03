@@ -190,6 +190,8 @@ class Invoice
         $attr['Sello'] = $this->signature;
         $attr['NoCertificado'] = $this->certificateNumber;
         $attr['Certificado'] = $this->certificate;
+
+        return $attr;
     }
 
 
@@ -202,12 +204,18 @@ class Invoice
         }
 
         // Issuer Node
-        $issuerNode = $this->issuer->toDOMElement($dom);
-        $node->appendChild($issuerNode);
+        if ($this->issuer) {
+            // TODO: What happens if the issuer is not set?
+            $issuerNode = $this->issuer->toDOMElement($dom);
+            $node->appendChild($issuerNode);
+        }
 
         // Recipient Node
-        $recipientNode = $this->recipient->toDOMElement($dom);
-        $node->appendChild($recipientNode);
+        if ($this->recipient) {
+            // TODO: What happens if the recipient is not set?
+            $recipientNode = $this->recipient->toDOMElement($dom);
+            $node->appendChild($recipientNode);
+        }
 
         return $node;
     }
@@ -267,6 +275,25 @@ class Invoice
         $this->serie = $serie;
         return $this;
     }
+
+    /**
+     * @return string|null
+     */
+    public function getFolio(): ?string
+    {
+        return $this->folio;
+    }
+
+    /**
+     * @param string|null $folio
+     * @return Invoice
+     */
+    public function setFolio(?string $folio): self
+    {
+        $this->folio = $folio;
+        return $this;
+    }
+
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
