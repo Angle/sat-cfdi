@@ -99,6 +99,7 @@ class Invoice
     protected $confirmation;
 
 
+
     // CHILDREN NODES
     /**
      * @var Issuer
@@ -294,23 +295,28 @@ class Invoice
         return $this;
     }
 
+    public function setDate(): self
+    {
+        // sample format: 2019-09-06T10:09:46
+    }
+
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
     private static $translationMap = [
-        // PropertyName => [english, spanish (official SAT)]
-        'version'           => ['version', 'Version'],
-        'series'            => ['series', 'Serie'],
-        'folio'             => ['folio', 'Folio'],
-        'date'              => ['date', 'Fecha'],
-        'paymentMethod'     => ['paymentMethod', 'FormaPago'],
-        'subTotal'          => ['subTotal', 'SubTotal'],
-        'currency'          => ['currency', 'Moneda'],
-        'exchangeRate'      => ['exchangeRate', 'TipoCambio'],
-        'total'             => ['total', 'Total'],
-        'invoiceType'       => ['invoiceType', 'TipoDeComprobante'],
+        // PropertyName => [spanish (official SAT), english]
+        'version'           => ['Version', 'version'],
+        'series'            => ['Serie', 'series'],
+        'folio'             => ['Folio', 'folio'],
+        'date'              => ['Fecha', 'date'],
+        'paymentMethod'     => ['FormaPago', 'paymentMethod'],
+        'subTotal'          => ['SubTotal', 'subTotal'],
+        'currency'          => ['Moneda', 'currency'],
+        'exchangeRate'      => ['TipoCambio', 'exchangeRate'],
+        'total'             => ['Total', 'total'],
+        'invoiceType'       => ['TipoDeComprobante', 'invoiceType'],
         'paymentType'       => ['paymentType', 'MetodoPago'],
         'postalCode'        => ['postalCode', 'LugarExpedicion'],
         'signature'         => ['signature', 'Sello'],

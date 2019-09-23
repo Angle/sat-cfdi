@@ -8,5 +8,8 @@
 ehthumbs.db
 Thumbs.db
 
+# Test Data
+test-data/
+
 # JetBrains
 .idea/
