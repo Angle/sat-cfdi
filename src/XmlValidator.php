@@ -61,7 +61,7 @@ class XmlValidator
      *
      * @throws \Exception
      */
-    public function validate($xml)
+    public function validateXmlFile(string $xmlFilePath)
     {
         // Clear any previous errors
         $this->errors = [];
@@ -70,7 +70,7 @@ class XmlValidator
             throw new \Exception("'DOMDocument' class not found!");
         }
 
-        if (!file_exists($xml)) {
+        if (!file_exists($xmlFilePath)) {
             $this->errors[] = 'Target XML file does not exist';
             throw new \Exception('Target xml file does not exist');
         }
@@ -78,15 +78,44 @@ class XmlValidator
         libxml_use_internal_errors(true);
 
         try {
-            $dom = new \DOMDocument();
-            $dom->load($xml);
+            $dom = new DOMDocument();
+            $dom->load($xmlFilePath);
         } catch (\Exception $e) {
             $this->errors[] = 'Cannot open target XML file: ' . $e->getMessage();
             $this->errors = array_merge($this->errors, $this->libxmlErrors());
             throw new \Exception('Cannot open target xml file: ' . $e->getMessage());
         }
 
+        return $this->validate($dom);
 
+
+    }
+
+    public function validateXmlString(string $xmlString)
+    {
+        // Clear any previous errors
+        $this->errors = [];
+
+        if (!class_exists('DOMDocument')) {
+            throw new \Exception("'DOMDocument' class not found!");
+        }
+
+        libxml_use_internal_errors(true);
+
+        try {
+            $dom = new DOMDocument();
+            $dom->loadXML($xmlString);
+        } catch (\Exception $e) {
+            $this->errors[] = 'Cannot load XML string: ' . $e->getMessage();
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+            throw new \Exception('Cannot load XML string: ' . $e->getMessage());
+        }
+
+        return $this->validate($dom);
+    }
+
+    private function validate(DOMDocument &$dom)
+    {
         $schemaUri = XsdStreamWrapper::PROTOCOL . '://' . self::CFDI_SCHEMA;
 
         if (!$dom->schemaValidate($schemaUri)) {

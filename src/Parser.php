@@ -2,16 +2,18 @@
 
 namespace Angle\CFDI;
 
+use DOMDocument;
+
 use Angle\CFDI\Invoice\Invoice;
 
 class Parser
 {
-    public static function xmlFileToInvoice(string $xmlFilePath): ?Invoice
+    public static function xmlStringToInvoice(string $xmlString): ?Invoice
     {
         $validator = new XmlValidator();
 
         try {
-            $r = $validator->validate($xmlFilePath);
+            $r = $validator->validateXmlString($xmlString);
         } catch (\Exception $e) {
             return null;
         }
@@ -21,6 +23,30 @@ class Parser
         }
 
         $dom = $validator->getDOM();
+
+        return self::domToInvoice($dom);
+    }
+    public static function xmlFileToInvoice(string $xmlFilePath): ?Invoice
+    {
+        $validator = new XmlValidator();
+
+        try {
+            $r = $validator->validateXmlFile($xmlFilePath);
+        } catch (\Exception $e) {
+            return null;
+        }
+
+        if (!$r) {
+            return null;
+        }
+
+        $dom = $validator->getDOM();
+
+        return self::domToInvoice($dom);
+    }
+
+    public static function domToInvoice(DOMDocument $dom): ?Invoice
+    {
         $invoiceNode = $dom->firstChild;
 
         /*

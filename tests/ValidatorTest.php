@@ -14,7 +14,7 @@ final class ValidatorTest extends TestCase
         //$xml = self::PATH . '/test-data/ONO9507278T4-ENH-314617.xml';
         $xml = __DIR__ . '/../test-data/invalid.xml';
 
-        $validated = $validator->validate($xml);
+        $validated = $validator->validateXmlFile($xml);
 
         if (!$validated) {
             $this->assertEquals($validated, false);
@@ -25,7 +25,7 @@ final class ValidatorTest extends TestCase
 
         $xml = __DIR__ . '/../test-data/QCS931209G49-A-94231073.xml';
 
-        $validated = $validator->validate($xml);
+        $validated = $validator->validateXmlFile($xml);
 
         if ($validated) {
             $this->assertEquals(
