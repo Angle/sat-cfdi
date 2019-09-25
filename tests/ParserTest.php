@@ -9,13 +9,9 @@ use PHPUnit\Framework\TestCase;
 
 final class ValidatorTest extends TestCase
 {
-    const PATH = '/Users/mundofr/GitHub/Angle/sat-cfdi'; // FIXME: dynamic paths
-
     public function testValidate(): void
     {
-        Parser::$DIR = self::PATH;
-
-        $xml = self::PATH . '/test-data/QCS931209G49-A-94231073.xml';
+        $xml = __DIR__ . '/../test-data/QCS931209G49-A-94231073.xml';
 
         try {
             $invoice = Parser::xmlFileToInvoice($xml);

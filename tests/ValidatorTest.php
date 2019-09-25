@@ -7,14 +7,12 @@ use PHPUnit\Framework\TestCase;
 
 final class ValidatorTest extends TestCase
 {
-    const PATH = '/Users/mundofr/GitHub/Angle/sat-cfdi'; // FIXME: dynamic paths
-
     public function testValidate(): void
     {
-        $validator = new XmlValidator(self::PATH); // FIXME: dynamic paths
+        $validator = new XmlValidator();
 
         //$xml = self::PATH . '/test-data/ONO9507278T4-ENH-314617.xml';
-        $xml = self::PATH . '/test-data/invalid.xml';
+        $xml = __DIR__ . '/../test-data/invalid.xml';
 
         $validated = $validator->validate($xml);
 
@@ -25,7 +23,7 @@ final class ValidatorTest extends TestCase
         }
 
 
-        $xml = self::PATH . '/test-data/QCS931209G49-A-94231073.xml';
+        $xml = __DIR__ . '/../test-data/QCS931209G49-A-94231073.xml';
 
         $validated = $validator->validate($xml);
 

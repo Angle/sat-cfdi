@@ -6,11 +6,9 @@ use Angle\CFDI\Invoice\Invoice;
 
 class Parser
 {
-    public static $DIR = ''; // TODO: how will we inject this??
-
     public static function xmlFileToInvoice(string $xmlFilePath): ?Invoice
     {
-        $validator = new XmlValidator(self::$DIR);
+        $validator = new XmlValidator();
 
         try {
             $r = $validator->validate($xmlFilePath);

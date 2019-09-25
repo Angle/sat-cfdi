@@ -31,8 +31,10 @@ class XmlValidator
     public $dom;
 
 
-    public function __construct(string $libDir)
+    public function __construct()
     {
+        $libDir = __DIR__ . '/../';
+
         // Create the Stream Wrapper to manipulate our XSD schema file
         if (in_array(XsdStreamWrapper::PROTOCOL, stream_get_wrappers())) {
             // the stream was previously registered, we'll destroy it and recreate it
