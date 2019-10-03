@@ -688,6 +688,7 @@ class Invoice
         'date'              => ['Fecha', 'date'],
         'paymentMethod'     => ['FormaPago', 'paymentMethod'],
         'subTotal'          => ['SubTotal', 'subTotal'],
+        'discount'          => ['Descuento', 'discount'],
         'currency'          => ['Moneda', 'currency'],
         'exchangeRate'      => ['TipoCambio', 'exchangeRate'],
         'total'             => ['Total', 'total'],
