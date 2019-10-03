@@ -5,11 +5,13 @@ namespace Angle\CFDI\Invoice;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\Issuer;
-use Angle\CFDI\Invoice\Recipient;
+use DateTime;
+use DateTimeZone;
+use RuntimeException;
 
 use DOMDocument;
 use DOMElement;
+use DOMNode;
 
 class Invoice
 {
@@ -17,8 +19,10 @@ class Invoice
     ##        PRESETS      ##
     #########################
 
-    // none
     const SERIES_WRONG_LENGTH_ERROR = 1;
+
+    const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
+    const DATETIME_TIMEZONE = 'America/Mexico_City';
 
 
     #########################
@@ -65,13 +69,11 @@ class Invoice
      * XSD Pattern: ((19|20)[0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])
      * RegExp =
      * No whitespace
-     * @var string
+     * @var DateTime
      */
     protected $date;
 
     protected $paymentMethod; // Forma de Pago
-
-    protected $paymentConditions;
 
     protected $subTotal;
 
@@ -113,7 +115,7 @@ class Invoice
 
 
     #########################
-    ##
+    ##     CONSTRUCTOR     ##
     #########################
 
     /**
@@ -149,11 +151,39 @@ class Invoice
         }
     }
 
+    /**
+     * @param DOMNode $node
+     * @return Invoice
+     * @throws CFDIException
+     */
+    public static function createFromDomNode(DOMNode $node): self
+    {
+        // Extract invoice data
+        $invoiceData = [];
 
+        if ($node->hasAttributes()) {
+            foreach ($node->attributes as $attr) {
+                $invoiceData[$attr->nodeName] = $attr->nodeValue;
+            }
+        }
+
+        //echo "Invoice data:" . PHP_EOL;
+        //print_r($invoiceData);
+
+        try {
+            $invoice = new Invoice($invoiceData);
+        } catch (CFDIException $e) {
+            // TODO: handle this exception
+            throw $e;
+        }
+
+
+        return $invoice;
+    }
 
 
     #########################
-    ## XML DOM TRANSLATION
+    ## INVOICE TO DOM TRANSLATION
     #########################
 
     public function baseAttributes(): array
@@ -167,6 +197,11 @@ class Invoice
 
     public function getAttributes(): array
     {
+        // TODO: should _this_ function trigger the validation???
+        if (!$this->validate()) {
+            throw new CFDIException('Invoice is not validated, cannot pull attributes');
+        }
+
         $attr = $this->baseAttributes();
 
         // FIXME: We could be pulling this automatically from the same translation array used to populate the new object.
@@ -174,7 +209,7 @@ class Invoice
         $attr['Version'] = $this->version;
         $attr['Serie'] = $this->series;
         $attr['Folio'] = $this->folio;
-        $attr['Fecha'] = $this->date;
+        $attr['Fecha'] = $this->date->format(self::DATETIME_FORMAT);
         $attr['FormaPago'] = $this->paymentMethod;
         $attr['SubTotal'] = $this->subTotal;
         $attr['Moneda'] = $this->currency;
@@ -223,6 +258,42 @@ class Invoice
 
 
     #########################
+    ## INVOICE TO XML
+    #########################
+
+    public function toDOMDocument(): DOMDocument
+    {
+        $dom = new \DOMDocument('1.0','UTF-8');
+        $dom->preserveWhiteSpace = false;
+
+        $invoiceNode = $this->toDOMElement($dom);
+        $dom->appendChild($invoiceNode);
+
+        return $dom;
+    }
+
+    public function toXML(): string
+    {
+        return $this->toDOMDocument()->saveXML();
+    }
+
+
+    #########################
+    ## VALIDATION
+    #########################
+
+    public function validate(): bool
+    {
+        // TODO: implement the full set of validation, including type and Business Logic
+
+        if (!($this->date instanceof DateTime)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    #########################
     ## GETTERS AND SETTERS ##
     #########################
 
@@ -253,27 +324,27 @@ class Invoice
     }
 
     /**
-     * @param string $serie
+     * @param string $series
      * @return Invoice
      * @throws CFDIException
      */
-    public function setSeries(string $serie): self
+    public function setSeries(string $series): self
     {
         // Validate Length
-        $l = strlen($serie);
+        $l = strlen($series);
 
         if ($l < 1 || $l > 25) {
             throw new CFDIException("Series contains wrong length.", self::SERIES_WRONG_LENGTH_ERROR);
         }
 
         // Validate contents
-        if (preg_match('/^[a-zA-Z0-0]$/', $serie)) {
+        if (preg_match('/^[a-zA-Z0-0]$/', $series)) {
 
         }
 
 
 
-        $this->serie = $serie;
+        $this->series = $series;
         return $this;
     }
 
@@ -295,10 +366,314 @@ class Invoice
         return $this;
     }
 
-    public function setDate(): self
+
+    /**
+     * @return DateTime
+     */
+    public function getDate(): ?DateTime
     {
-        // sample format: 2019-09-06T10:09:46
+        return $this->date;
     }
+
+    /**
+     * @param DateTime|string $rawDate
+     * @throws CFDIException
+     * @return Invoice
+     */
+    public function setDate($rawDate): self
+    {
+        if ($rawDate instanceof DateTime) {
+            $this->date = $rawDate;
+        }
+
+        // sample format: 2019-09-06T10:09:46
+        // TODO: We are assuming that dates ARE in Mexico City's timezone
+        try {
+            $tz = new DateTimeZone(self::DATETIME_TIMEZONE);
+            $date = DateTime::createFromFormat(self::DATETIME_FORMAT, $rawDate, $tz);
+        } catch (\Exception $e) {
+            throw new CFDIException('Raw date string is in invalid format, cannot parse date');
+        }
+
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPaymentMethod()
+    {
+        return $this->paymentMethod;
+    }
+
+    /**
+     * @param mixed $paymentMethod
+     * @return Invoice
+     */
+    public function setPaymentMethod($paymentMethod): self
+    {
+        $this->paymentMethod = $paymentMethod;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubTotal()
+    {
+        return $this->subTotal;
+    }
+
+    /**
+     * @param mixed $subTotal
+     * @return Invoice
+     */
+    public function setSubTotal($subTotal): self
+    {
+        $this->subTotal = $subTotal;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDiscount()
+    {
+        return $this->discount;
+    }
+
+    /**
+     * @param mixed $discount
+     * @return Invoice
+     */
+    public function setDiscount($discount): self
+    {
+        $this->discount = $discount;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCurrency()
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param mixed $currency
+     * @return Invoice
+     */
+    public function setCurrency($currency): self
+    {
+        $this->currency = $currency;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExchangeRate()
+    {
+        return $this->exchangeRate;
+    }
+
+    /**
+     * @param mixed $exchangeRate
+     * @return Invoice
+     */
+    public function setExchangeRate($exchangeRate): self
+    {
+        $this->exchangeRate = $exchangeRate;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotal()
+    {
+        return $this->total;
+    }
+
+    /**
+     * @param mixed $total
+     * @return Invoice
+     */
+    public function setTotal($total): self
+    {
+        $this->total = $total;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getInvoiceType()
+    {
+        return $this->invoiceType;
+    }
+
+    /**
+     * @param mixed $invoiceType
+     * @return Invoice
+     */
+    public function setInvoiceType($invoiceType): self
+    {
+        $this->invoiceType = $invoiceType;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPaymentType()
+    {
+        return $this->paymentType;
+    }
+
+    /**
+     * @param mixed $paymentType
+     * @return Invoice
+     */
+    public function setPaymentType($paymentType): self
+    {
+        $this->paymentType = $paymentType;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPostalCode()
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * @param mixed $postalCode
+     * @return Invoice
+     */
+    public function setPostalCode($postalCode): self
+    {
+        $this->postalCode = $postalCode;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSignature()
+    {
+        return $this->signature;
+    }
+
+    /**
+     * @param mixed $signature
+     * @return Invoice
+     */
+    public function setSignature($signature): self
+    {
+        $this->signature = $signature;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCertificateNumber()
+    {
+        return $this->certificateNumber;
+    }
+
+    /**
+     * @param mixed $certificateNumber
+     * @return Invoice
+     */
+    public function setCertificateNumber($certificateNumber): self
+    {
+        $this->certificateNumber = $certificateNumber;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCertificate()
+    {
+        return $this->certificate;
+    }
+
+    /**
+     * @param mixed $certificate
+     * @return Invoice
+     */
+    public function setCertificate($certificate): self
+    {
+        $this->certificate = $certificate;
+        return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConfirmation()
+    {
+        return $this->confirmation;
+    }
+
+    /**
+     * @param mixed $confirmation
+     * @return Invoice
+     */
+    public function setConfirmation($confirmation): self
+    {
+        $this->confirmation = $confirmation;
+        return $this;
+    }
+
+    #########################
+    ## CHILDREN
+    #########################
+
+    /**
+     * @return Issuer
+     */
+    public function getIssuer(): ?Issuer
+    {
+        return $this->issuer;
+    }
+
+    /**
+     * @param Issuer $issuer
+     * @return Invoice
+     */
+    public function setIssuer(Issuer $issuer): self
+    {
+        $this->issuer = $issuer;
+        return $this;
+    }
+
+    /**
+     * @return Recipient
+     */
+    public function getRecipient(): ?Recipient
+    {
+        return $this->recipient;
+    }
+
+    /**
+     * @param Recipient $recipient
+     * @return Invoice
+     */
+    public function setRecipient(Recipient $recipient): self
+    {
+        $this->recipient = $recipient;
+        return $this;
+    }
+
 
 
     #########################
@@ -317,11 +692,11 @@ class Invoice
         'exchangeRate'      => ['TipoCambio', 'exchangeRate'],
         'total'             => ['Total', 'total'],
         'invoiceType'       => ['TipoDeComprobante', 'invoiceType'],
-        'paymentType'       => ['paymentType', 'MetodoPago'],
-        'postalCode'        => ['postalCode', 'LugarExpedicion'],
-        'signature'         => ['signature', 'Sello'],
-        'certificateNumber' => ['certificateNumber', 'NoCertificado'],
-        'certificate'       => ['certificate', 'Certificado']
+        'paymentType'       => ['MetodoPago', 'paymentType'],
+        'postalCode'        => ['LugarExpedicion', 'postalCode'],
+        'signature'         => ['Sello', 'signature'],
+        'certificateNumber' => ['NoCertificado', 'certificateNumber'],
+        'certificate'       => ['Certificado', 'certificate']
 
     ];
 

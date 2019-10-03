@@ -3,8 +3,11 @@
 namespace Angle\CFDI;
 
 use DOMDocument;
+use DOMNode;
 
 use Angle\CFDI\Invoice\Invoice;
+use Angle\CFDI\Invoice\Issuer;
+use Angle\CFDI\Invoice\Recipient;
 
 class Parser
 {
@@ -49,28 +52,32 @@ class Parser
     {
         $invoiceNode = $dom->firstChild;
 
-        /*
-        if ($dom->getElementsByTagNameNS('cfdi', 'Comprobante')->count() != 1) {
+        $invoice = Invoice::createFromDomNode($invoiceNode);
+
+        if (!$invoiceNode->hasChildNodes()) {
+            // at least one child node is required
             return null;
         }
 
-        $invoiceNode = $dom->getElementsByTagName('Comprobante')->item(0);
-        */
+        foreach ($invoiceNode->childNodes as $node) {
+            echo $node->localName . PHP_EOL;
 
-        // Extract invoice data
-        $invoiceData = [];
+            /** @var DOMNode $node */
 
-        if ($invoiceNode->hasAttributes()) {
-            echo "has attributes!" . PHP_EOL;
-            foreach ($invoiceNode->attributes as $attr) {
-                $invoiceData[$attr->nodeName] = $attr->nodeValue;
+            switch ($node->localName) {
+                case 'Emisor':
+                    $issuer = Issuer::createFromDomNode($node);
+                    $invoice->setIssuer($issuer);
+                    break;
+                case 'Receptor':
+                    $recipient = Recipient::createFromDomNode($node);
+                    $invoice->setRecipient($recipient);
+                    break;
+                default:
+                //    throw new CFDIException(sprintf("Unknown node '%s'", $node->localName));
             }
+
         }
-
-        echo "Invoice data:" . PHP_EOL;
-        print_r($invoiceData);
-
-        $invoice = new Invoice($invoiceData);
 
         return $invoice;
     }

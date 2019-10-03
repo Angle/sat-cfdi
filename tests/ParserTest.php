@@ -13,6 +13,10 @@ final class ValidatorTest extends TestCase
     {
         $xml = __DIR__ . '/../test-data/QCS931209G49-A-94231073.xml';
 
+        echo "Source XML: " . PHP_EOL;
+        echo file_get_contents($xml);
+        echo PHP_EOL;
+
         try {
             $invoice = Parser::xmlFileToInvoice($xml);
         } catch (\Exception $e) {
@@ -20,5 +24,10 @@ final class ValidatorTest extends TestCase
         }
 
         $this->assertInstanceOf(Invoice::class, $invoice);
+
+        // Write out the XML, check if we match the same file
+        print_r($invoice);
+        echo "Result XML:" . PHP_EOL;
+        echo $invoice->toXML();
     }
 }
