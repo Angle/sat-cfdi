@@ -14,11 +14,15 @@ class CFDI
 
     const VERSION = "3.3";
     const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
+    const DATETIME_TIMEZONE = 'America/Mexico_City';
 
     // Payment Method
     const PAYMENT_METHOD_CASH =     "01";
     const PAYMENT_METHOD_CHECK =    "02"; // Cheque nominativo
     // many many more..
+
+    const ATTR_REQUIRED = 'R';
+    const ATTR_OPTIONAL = 'O';
 
 
     // Currency

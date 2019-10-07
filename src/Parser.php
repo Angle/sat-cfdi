@@ -6,8 +6,9 @@ use DOMDocument;
 use DOMNode;
 
 use Angle\CFDI\Invoice\Invoice;
-use Angle\CFDI\Invoice\Issuer;
-use Angle\CFDI\Invoice\Recipient;
+use Angle\CFDI\Invoice\Node\Issuer;
+use Angle\CFDI\Invoice\Node\Recipient;
+use Angle\CFDI\Invoice\Node\ItemList;
 
 class Parser
 {
@@ -65,13 +66,17 @@ class Parser
             /** @var DOMNode $node */
 
             switch ($node->localName) {
-                case 'Emisor':
+                case Issuer::NODE_NAME:
                     $issuer = Issuer::createFromDomNode($node);
                     $invoice->setIssuer($issuer);
                     break;
-                case 'Receptor':
+                case Recipient::NODE_NAME:
                     $recipient = Recipient::createFromDomNode($node);
                     $invoice->setRecipient($recipient);
+                    break;
+                case ItemList::NODE_NAME:
+                    $itemList = ItemList::createFromDomNode($node);
+                    $invoice->setItemList($itemList);
                     break;
                 default:
                 //    throw new CFDIException(sprintf("Unknown node '%s'", $node->localName));

@@ -7,7 +7,7 @@ use Angle\CFDI\Parser;
 use Angle\CFDI\XmlValidator;
 use PHPUnit\Framework\TestCase;
 
-final class ValidatorTest extends TestCase
+final class ParserTest extends TestCase
 {
     public function testValidate(): void
     {

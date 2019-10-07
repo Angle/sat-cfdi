@@ -5,6 +5,10 @@ namespace Angle\CFDI\Invoice;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
+use Angle\CFDI\Invoice\Node\Issuer;
+use Angle\CFDI\Invoice\Node\Recipient;
+use Angle\CFDI\Invoice\Node\ItemList;
+
 use DateTime;
 use DateTimeZone;
 use RuntimeException;
@@ -12,25 +16,110 @@ use RuntimeException;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 
-class Invoice
+/**
+ * @method static Invoice createFromDOMNode(DOMNode $node)
+ */
+class Invoice extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
+    const NODE_NAME = 'Comprobante';
+    const NS_NODE_NAME = 'cfdi:Comprobante';
+
     const SERIES_WRONG_LENGTH_ERROR = 1;
 
-    const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
-    const DATETIME_TIMEZONE = 'America/Mexico_City';
+
+    protected static $baseAttributes = [
+        'xmlns:cfdi'            => 'http://www.sat.gob.mx/cfd/3',
+        'xmlns:xsi'             => 'http://www.w3.org/2001/XMLSchema-instance',
+        'xsi:schemaLocation'    => 'http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd',
+    ];
+
+
+    #########################
+    ## PROPERTY NAME TRANSLATIONS ##
+    #########################
+
+    protected static $attributes = [
+        // PropertyName => [spanish (official SAT), english]
+        'version'           => [
+            'keywords' => ['Version', 'version'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'series'            => [
+            'keywords' => ['Serie', 'series'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'folio'             => [
+            'keywords' => ['Folio', 'folio'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'date'              => [
+            'keywords' => ['Fecha', 'date'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'paymentMethod'     => [
+            'keywords' => ['FormaPago', 'paymentMethod'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'paymentConditions'     => [
+            'keywords' => ['CondicionesDePago', 'paymentConditions'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'subTotal'          => [
+            'keywords' => ['SubTotal', 'subTotal'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'discount'          => [
+            'keywords' => ['Descuento', 'discount'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'currency'          => [
+            'keywords' => ['Moneda', 'currency'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'exchangeRate'      => [
+            'keywords' => ['TipoCambio', 'exchangeRate'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'total'             => [
+            'keywords' => ['Total', 'total'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'invoiceType'       => [
+            'keywords' => ['TipoDeComprobante', 'invoiceType'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'paymentType'       => [
+            'keywords' => ['MetodoPago', 'paymentType'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'postalCode'        => [
+            'keywords' => ['LugarExpedicion', 'postalCode'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'signature'         => [
+            'keywords' => ['Sello', 'signature'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'certificateNumber' => [
+            'keywords' => ['NoCertificado', 'certificateNumber'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+        'certificate'       => [
+            'keywords' => ['Certificado', 'certificate'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+    ];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
-
-    const NODE_NAME = 'cfdi:Comprobante';
-
 
     /**
      * Display Label: Version
@@ -69,35 +158,80 @@ class Invoice
      * XSD Pattern: ((19|20)[0-9][0-9])-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])
      * RegExp =
      * No whitespace
-     * @var DateTime
+     * @var DateTime|null
      */
     protected $date;
 
+    /**
+     * @var string
+     */
     protected $paymentMethod; // Forma de Pago
 
+    /**
+     * @var string
+     */
     protected $subTotal;
 
+    /**
+     * @var string
+     */
     protected $discount;
 
+    /**
+     * @var string
+     */
     protected $currency;
 
+    /**
+     * @var string
+     */
     protected $exchangeRate;
 
+    /**
+     * @var string
+     */
     protected $total;
 
-    protected $invoiceType;
 
+    /**
+     * @var string
+     */
+    protected $invoiceType; // Tipo de Comprobante
+
+    /**
+     * @var string
+     */
     protected $paymentType; // Método de Pago
 
-    protected $postalCode;
+    /**
+     * @var string
+     */
+    protected $paymentConditions; // Condiciones de Pago
+
+    /**
+     * @var string
+     */
+    protected $postalCode; // Lugar de Expedición
 
 
-    protected $signature;
+    /**
+     * @var string
+     */
+    protected $signature; // Sello
 
+    /**
+     * @var string
+     */
     protected $certificateNumber;
 
+    /**
+     * @var string
+     */
     protected $certificate;
 
+    /**
+     * @var string
+     */
     protected $confirmation;
 
 
@@ -113,72 +247,47 @@ class Invoice
      */
     protected $recipient;
 
+    /**
+     * @var ItemList
+     */
+    protected $itemList;
+
 
     #########################
     ##     CONSTRUCTOR     ##
     #########################
 
+    // constructor implemented in the CFDINode abstract class
+
     /**
-     * Invoice constructor.
-     * @param array $data [$attributeName => $value]
+     * @param DOMNode[]
      * @throws CFDIException
      */
-    public function __construct(array $data)
+    public function setChildren(array $children): void
     {
-        // Lookup each element in the given array, attempt to find the corresponding property even if the input is in english or spanish
-        foreach ($data as $key => $value) {
-            // If the property is in the "base attributes" list, ignore it.
-            if (array_key_exists($key, $this->baseAttributes())) {
+        foreach ($children as $node) {
+            if ($node instanceof DOMText) {
+                // TODO: we are skipping the actual text inside the Node.. is this useful?
                 continue;
             }
 
-            // Find the corresponding propertyName from the current attribute key
-            $propertyName = $this->findPropertyName($key);
-
-            if ($propertyName === null) {
-                // Attribute name not found.
-                throw new CFDIException("Invalid Attribute Name given, '$key' not found in Invoice object definition.", -1); // TODO: Pelos: add a proper code
-            }
-
-            $setter = 'set' . ucfirst($propertyName);
-            if (!method_exists(self::class, $setter)) {
-                throw new CFDIException("Property '$propertyName' has no setter method.", -1); // TODO: Pelos: add a proper code
-            }
-
-
-            // If the setter fails, it'll throw a CFDIException. We'll let it arise, the final library user should be the one catching and handling these type of exceptions.
-            $this->$setter($value);
-        }
-    }
-
-    /**
-     * @param DOMNode $node
-     * @return Invoice
-     * @throws CFDIException
-     */
-    public static function createFromDomNode(DOMNode $node): self
-    {
-        // Extract invoice data
-        $invoiceData = [];
-
-        if ($node->hasAttributes()) {
-            foreach ($node->attributes as $attr) {
-                $invoiceData[$attr->nodeName] = $attr->nodeValue;
+            switch ($node->localName) {
+                case Issuer::NODE_NAME:
+                    $issuer = Issuer::createFromDOMNode($node);
+                    $this->setIssuer($issuer);
+                    break;
+                case Recipient::NODE_NAME:
+                    $recipient = Recipient::createFromDOMNode($node);
+                    $this->setRecipient($recipient);
+                    break;
+                case ItemList::NODE_NAME:
+                    $itemList = ItemList::createFromDOMNode($node);
+                    $this->setItemList($itemList);
+                    break;
+                default:
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
-
-        //echo "Invoice data:" . PHP_EOL;
-        //print_r($invoiceData);
-
-        try {
-            $invoice = new Invoice($invoiceData);
-        } catch (CFDIException $e) {
-            // TODO: handle this exception
-            throw $e;
-        }
-
-
-        return $invoice;
     }
 
 
@@ -186,54 +295,9 @@ class Invoice
     ## INVOICE TO DOM TRANSLATION
     #########################
 
-    public function baseAttributes(): array
-    {
-        return [
-            'xmlns:cfdi'            => 'http://www.sat.gob.mx/cfd/3',
-            'xmlns:xsi'             => 'http://www.w3.org/2001/XMLSchema-instance',
-            'xsi:schemaLocation'    => 'http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd',
-        ];
-    }
-
-    public function getAttributes(): array
-    {
-        // TODO: should _this_ function trigger the validation???
-        if (!$this->validate()) {
-            throw new CFDIException('Invoice is not validated, cannot pull attributes');
-        }
-
-        $attr = $this->baseAttributes();
-
-        // FIXME: We could be pulling this automatically from the same translation array used to populate the new object.
-
-        $attr['Version'] = $this->version;
-        $attr['Serie'] = $this->series;
-        $attr['Folio'] = $this->folio;
-        $attr['Fecha'] = $this->date->format(self::DATETIME_FORMAT);
-        $attr['FormaPago'] = $this->paymentMethod;
-        $attr['SubTotal'] = $this->subTotal;
-        $attr['Moneda'] = $this->currency;
-
-        if ($this->exchangeRate) {
-            $attr['TipoCambio'] = $this->exchangeRate;
-        }
-
-        $attr['Total'] = $this->total;
-        $attr['TipoDeComprobante'] = $this->invoiceType;
-        $attr['MetodoPago'] = $this->paymentType;
-        $attr['LugarExpedicion'] = $this->postalCode;
-
-        $attr['Sello'] = $this->signature;
-        $attr['NoCertificado'] = $this->certificateNumber;
-        $attr['Certificado'] = $this->certificate;
-
-        return $attr;
-    }
-
-
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
-        $node = $dom->createElement(self::NODE_NAME);
+        $node = $dom->createElement(self::NS_NODE_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);
@@ -251,6 +315,13 @@ class Invoice
             // TODO: What happens if the recipient is not set?
             $recipientNode = $this->recipient->toDOMElement($dom);
             $node->appendChild($recipientNode);
+        }
+
+        // ItemList Node
+        if ($this->itemList) {
+            // TODO: What happens if the itemList is not set?
+            $itemListNode = $this->itemList->toDOMElement($dom);
+            $node->appendChild($itemListNode);
         }
 
         return $node;
@@ -300,7 +371,7 @@ class Invoice
     /**
      * @return string|null
      */
-    public function getVersion(): string
+    public function getVersion(): ?string
     {
         return $this->version;
     }
@@ -309,7 +380,7 @@ class Invoice
      * @param string $version
      * @return Invoice
      */
-    public function setVersion(string $version): self
+    public function setVersion(?string $version): self
     {
         $this->version = $version;
         return $this;
@@ -318,7 +389,7 @@ class Invoice
     /**
      * @return string
      */
-    public function getSeries(): string
+    public function getSeries(): ?string
     {
         return $this->series;
     }
@@ -328,7 +399,7 @@ class Invoice
      * @return Invoice
      * @throws CFDIException
      */
-    public function setSeries(string $series): self
+    public function setSeries(?string $series): self
     {
         // Validate Length
         $l = strlen($series);
@@ -389,8 +460,8 @@ class Invoice
         // sample format: 2019-09-06T10:09:46
         // TODO: We are assuming that dates ARE in Mexico City's timezone
         try {
-            $tz = new DateTimeZone(self::DATETIME_TIMEZONE);
-            $date = DateTime::createFromFormat(self::DATETIME_FORMAT, $rawDate, $tz);
+            $tz = new DateTimeZone(CFDI::DATETIME_TIMEZONE);
+            $date = DateTime::createFromFormat(CFDI::DATETIME_FORMAT, $rawDate, $tz);
         } catch (\Exception $e) {
             throw new CFDIException('Raw date string is in invalid format, cannot parse date');
         }
@@ -401,238 +472,257 @@ class Invoice
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPaymentMethod()
+    public function getPaymentMethod(): ?string
     {
         return $this->paymentMethod;
     }
 
     /**
-     * @param mixed $paymentMethod
+     * @param string $paymentMethod
      * @return Invoice
      */
-    public function setPaymentMethod($paymentMethod): self
+    public function setPaymentMethod(?string $paymentMethod): self
     {
         $this->paymentMethod = $paymentMethod;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSubTotal()
+    public function getSubTotal(): ?string
     {
         return $this->subTotal;
     }
 
     /**
-     * @param mixed $subTotal
+     * @param string $subTotal
      * @return Invoice
      */
-    public function setSubTotal($subTotal): self
+    public function setSubTotal(?string $subTotal): self
     {
         $this->subTotal = $subTotal;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getDiscount()
+    public function getDiscount(): ?string
     {
         return $this->discount;
     }
 
     /**
-     * @param mixed $discount
+     * @param string $discount
      * @return Invoice
      */
-    public function setDiscount($discount): self
+    public function setDiscount(?string $discount): self
     {
         $this->discount = $discount;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCurrency()
+    public function getCurrency(): ?string
     {
         return $this->currency;
     }
 
     /**
-     * @param mixed $currency
+     * @param string $currency
      * @return Invoice
      */
-    public function setCurrency($currency): self
+    public function setCurrency(?string $currency): self
     {
         $this->currency = $currency;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getExchangeRate()
+    public function getExchangeRate(): ?string
     {
         return $this->exchangeRate;
     }
 
     /**
-     * @param mixed $exchangeRate
+     * @param string $exchangeRate
      * @return Invoice
      */
-    public function setExchangeRate($exchangeRate): self
+    public function setExchangeRate(?string $exchangeRate): self
     {
         $this->exchangeRate = $exchangeRate;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getTotal()
+    public function getTotal(): ?string
     {
         return $this->total;
     }
 
     /**
-     * @param mixed $total
+     * @param string $total
      * @return Invoice
      */
-    public function setTotal($total): self
+    public function setTotal(?string $total): self
     {
         $this->total = $total;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getInvoiceType()
+    public function getInvoiceType(): ?string
     {
         return $this->invoiceType;
     }
 
     /**
-     * @param mixed $invoiceType
+     * @param string $invoiceType
      * @return Invoice
      */
-    public function setInvoiceType($invoiceType): self
+    public function setInvoiceType(?string $invoiceType): self
     {
         $this->invoiceType = $invoiceType;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPaymentType()
+    public function getPaymentType(): ?string
     {
         return $this->paymentType;
     }
 
     /**
-     * @param mixed $paymentType
+     * @param string $paymentType
      * @return Invoice
      */
-    public function setPaymentType($paymentType): self
+    public function setPaymentType(?string $paymentType): self
     {
         $this->paymentType = $paymentType;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getPostalCode()
+    public function getPaymentConditions(): ?string
+    {
+        return $this->paymentConditions;
+    }
+
+    /**
+     * @param string $paymentConditions
+     * @return Invoice
+     */
+    public function setPaymentConditions(?string $paymentConditions): self
+    {
+        $this->paymentConditions = $paymentConditions;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
     /**
-     * @param mixed $postalCode
+     * @param string $postalCode
      * @return Invoice
      */
-    public function setPostalCode($postalCode): self
+    public function setPostalCode(?string $postalCode): self
     {
         $this->postalCode = $postalCode;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSignature()
+    public function getSignature(): ?string
     {
         return $this->signature;
     }
 
     /**
-     * @param mixed $signature
+     * @param string $signature
      * @return Invoice
      */
-    public function setSignature($signature): self
+    public function setSignature(?string $signature): self
     {
         $this->signature = $signature;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCertificateNumber()
+    public function getCertificateNumber(): ?string
     {
         return $this->certificateNumber;
     }
 
     /**
-     * @param mixed $certificateNumber
+     * @param string $certificateNumber
      * @return Invoice
      */
-    public function setCertificateNumber($certificateNumber): self
+    public function setCertificateNumber(?string $certificateNumber): self
     {
         $this->certificateNumber = $certificateNumber;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getCertificate()
+    public function getCertificate(): ?string
     {
         return $this->certificate;
     }
 
     /**
-     * @param mixed $certificate
+     * @param string $certificate
      * @return Invoice
      */
-    public function setCertificate($certificate): self
+    public function setCertificate(?string $certificate): self
     {
         $this->certificate = $certificate;
         return $this;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getConfirmation()
+    public function getConfirmation(): ?string
     {
         return $this->confirmation;
     }
 
     /**
-     * @param mixed $confirmation
+     * @param string $confirmation
      * @return Invoice
      */
-    public function setConfirmation($confirmation): self
+    public function setConfirmation(?string $confirmation): self
     {
         $this->confirmation = $confirmation;
         return $this;
     }
+
 
     #########################
     ## CHILDREN
@@ -674,41 +764,22 @@ class Invoice
         return $this;
     }
 
-
-
-    #########################
-    ## PROPERTY NAME TRANSLATIONS ##
-    #########################
-
-    private static $translationMap = [
-        // PropertyName => [spanish (official SAT), english]
-        'version'           => ['Version', 'version'],
-        'series'            => ['Serie', 'series'],
-        'folio'             => ['Folio', 'folio'],
-        'date'              => ['Fecha', 'date'],
-        'paymentMethod'     => ['FormaPago', 'paymentMethod'],
-        'subTotal'          => ['SubTotal', 'subTotal'],
-        'discount'          => ['Descuento', 'discount'],
-        'currency'          => ['Moneda', 'currency'],
-        'exchangeRate'      => ['TipoCambio', 'exchangeRate'],
-        'total'             => ['Total', 'total'],
-        'invoiceType'       => ['TipoDeComprobante', 'invoiceType'],
-        'paymentType'       => ['MetodoPago', 'paymentType'],
-        'postalCode'        => ['LugarExpedicion', 'postalCode'],
-        'signature'         => ['Sello', 'signature'],
-        'certificateNumber' => ['NoCertificado', 'certificateNumber'],
-        'certificate'       => ['Certificado', 'certificate']
-
-    ];
-
-    private function findPropertyName($prop): ?string
+    /**
+     * @return ItemList
+     */
+    public function getItemList(): ?ItemList
     {
-        foreach (self::$translationMap as $propertyName => $translations) {
-            if (in_array($prop, $translations)) {
-                return $propertyName;
-            }
-        }
-
-        return null;
+        return $this->itemList;
     }
+
+    /**
+     * @param ItemList $itemList
+     * @return Invoice
+     */
+    public function setItemList(ItemList $itemList): self
+    {
+        $this->itemList = $itemList;
+        return $this;
+    }
+
 }
