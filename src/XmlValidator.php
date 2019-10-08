@@ -87,8 +87,6 @@ class XmlValidator
         }
 
         return $this->validate($dom);
-
-
     }
 
     public function validateXmlString(string $xmlString)

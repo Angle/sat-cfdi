@@ -285,7 +285,7 @@ class Invoice extends CFDINode
                     $this->setItemList($itemList);
                     break;
                 default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
     }

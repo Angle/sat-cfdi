@@ -11,23 +11,36 @@ final class ParserTest extends TestCase
 {
     public function testValidate(): void
     {
-        $xml = __DIR__ . '/../test-data/QCS931209G49-A-94231073.xml';
+        $files = glob(__DIR__ . '/../test-data/*.xml', GLOB_ERR);
 
-        echo "Source XML: " . PHP_EOL;
-        echo file_get_contents($xml);
-        echo PHP_EOL;
+        print_r($files);
 
-        try {
-            $invoice = Parser::xmlFileToInvoice($xml);
-        } catch (\Exception $e) {
-            $this->fail($e->getMessage());
+        foreach ($files as $filename) {
+            $filename = realpath($filename);
+            echo "Source XML: " . $filename . PHP_EOL;
+            echo file_get_contents($filename);
+            echo PHP_EOL;
+
+            try {
+                $invoice = Parser::xmlFileToInvoice($filename);
+            } catch (\Exception $e) {
+                $this->fail($e->getMessage());
+            }
+
+            if ($invoice === null) {
+                // The process failed
+                $this->fail('XML did not validate');
+            }
+
+            $this->assertInstanceOf(Invoice::class, $invoice);
+
+            // Write out the XML, check if we match the same file
+            print_r($invoice);
+            echo "Result XML:" . PHP_EOL;
+            echo $invoice->toXML();
+            echo PHP_EOL;
         }
 
-        $this->assertInstanceOf(Invoice::class, $invoice);
 
-        // Write out the XML, check if we match the same file
-        print_r($invoice);
-        echo "Result XML:" . PHP_EOL;
-        echo $invoice->toXML();
     }
 }

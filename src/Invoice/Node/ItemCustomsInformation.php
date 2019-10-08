@@ -13,17 +13,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemList createFromDOMNode(DOMNode $node)
+ * @method static ItemCustomsInformation createFromDOMNode(DOMNode $node)
  */
-class ItemList extends CFDINode
+class ItemCustomsInformation extends CFDINode
 {
-
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Conceptos";
-    const NS_NODE_NAME = "cfdi:Conceptos";
+    const NODE_NAME = "InformacionAduanera";
+    const NS_NODE_NAME = "cfdi:InformacionAduanera";
 
     protected static $baseAttributes = [];
 
@@ -32,20 +31,23 @@ class ItemList extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [];
+    protected static $attributes = [
+        // PropertyName => [spanish (official SAT), english]
+        'importDocumentNumber'           => [
+            'keywords' => ['NumeroPedimento', 'importDocumentNumber'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
+    ];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
-
-    // CHILDREN NODES
     /**
-     * @var Item[]
+     * @var string
      */
-    protected $items = [];
-
+    protected $importDocumentNumber;
 
 
     #########################
@@ -60,21 +62,7 @@ class ItemList extends CFDINode
      */
     public function setChildren(array $children): void
     {
-        foreach ($children as $node) {
-            if ($node instanceof DOMText) {
-                // TODO: we are skipping the actual text inside the Node.. is this useful?
-                continue;
-            }
-
-            switch ($node->localName) {
-                case Item::NODE_NAME:
-                    $item = Item::createFromDomNode($node);
-                    $this->addItem($item);
-                    break;
-                default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
-            }
-        }
+        // void
     }
 
 
@@ -90,11 +78,7 @@ class ItemList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Items node (array)
-        foreach ($this->items as $item) {
-            $itemNode = $item->toDOMElement($dom);
-            $node->appendChild($itemNode);
-        }
+        // no children
 
         return $node;
     }
@@ -116,38 +100,28 @@ class ItemList extends CFDINode
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return string
+     */
+    public function getImportDocumentNumber(): ?string
+    {
+        return $this->importDocumentNumber;
+    }
+
+    /**
+     * @param string $importDocumentNumber
+     * @return ItemCustomsInformation
+     */
+    public function setImportDocumentNumber(?string $importDocumentNumber): self
+    {
+        $this->importDocumentNumber = $importDocumentNumber;
+        return $this;
+    }
 
 
     #########################
     ## CHILDREN
     #########################
 
-    /**
-     * @return Item[]
-     */
-    public function getItems(): ?array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @param Item $item
-     * @return ItemList
-     */
-    public function addItem(Item $item): self
-    {
-        $this->items[] = $item;
-        return $this;
-    }
-
-    /**
-     * @param Item[] $items
-     * @return ItemList
-     */
-    public function setItems(array $items): self
-    {
-        $this->items = $items;
-        return $this;
-    }
+    // none.
 }

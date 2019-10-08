@@ -19,17 +19,19 @@ class Parser
         try {
             $r = $validator->validateXmlString($xmlString);
         } catch (\Exception $e) {
-            return null;
+            throw $e;
         }
 
         if (!$r) {
-            return null;
+            $errors = implode(' || ', $validator->getErrors());
+            throw new \Exception('XML did not validate. [' . $errors . ']');
         }
 
         $dom = $validator->getDOM();
 
         return self::domToInvoice($dom);
     }
+
     public static function xmlFileToInvoice(string $xmlFilePath): ?Invoice
     {
         $validator = new XmlValidator();
@@ -37,11 +39,12 @@ class Parser
         try {
             $r = $validator->validateXmlFile($xmlFilePath);
         } catch (\Exception $e) {
-            return null;
+            throw $e;
         }
 
         if (!$r) {
-            return null;
+            $errors = implode(' || ', $validator->getErrors());
+            throw new \Exception('XML did not validate. [' . $errors . ']');
         }
 
         $dom = $validator->getDOM();
@@ -54,35 +57,6 @@ class Parser
         $invoiceNode = $dom->firstChild;
 
         $invoice = Invoice::createFromDomNode($invoiceNode);
-
-        if (!$invoiceNode->hasChildNodes()) {
-            // at least one child node is required
-            return null;
-        }
-
-        foreach ($invoiceNode->childNodes as $node) {
-            echo $node->localName . PHP_EOL;
-
-            /** @var DOMNode $node */
-
-            switch ($node->localName) {
-                case Issuer::NODE_NAME:
-                    $issuer = Issuer::createFromDomNode($node);
-                    $invoice->setIssuer($issuer);
-                    break;
-                case Recipient::NODE_NAME:
-                    $recipient = Recipient::createFromDomNode($node);
-                    $invoice->setRecipient($recipient);
-                    break;
-                case ItemList::NODE_NAME:
-                    $itemList = ItemList::createFromDomNode($node);
-                    $invoice->setItemList($itemList);
-                    break;
-                default:
-                //    throw new CFDIException(sprintf("Unknown node '%s'", $node->localName));
-            }
-
-        }
 
         return $invoice;
     }

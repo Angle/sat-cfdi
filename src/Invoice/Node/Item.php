@@ -72,6 +72,67 @@ class Item extends CFDINode
     ];
 
 
+    #########################
+    ##      PROPERTIES     ##
+    #########################
+
+    /**
+     * @var string
+     */
+    protected $code;
+
+    /**
+     * @var string
+     */
+    protected $id;
+
+    /**
+     * @var string
+     */
+    protected $quantity;
+
+    /**
+     * @var string
+     */
+    protected $unitCode;
+
+    /**
+     * @var string
+     */
+    protected $unit;
+
+    /**
+     * @var string
+     */
+    protected $description;
+
+    /**
+     * @var string
+     */
+    protected $unitPrice;
+
+    /**
+     * @var string
+     */
+    protected $amount;
+
+    /**
+     * @var string
+     */
+    protected $discount;
+
+
+    // CHILDREN NODES
+    /**
+     * @var ItemPart[]
+     */
+    protected $parts = [];
+
+    /**
+     * @var ItemCustomsInformation[]
+     */
+    protected $customsInformation = [];
+
 
     #########################
     ##     CONSTRUCTOR     ##
@@ -93,8 +154,16 @@ class Item extends CFDINode
 
             switch ($node->localName) {
                 // todo
+                case ItemPart::NODE_NAME:
+                    $part = ItemPart::createFromDOMNode($node);
+                    $this->addPart($part);
+                    break;
+                case ItemCustomsInformation::NODE_NAME:
+                    $customs = ItemCustomsInformation::createFromDOMNode($node);
+                    $this->addCustomsInformation($customs);
+                    break;
                 default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
     }
@@ -113,7 +182,17 @@ class Item extends CFDINode
         }
 
 
-        // TODO: Child nodes
+        // Item Part node (array)
+        foreach ($this->parts as $part) {
+            $partNode = $part->toDOMElement($dom);
+            $node->appendChild($partNode);
+        }
+
+        // Custom Information node (array)
+        foreach ($this->customsInformation as $customs) {
+            $customsNode = $customs->toDOMElement($dom);
+            $node->appendChild($customsNode);
+        }
 
         return $node;
     }
@@ -132,22 +211,171 @@ class Item extends CFDINode
 
 
     #########################
-    ##      PROPERTIES     ##
-    #########################
-
-
-    // CHILDREN NODES
-    /**
-     * @var Item[]
-     */
-    protected $items;
-
-
-    #########################
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return string
+     */
+    public function getCode(): ?string
+    {
+        return $this->code;
+    }
+
+    /**
+     * @param string $code
+     * @return Item
+     */
+    public function setCode(?string $code): self
+    {
+        $this->code = $code;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     * @return Item
+     */
+    public function setId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getQuantity(): ?string
+    {
+        return $this->quantity;
+    }
+
+    /**
+     * @param string $quantity
+     * @return Item
+     */
+    public function setQuantity(?string $quantity): self
+    {
+        $this->quantity = $quantity;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnitCode(): ?string
+    {
+        return $this->unitCode;
+    }
+
+    /**
+     * @param string $unitCode
+     * @return Item
+     */
+    public function setUnitCode(?string $unitCode): self
+    {
+        $this->unitCode = $unitCode;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnit(): ?string
+    {
+        return $this->unit;
+    }
+
+    /**
+     * @param string $unit
+     * @return Item
+     */
+    public function setUnit(?string $unit): self
+    {
+        $this->unit = $unit;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param string $description
+     * @return Item
+     */
+    public function setDescription(?string $description): self
+    {
+        $this->description = $description;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getUnitPrice(): ?string
+    {
+        return $this->unitPrice;
+    }
+
+    /**
+     * @param string $unitPrice
+     * @return Item
+     */
+    public function setUnitPrice(?string $unitPrice): self
+    {
+        $this->unitPrice = $unitPrice;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAmount(): ?string
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param string $amount
+     * @return Item
+     */
+    public function setAmount(?string $amount): self
+    {
+        $this->amount = $amount;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDiscount(): ?string
+    {
+        return $this->discount;
+    }
+
+    /**
+     * @param string $discount
+     * @return Item
+     */
+    public function setDiscount(?string $discount): self
+    {
+        $this->discount = $discount;
+        return $this;
+    }
+
 
 
     #########################
@@ -155,20 +383,58 @@ class Item extends CFDINode
     #########################
 
     /**
-     * @return Item[]
+     * @return ItemPart[]
      */
-    public function getItems(): ?array
+    public function getParts(): ?array
     {
-        return $this->items;
+        return $this->parts;
     }
 
     /**
-     * @param Item[] $items
-     * @return ItemList
+     * @param ItemPart $part
+     * @return Item
      */
-    public function setItems(array $items): self
+    public function addPart(ItemPart $part): self
     {
-        $this->items = $items;
+        $this->parts[] = $part;
+        return $this;
+    }
+
+    /**
+     * @param ItemPart[] $parts
+     * @return Item
+     */
+    public function setPart(array $parts): self
+    {
+        $this->parts = $parts;
+        return $this;
+    }
+
+    /**
+     * @return ItemCustomsInformation[]
+     */
+    public function getCustomsInformation(): ?array
+    {
+        return $this->customsInformation;
+    }
+
+    /**
+     * @param ItemCustomsInformation $customs
+     * @return Item
+     */
+    public function addCustomsInformation(ItemCustomsInformation $customs): self
+    {
+        $this->customsInformation[] = $customs;
+        return $this;
+    }
+
+    /**
+     * @param ItemCustomsInformation[] $customs
+     * @return Item
+     */
+    public function setCustomsInformation(array $customs): self
+    {
+        $this->customsInformation = $customs;
         return $this;
     }
 }
