@@ -31,10 +31,12 @@
   ],
   "require": {
     "php": ">=7.1",
+    "ext-json": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
     "ext-dom": "*",
-    "ext-openssl": "*"
+    "ext-openssl": "*",
+    "ext-curl": "*"
   },
   "suggest": {
   },
