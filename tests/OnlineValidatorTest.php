@@ -20,9 +20,6 @@ final class OnlineValidatorTest extends TestCase
 
         foreach ($files as $filename) {
             $filename = realpath($filename);
-            echo "Source XML: " . $filename . PHP_EOL;
-            echo file_get_contents($filename);
-            echo PHP_EOL;
 
             try {
                 $invoice = Parser::xmlFileToInvoice($filename);
@@ -37,10 +34,6 @@ final class OnlineValidatorTest extends TestCase
 
             $this->assertInstanceOf(Invoice::class, $invoice);
 
-            // Write out the XML, check if we match the same file
-            print_r($invoice);
-            echo "Result XML:" . PHP_EOL;
-            echo $invoice->toXML();
 
             OnlineValidator::validate($invoice);
 

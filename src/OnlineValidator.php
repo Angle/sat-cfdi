@@ -13,15 +13,17 @@ class OnlineValidator
     {
         // Build the Query parameters
         $query = [
-            'id' => '', // UUID
+            'id' => strtolower($invoice->getUuid()), // UUID
             're' => $invoice->getIssuer()->getRfc(),
             'rr' => $invoice->getRecipient()->getRfc(),
-            'rt' => $invoice->getTotal(),
-            'fe' => substr($invoice->getSignature(), -8),
+            'tt' => $invoice->getTotal(),
+            //'fe' => substr($invoice->getSignature(), -8),
         ];
 
         // build URL
-        $url = self::ENDPOINT . http_build_query($query);
+        //$url = self::WS . '?' . http_build_query($query);
+
+        $url = '<![CDATA[' . '?' . http_build_query($query) . ']]>';
 
         echo 'URL: ' . $url . PHP_EOL;
         // TODO: do http request

@@ -61,3 +61,7 @@ http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Pagos/catPagos.xsd
 
 Download CSD
 https://portalsat.plataforma.sat.gob.mx/RecuperacionDeCertificados/faces/recuperaRFC.xhtml
+
+
+To solve:
+- how can we pull new CSDs from SAT to validate the TFD?
