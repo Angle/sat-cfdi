@@ -8,12 +8,14 @@ use DOMDocument;
 class XmlValidator
 {
     // Relative to the project directory
-    const XSD_RESOURCES_DIR = '/resources/';
+    const XSD_RESOURCES_DIR = '/resources/xml-schema/';
     const XSD_WHITELIST = [
         'cfdv33.xsd',
         'catCFDI.xsd',
         'tdCFDI.xsd',
         'TimbreFiscalDigitalv11.xsd',
+        'Pagos10.xsd',
+        'catPagos.xsd',
     ];
 
     // should be inside the resources directory
@@ -116,7 +118,14 @@ class XmlValidator
     {
         $schemaUri = XsdStreamWrapper::PROTOCOL . '://' . self::CFDI_SCHEMA;
 
-        if (!$dom->schemaValidate($schemaUri)) {
+        try {
+            $r = $dom->schemaValidate($schemaUri);
+        } catch (\Exception $e) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+            throw $e;
+        }
+
+        if (!$r) {
             // errors found
             $this->errors = array_merge($this->errors, $this->libxmlErrors());
         }
