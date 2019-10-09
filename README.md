@@ -65,3 +65,13 @@ https://portalsat.plataforma.sat.gob.mx/RecuperacionDeCertificados/faces/recuper
 
 To solve:
 - how can we pull new CSDs from SAT to validate the TFD?
+- Expired certificates / revoked
+
+Validations
+
+- STEP 1: Parse (XML to Invoice)
+- STEP 2: Validate properties
+- STEP 3: Validate Signature and FiscalStamp match
+- STEP 4: Validate Signature cryptographic integrity
+- STEP 5: Validate FiscalStamp cryptographic integrity
+- STEP 6: Validate UUID against SAT <- optional ?
