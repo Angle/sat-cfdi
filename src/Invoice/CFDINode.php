@@ -78,6 +78,11 @@ abstract class CFDINode implements CFDINodeInterface
 
         if ($node->hasAttributes()) {
             foreach ($node->attributes as $attr) {
+                // Pipe characters are strictly forbidden, they interfere with the Cryptographic signature validation
+                if (strpos($attr->nodeValue, '|') !== false) {
+                    throw new CFDIException(sprintf("Pipe character '|' cannot appear on any attribute value. [%s - %s: %s]", $node->nodeName, $attr->nodeName, $attr->nodeValue));
+                }
+
                 $attributes[$attr->nodeName] = $attr->nodeValue;
             }
         }

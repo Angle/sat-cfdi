@@ -39,7 +39,9 @@ class Parser
         try {
             $r = $validator->validateXmlFile($xmlFilePath);
         } catch (\Exception $e) {
-            throw $e;
+            $errors = implode(' || ', $validator->getErrors());
+            throw new \Exception('XML did not validate. [' . $e->getMessage() . '] [' . $errors . ']');
+            //throw $e;
         }
 
         if (!$r) {

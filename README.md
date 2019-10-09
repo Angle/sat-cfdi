@@ -31,6 +31,11 @@ Run tests
 php vendor/bin/phpunit tests
 ```
 
+## Certificates (CA)
+http://omawww.sat.gob.mx/tramitesyservicios/Paginas/certificado_sello_digital.htm
+
+
+
 ## Official
 
 http://omawww.sat.gob.mx/tramitesyservicios/Paginas/anexo_20_version3-3.htm
@@ -47,3 +52,12 @@ http://omawww.sat.gob.mx/tramitesyservicios/Paginas/anexo_20_version3-3.htm
 | Fiscal Digital Signature, Schema v1.1 (xsd) | 2017-04-12 | http://www.sat.gob.mx/sitio_internet/cfd/timbrefiscaldigital/TimbreFiscalDigitalv11.xsd
 | Fiscal Digital Signature, Original Chain Sequence (xslt) | 2017-05-29 | http://www.sat.gob.mx/sitio_internet/cfd/timbrefiscaldigital/cadenaoriginal_TFD_1_1.xslt |
 | Error Catalog (xls) | 2017-04-12 | http://omawww.sat.gob.mx/tramitesyservicios/Paginas/documentos/MatrizDeErrores_CFDI_v33.xls |
+
+
+http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd
+
+http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Pagos/catPagos.xsd
+
+
+Download CSD
+https://portalsat.plataforma.sat.gob.mx/RecuperacionDeCertificados/faces/recuperaRFC.xhtml

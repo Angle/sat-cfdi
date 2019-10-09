@@ -5,9 +5,13 @@ namespace Angle\CFDI\Invoice;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
+use Angle\CFDI\Invoice\Node\FiscalStamp;
 use Angle\CFDI\Invoice\Node\Issuer;
 use Angle\CFDI\Invoice\Node\Recipient;
 use Angle\CFDI\Invoice\Node\ItemList;
+use Angle\CFDI\Invoice\Node\Complement;
+
+use Angle\CFDI\OpenSSLUtility;
 
 use DateTime;
 use DateTimeZone;
@@ -227,7 +231,7 @@ class Invoice extends CFDINode
     /**
      * @var string
      */
-    protected $certificate;
+    protected $certificate; // (public key)
 
     /**
      * @var string
@@ -252,6 +256,11 @@ class Invoice extends CFDINode
      */
     protected $itemList;
 
+    /**
+     * @var Complement[]
+     */
+    protected $complements = [];
+
 
     #########################
     ##     CONSTRUCTOR     ##
@@ -268,6 +277,7 @@ class Invoice extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
+                // TODO: DOMText
                 continue;
             }
 
@@ -283,6 +293,10 @@ class Invoice extends CFDINode
                 case ItemList::NODE_NAME:
                     $itemList = ItemList::createFromDOMNode($node);
                     $this->setItemList($itemList);
+                    break;
+                case Complement::NODE_NAME:
+                    $complement = Complement::createFromDomNode($node);
+                    $this->addComplement($complement);
                     break;
                 default:
                     //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
@@ -322,6 +336,12 @@ class Invoice extends CFDINode
             // TODO: What happens if the itemList is not set?
             $itemListNode = $this->itemList->toDOMElement($dom);
             $node->appendChild($itemListNode);
+        }
+
+        // Complements Node
+        foreach ($this->complements as $complement) {
+            $complementNode = $complement->toDOMElement($dom);
+            $node->appendChild($complementNode);
         }
 
         return $node;
@@ -364,6 +384,157 @@ class Invoice extends CFDINode
         return true;
     }
 
+    public function getChainSequence(): string
+    {
+        return '';
+    }
+
+    /**
+     * On success, returns 0
+     * On failure, returns an array with any validation errors encountered.
+     * @return array|0
+     */
+    public function checkSignature()
+    {
+        OpenSSLUtility::findCertificateSerial();
+        /////////
+        // VALIDATE THE CERTIFICATE
+
+        if (!$this->certificate) {
+            return ['CFDI does not have an Issuer Certificate'];
+        }
+
+        $certificatePem = OpenSSLUtility::coerceBase64Certificate($this->certificate);
+
+        $certificate = openssl_x509_read($certificatePem);
+
+        if ($certificate === false) {
+            return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        }
+
+        $parsedCertificate = openssl_x509_parse($certificate);
+
+        // Check that the Certificate matches the CFDI Issuer's RFC
+        if (!array_key_exists('subject', $parsedCertificate)
+            || !array_key_exists('x500UniqueIdentifier', $parsedCertificate['subject'])
+            || !$parsedCertificate['subject']['x500UniqueIdentifier']) {
+            return ['Certificate X.509 does not have a valid Subject x500UniqueIdentifier'];
+        }
+
+        // Extract and clean up the RFC
+        $issuerRfc = explode('/', $parsedCertificate['subject']['x500UniqueIdentifier']);
+        $issuerRfc = trim($issuerRfc[0]);
+
+        if (!$this->issuer || !($this->issuer instanceof Issuer)) {
+            return ['CFDI does not have an Issuer'];
+        }
+
+        if ($this->issuer->getRfc() != $issuerRfc) {
+            return ['CFDI Issuer\'s RFC does not match certificate'];
+        }
+
+
+        // Check the certificate's CA
+        $auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [OpenSSLUtility::TRUSTED_CA_PEM]);
+        if ($auth === false) {
+            return ['Certificate not authentic: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        } elseif ($auth === -1) {
+            return ['Certificate authenticity check failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        }
+
+
+        ////////////////
+        /// VALIDATE THE SIGNATURE
+
+        if (!$this->signature) {
+            return ['CFDI does not have a Signature'];
+        }
+
+        $signature = base64_decode($this->signature, true);
+
+        if ($signature === false) {
+            return ['Cannot decode CFDI signature'];
+        }
+
+        // Build the Original Chain Sequence
+        // TODO: Check if the "original chain sequence" is properly built and compare it against the signature
+        $chain = $this->getChainSequence();
+
+        $publicKey = openssl_pkey_get_public($certificate);
+
+        echo "Public Key: " . var_dump($publicKey);
+
+        if ($publicKey === false) {
+            return ['Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        }
+
+        // Verify the given signature with the Chain
+        // Returns 1 if the signature is correct, 0 if it is incorrect, and -1 on error.
+        $r = openssl_verify($chain, $signature, $publicKey, OPENSSL_ALGO_SHA256);
+
+        if ($r === 0) {
+            return ['Signature is incorrect: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        } elseif ($r === -1) {
+            return ['Signature verification failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        }
+
+
+        // Validate against the Fiscal Stamp
+        $fiscalStamp = $this->getFiscalStamp();
+        if ($fiscalStamp === null) {
+            // Fiscal stamp is not set
+            return ['Fiscal Stamp is not set in Invoice'];
+        }
+
+        // The CFDI signature should be exactly the same as the one in the FiscalStamp node
+        if ($this->signature !== $fiscalStamp->getCfdiSignature()) {
+            // CFDI Signature mismatched
+            return ['CFDI Signature mismatched in Fiscal Stamp'];
+        }
+
+
+
+        return 0;
+    }
+
+
+
+    #########################
+    ##   SPECIAL METHODS   ##
+    #########################
+
+    /**
+     * This will return the first UUID found in the Complements
+     */
+    public function getUuid(): ?string
+    {
+        foreach ($this->complements as $complement) {
+            if ($complement->getFiscalStamp()) {
+                if ($complement->getFiscalStamp()->getUuid()) {
+                    return $complement->getFiscalStamp()->getUuid();
+                }
+            }
+        }
+
+        // nothing found
+        return null;
+    }
+
+    /**
+     * This will return the first FiscalStamp found in the Complements
+     */
+    public function getFiscalStamp(): ?FiscalStamp
+    {
+        foreach ($this->complements as $complement) {
+            if ($complement->getFiscalStamp() instanceof FiscalStamp) {
+                return $complement->getFiscalStamp();
+            }
+        }
+
+        // nothing found
+        return null;
+    }
+
     #########################
     ## GETTERS AND SETTERS ##
     #########################
@@ -382,7 +553,8 @@ class Invoice extends CFDINode
      */
     public function setVersion(?string $version): self
     {
-        $this->version = $version;
+        // Note: this value is fixed, it cannot be set or changed
+        //$this->version = $version;
         return $this;
     }
 
@@ -779,6 +951,34 @@ class Invoice extends CFDINode
     public function setItemList(ItemList $itemList): self
     {
         $this->itemList = $itemList;
+        return $this;
+    }
+
+    /**
+     * @return Complement[]
+     */
+    public function getComplements(): ?array
+    {
+        return $this->complements;
+    }
+
+    /**
+     * @param Complement $complement
+     * @return Invoice
+     */
+    public function addComplement(Complement $complement): self
+    {
+        $this->complements[] = $complement;
+        return $this;
+    }
+
+    /**
+     * @param Complement[] $complements
+     * @return Invoice
+     */
+    public function setComplements(array $complements): self
+    {
+        $this->complements = $complements;
         return $this;
     }
 

@@ -34,44 +34,19 @@ class CFDI
     const PAYMENT_TYPE_PARTIAL = "PPD"; // Pago en parcialidades o diferido
 
 
+    ## Helper methods, according to the spec
 
-    ## Properties
-    /**
-     * @var DOMDocument
-     */
-    protected $document;
-
-    /**
-     * @var Invoice
-     */
-    protected $invoice;
-
-    public function __construct()
+    public static function cleanWhitespace(string $s): string
     {
+        // Replace all non visible characters with a single space
+        $s = preg_replace('/[\x00-\x1F\x7F]/u', ' ', $s);
 
-    }
+        // Trim whitespace at the beginning and end of the string
+        $s = trim($s);
 
-    public function toDOMDocument(): DOMDocument
-    {
-        $this->document = new DOMDocument('1.0', 'UTF-8');
-        $this->document->preserveWhiteSpace = false;
+        // Collapse multiple spaces into a single space
+        $s = preg_replace('/\s+/u', ' ', $s);
 
-        $invoiceNode = $this->invoice->toDOMElement($this->document);
-        $this->document->appendChild($invoiceNode);
-
-        return $this->document;
-    }
-
-    public function toXML(): string
-    {
-        return $this->toDOMDocument()->saveXML();
-    }
-
-
-
-    public static function CreateFromData(array $data)
-    {
-        $cfdi = new self();
-
+        return $s;
     }
 }
