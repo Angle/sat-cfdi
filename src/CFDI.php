@@ -12,7 +12,7 @@ class CFDI
     ##       CATALOG       ##
     #########################
 
-    const VERSION = "3.3";
+    const VERSION_3_3 = "3.3";
     const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
     const DATETIME_TIMEZONE = 'America/Mexico_City';
 

@@ -24,7 +24,7 @@ class FiscalStamp extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const VERSION = "1.1";
+    const VERSION_1_1 = "1.1";
 
     const NODE_NAME = "TimbreFiscalDigital";
     const NS_NODE_NAME = "tfd:TimbreFiscalDigital";
@@ -85,7 +85,7 @@ class FiscalStamp extends CFDINode
     /**
      * @var string
      */
-    protected $version = self::VERSION;
+    protected $version = self::VERSION_1_1;
 
     /**
      * @var string
@@ -168,11 +168,14 @@ class FiscalStamp extends CFDINode
         return true;
     }
 
+    /**
+     * Builds the Original Chain Sequence for the Fiscal Stamp
+     * @return string
+     * @throws CFDIException
+     */
     public function getChainSequence(): string
     {
         $items = [];
-        // Build the Original Chain Sequence for the Fiscal Stamp
-        $c = "||";
 
         $items[] = $this->version;
         $items[] = $this->uuid;
@@ -200,10 +203,18 @@ class FiscalStamp extends CFDINode
      * On success, returns 0
      * On failure, returns an array with any validation errors encountered.
      * @return array|0
+     * @throws CFDIException
      */
     public function checkSignature()
     {
-        // LOOK UP THE CERTIFICATE NUMBER
+        if ($this->version != self::VERSION_1_1) {
+            return ['FiscalStamp Signature check is only implemented for TFD v1.1'];
+        }
+
+        ////////////////
+        /// VALIDATE THE CERTIFICATE
+
+        // Look up the certificate number
         if (!$this->satCertificateNumber) {
             return ['TFD does not have a SAT Certificate Number'];
         }

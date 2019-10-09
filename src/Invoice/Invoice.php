@@ -132,7 +132,7 @@ class Invoice extends CFDINode
      * No whitespace
      * @var string
      */
-    protected $version = CFDI::VERSION;
+    protected $version = CFDI::VERSION_3_3;
 
     /**
      * Display Label: Serie
@@ -396,7 +396,10 @@ class Invoice extends CFDINode
      */
     public function checkSignature()
     {
-        OpenSSLUtility::findCertificateSerial();
+        if ($this->version != CFDI::VERSION_3_3) {
+            return ['Invoice Signature check is only implemented for CFDI v3.3'];
+        }
+
         /////////
         // VALIDATE THE CERTIFICATE
 
