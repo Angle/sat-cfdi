@@ -35,7 +35,15 @@ final class OnlineValidatorTest extends TestCase
             $this->assertInstanceOf(Invoice::class, $invoice);
 
 
-            OnlineValidator::validate($invoice);
+            $r = OnlineValidator::validate($invoice);
+
+            if ($r === OnlineValidator::RESULT_ERROR) {
+                print_r(OnlineValidator::lastErrors());
+                $this->fail('An error occurred on the OnlineValidator');
+            }
+
+            // Now check for a valid status!
+            $this->assertEquals(OnlineValidator::RESULT_VALID, $r);
 
             echo PHP_EOL;
         }

@@ -78,6 +78,7 @@ class XmlValidator
         }
 
         libxml_use_internal_errors(true);
+        libxml_clear_errors(); // clean up any previous errors found in other validations
 
         try {
             $dom = new DOMDocument();
@@ -101,6 +102,7 @@ class XmlValidator
         }
 
         libxml_use_internal_errors(true);
+        libxml_clear_errors(); // clean up any previous errors found in other validations
 
         try {
             $dom = new DOMDocument();
