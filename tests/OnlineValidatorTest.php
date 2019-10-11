@@ -5,7 +5,7 @@ namespace Angle\CFDI\Tests;
 use Angle\CFDI\Invoice\Invoice;
 
 use Angle\CFDI\OnlineValidator;
-use Angle\CFDI\Parser;
+use Angle\CFDI\XmlLoader;
 use Angle\CFDI\XmlValidator;
 
 use PHPUnit\Framework\TestCase;
@@ -22,7 +22,7 @@ final class OnlineValidatorTest extends TestCase
             $filename = realpath($filename);
 
             try {
-                $invoice = Parser::xmlFileToInvoice($filename);
+                $invoice = XmlLoader::xmlFileToInvoice($filename);
             } catch (\Exception $e) {
                 $this->fail($e->getMessage());
             }

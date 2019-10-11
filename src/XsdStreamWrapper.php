@@ -2,6 +2,8 @@
 
 namespace Angle\CFDI;
 
+use Angle\CFDI\Utility\PathUtility;
+
 class XsdStreamWrapper
 {
     const PROTOCOL = 'anglemx.sat.cfdi';
@@ -105,7 +107,7 @@ class XsdStreamWrapper
             throw new \RuntimeException('XsdStreamWrapper resource directory misconfigured');
         }
 
-        $path = Path::join(self::$RESOURCE_DIR, $this->getTarget($uri));
+        $path = PathUtility::join(self::$RESOURCE_DIR, $this->getTarget($uri));
 
         $realpath = realpath($path);
 

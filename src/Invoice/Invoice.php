@@ -9,9 +9,8 @@ use Angle\CFDI\Invoice\Node\FiscalStamp;
 use Angle\CFDI\Invoice\Node\Issuer;
 use Angle\CFDI\Invoice\Node\Recipient;
 use Angle\CFDI\Invoice\Node\ItemList;
+use Angle\CFDI\Invoice\Node\RelatedCFDIList;
 use Angle\CFDI\Invoice\Node\Complement;
-
-use Angle\CFDI\OpenSSLUtility;
 
 use DateTime;
 use DateTimeZone;
@@ -241,6 +240,12 @@ class Invoice extends CFDINode
 
 
     // CHILDREN NODES
+
+    /**
+     * @var RelatedCFDIList|null
+     */
+    protected $relatedCFDIList;
+
     /**
      * @var Issuer
      */
@@ -282,6 +287,10 @@ class Invoice extends CFDINode
             }
 
             switch ($node->localName) {
+                case RelatedCFDIList::NODE_NAME:
+                    $relatedCFDIList = RelatedCFDIList::createFromDOMNode($node);
+                    $this->setRelatedCFDIList($relatedCFDIList);
+                    break;
                 case Issuer::NODE_NAME:
                     $issuer = Issuer::createFromDOMNode($node);
                     $this->setIssuer($issuer);
@@ -295,7 +304,7 @@ class Invoice extends CFDINode
                     $this->setItemList($itemList);
                     break;
                 case Complement::NODE_NAME:
-                    $complement = Complement::createFromDomNode($node);
+                    $complement = Complement::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 default:
@@ -315,6 +324,13 @@ class Invoice extends CFDINode
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);
+        }
+
+        // RelatedCFDIList Node
+        if ($this->relatedCFDIList) {
+            // This can be null, no problem if not found
+            $relatedCFDIListNode = $this->relatedCFDIList->toDOMElement($dom);
+            $node->appendChild($relatedCFDIListNode);
         }
 
         // Issuer Node
@@ -388,118 +404,6 @@ class Invoice extends CFDINode
     {
         return '';
     }
-
-    /**
-     * On success, returns 0
-     * On failure, returns an array with any validation errors encountered.
-     * @return array|0
-     */
-    public function checkSignature()
-    {
-        if ($this->version != CFDI::VERSION_3_3) {
-            return ['Invoice Signature check is only implemented for CFDI v3.3'];
-        }
-
-        /////////
-        // VALIDATE THE CERTIFICATE
-
-        if (!$this->certificate) {
-            return ['CFDI does not have an Issuer Certificate'];
-        }
-
-        $certificatePem = OpenSSLUtility::coerceBase64Certificate($this->certificate);
-
-        $certificate = openssl_x509_read($certificatePem);
-
-        if ($certificate === false) {
-            return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-        }
-
-        $parsedCertificate = openssl_x509_parse($certificate);
-
-        // Check that the Certificate matches the CFDI Issuer's RFC
-        if (!array_key_exists('subject', $parsedCertificate)
-            || !array_key_exists('x500UniqueIdentifier', $parsedCertificate['subject'])
-            || !$parsedCertificate['subject']['x500UniqueIdentifier']) {
-            return ['Certificate X.509 does not have a valid Subject x500UniqueIdentifier'];
-        }
-
-        // Extract and clean up the RFC
-        $issuerRfc = explode('/', $parsedCertificate['subject']['x500UniqueIdentifier']);
-        $issuerRfc = trim($issuerRfc[0]);
-
-        if (!$this->issuer || !($this->issuer instanceof Issuer)) {
-            return ['CFDI does not have an Issuer'];
-        }
-
-        if ($this->issuer->getRfc() != $issuerRfc) {
-            return ['CFDI Issuer\'s RFC does not match certificate'];
-        }
-
-
-        // Check the certificate's CA
-        $auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [OpenSSLUtility::TRUSTED_CA_PEM]);
-        if ($auth === false) {
-            return ['Certificate not authentic: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-        } elseif ($auth === -1) {
-            return ['Certificate authenticity check failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-        }
-
-
-        ////////////////
-        /// VALIDATE THE SIGNATURE
-
-        if (!$this->signature) {
-            return ['CFDI does not have a Signature'];
-        }
-
-        $signature = base64_decode($this->signature, true);
-
-        if ($signature === false) {
-            return ['Cannot decode CFDI signature'];
-        }
-
-        // Build the Original Chain Sequence
-        // TODO: Check if the "original chain sequence" is properly built and compare it against the signature
-        $chain = $this->getChainSequence();
-
-        $publicKey = openssl_pkey_get_public($certificate);
-
-        echo "Public Key: " . var_dump($publicKey);
-
-        if ($publicKey === false) {
-            return ['Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-        }
-
-        // Verify the given signature with the Chain
-        // Returns 1 if the signature is correct, 0 if it is incorrect, and -1 on error.
-        $r = openssl_verify($chain, $signature, $publicKey, OPENSSL_ALGO_SHA256);
-
-        if ($r === 0) {
-            return ['Signature is incorrect: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-        } elseif ($r === -1) {
-            return ['Signature verification failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-        }
-
-
-        // Validate against the Fiscal Stamp
-        $fiscalStamp = $this->getFiscalStamp();
-        if ($fiscalStamp === null) {
-            // Fiscal stamp is not set
-            return ['Fiscal Stamp is not set in Invoice'];
-        }
-
-        // The CFDI signature should be exactly the same as the one in the FiscalStamp node
-        if ($this->signature !== $fiscalStamp->getCfdiSignature()) {
-            // CFDI Signature mismatched
-            return ['CFDI Signature mismatched in Fiscal Stamp'];
-        }
-
-
-
-        return 0;
-    }
-
 
 
     #########################
@@ -954,6 +858,24 @@ class Invoice extends CFDINode
     public function setItemList(ItemList $itemList): self
     {
         $this->itemList = $itemList;
+        return $this;
+    }
+
+    /**
+     * @return RelatedCFDIList|null
+     */
+    public function getRelatedCFDIList(): ?RelatedCFDIList
+    {
+        return $this->relatedCFDIList;
+    }
+
+    /**
+     * @param RelatedCFDIList|null $relatedCFDIList
+     * @return Invoice
+     */
+    public function setRelatedCFDIList(?RelatedCFDIList $relatedCFDIList): self
+    {
+        $this->relatedCFDIList = $relatedCFDIList;
         return $this;
     }
 

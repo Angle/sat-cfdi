@@ -71,6 +71,11 @@ abstract class CFDINode implements CFDINodeInterface
         $this->setChildren($children);
     }
 
+    /**
+     * @param DOMNode $node
+     * @return CFDINode
+     * @throws CFDIException
+     */
     public static function createFromDOMNode(DOMNode $node): self
     {
         // Extract node attribute data
@@ -107,6 +112,10 @@ abstract class CFDINode implements CFDINodeInterface
     #########################
 
     // Helper for DOM Translations
+    /**
+     * @return array
+     * @throws CFDIException
+     */
     public function getAttributes(): array
     {
         // TODO: should _this_ function trigger a validation???

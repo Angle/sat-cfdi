@@ -7,24 +7,22 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\Invoice\CFDINode;
 
-use DateTime;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemComplement createFromDOMNode(DOMNode $node)
+ * @method static ItemTaxesTransferredList createFromDOMNode(DOMNode $node)
  */
-class ItemComplement extends CFDINode
+class ItemTaxesTransferredList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "ComplementoConcepto";
-    const NS_NODE_NAME = "cfdi:ComplementoConcepto";
+    const NODE_NAME = "Traslados";
+    const NS_NODE_NAME = "cfdi:Traslados";
 
     protected static $baseAttributes = [];
 
@@ -33,19 +31,20 @@ class ItemComplement extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [
-        // PropertyName => [spanish (official SAT), english]
-    ];
+    protected static $attributes = [];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
+
+    // CHILDREN NODES
     /**
-     * @var array
+     * @var ItemTaxesTransferred[]
      */
-    protected $complements = [];
+    protected $transfers = [];
+
 
 
     #########################
@@ -63,13 +62,16 @@ class ItemComplement extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
-                // TODO: DOMText
                 continue;
             }
 
             switch ($node->localName) {
+                case ItemTaxesTransferred::NODE_NAME:
+                    $transfer = ItemTaxesTransferred::createFromDomNode($node);
+                    $this->addTransfer($transfer);
+                    break;
                 default:
-                    // TODO: implement other types of nodes
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
     }
@@ -87,10 +89,10 @@ class ItemComplement extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        // Transfers node (array)
+        foreach ($this->transfers as $transfer) {
+            $transferNode = $transfer->toDOMElement($dom);
+            $node->appendChild($transferNode);
         }
 
         return $node;
@@ -120,6 +122,31 @@ class ItemComplement extends CFDINode
     ## CHILDREN
     #########################
 
-    // TODO: implement complement nodes for items
+    /**
+     * @return ItemTaxesTransferred[]
+     */
+    public function getTransfers(): ?array
+    {
+        return $this->transfers;
+    }
 
+    /**
+     * @param ItemTaxesTransferred $transfer
+     * @return ItemTaxesTransferredList
+     */
+    public function addTransfer(ItemTaxesTransferred $transfer): self
+    {
+        $this->transfers[] = $transfer;
+        return $this;
+    }
+
+    /**
+     * @param ItemTaxesTransferred[] $transfers
+     * @return ItemTaxesTransferredList
+     */
+    public function setItems(array $transfers): self
+    {
+        $this->transfers = $transfers;
+        return $this;
+    }
 }

@@ -7,24 +7,24 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\Invoice\CFDINode;
 
-use DateTime;
-
+use Angle\CFDI\Node\RelatedCFDI;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemComplement createFromDOMNode(DOMNode $node)
+ * @method static RelatedCFDIList createFromDOMNode(DOMNode $node)
  */
-class ItemComplement extends CFDINode
+
+class RelatedCFDIList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "ComplementoConcepto";
-    const NS_NODE_NAME = "cfdi:ComplementoConcepto";
+    const NODE_NAME = "CfdiRelacionados";
+    const NS_NODE_NAME = "cfdi:CfdiRelacionados";
 
     protected static $baseAttributes = [];
 
@@ -35,6 +35,10 @@ class ItemComplement extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
+        'type'           => [
+            'keywords' => ['TipoRelacion', 'type'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
     ];
 
 
@@ -43,9 +47,15 @@ class ItemComplement extends CFDINode
     #########################
 
     /**
-     * @var array
+     * @var string
      */
-    protected $complements = [];
+    protected $type;
+
+    // CHILDREN NODES
+    /**
+     * @var RelatedCFDI[]
+     */
+    protected $related = [];
 
 
     #########################
@@ -63,13 +73,16 @@ class ItemComplement extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
-                // TODO: DOMText
                 continue;
             }
 
             switch ($node->localName) {
+                case RelatedCFDI::NODE_NAME:
+                    $related = Item::createFromDomNode($node);
+                    $this->addRelated($related);
+                    break;
                 default:
-                    // TODO: implement other types of nodes
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
     }
@@ -87,10 +100,10 @@ class ItemComplement extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        // Related node (array)
+        foreach ($this->related as $related) {
+            $relatedNode = $related->toDOMElement($dom);
+            $node->appendChild($relatedNode);
         }
 
         return $node;
@@ -113,13 +126,57 @@ class ItemComplement extends CFDINode
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return string
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return RelatedCFDIList
+     */
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
 
 
     #########################
     ## CHILDREN
     #########################
 
-    // TODO: implement complement nodes for items
+    /**
+     * @return RelatedCFDI[]
+     */
+    public function getRelated(): ?array
+    {
+        return $this->related;
+    }
+
+    /**
+     * @param RelatedCFDI $related
+     * @return RelatedCFDIList
+     */
+    public function addRelated(RelatedCFDI $related): self
+    {
+        $this->related[] = $related;
+        return $this;
+    }
+
+    /**
+     * @param RelatedCFDI[] $related
+     * @return RelatedCFDIList
+     */
+    public function setRelated(array $related): self
+    {
+        $this->related = $related;
+        return $this;
+    }
+
 
 }

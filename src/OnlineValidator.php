@@ -6,7 +6,7 @@ use Angle\CFDI\Invoice\Invoice;
 
 use SimpleXMLElement;
 
-class OnlineValidator
+abstract class OnlineValidator
 {
     // Enable to debug the HTTP connection
     const DEBUG_CURL = false;

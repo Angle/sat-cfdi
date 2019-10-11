@@ -10,19 +10,18 @@ use Angle\CFDI\Invoice\CFDINode;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use DOMText;
 
 /**
- * @method static RelatedCFDI createFromDOMNode(DOMNode $node)
+ * @method static ItemPropertyTaxAccount createFromDOMNode(DOMNode $node)
  */
-class RelatedCFDI extends CFDINode
+class ItemPropertyTaxAccount extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "CfdiRelacionado";
-    const NS_NODE_NAME = "cfdi:CfdiRelacionado";
+    const NODE_NAME = "CuentaPredial";
+    const NS_NODE_NAME = "cfdi:CuentaPredial";
 
     protected static $baseAttributes = [];
 
@@ -33,8 +32,8 @@ class RelatedCFDI extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'uuid'           => [
-            'keywords' => ['UUID', 'uuid'],
+        'number'           => [
+            'keywords' => ['Numero', 'number'],
             'type' => CFDI::ATTR_REQUIRED
         ],
     ];
@@ -47,11 +46,7 @@ class RelatedCFDI extends CFDINode
     /**
      * @var string
      */
-    protected $uuid;
-
-
-    // CHILDREN NODES
-    // none.
+    protected $number;
 
 
     #########################
@@ -66,7 +61,7 @@ class RelatedCFDI extends CFDINode
      */
     public function setChildren(array $children): void
     {
-        // void.
+        // void
     }
 
 
@@ -82,7 +77,7 @@ class RelatedCFDI extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // no children
+        // no child nodes
 
         return $node;
     }
@@ -107,20 +102,18 @@ class RelatedCFDI extends CFDINode
     /**
      * @return string
      */
-    public function getUuid(): ?string
+    public function getNumber(): ?string
     {
-        return $this->uuid;
+        return $this->number;
     }
 
     /**
-     * @param string $uuid
-     * @return RelatedCFDI
+     * @param string $number
+     * @return ItemPropertyTaxAccount
      */
-    public function setUuid(?string $uuid): self
+    public function setNumber(?string $number): self
     {
-        $this->uuid = $uuid;
+        $this->number = $number;
         return $this;
     }
-
-
 }

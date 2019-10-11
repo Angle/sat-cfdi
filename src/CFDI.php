@@ -6,6 +6,8 @@ use DOMDocument;
 
 use Angle\CFDI\Invoice\Invoice;
 
+use Angle\CFDI\Utility\PathUtility;
+
 class CFDI
 {
     #########################
@@ -33,6 +35,11 @@ class CFDI
     const PAYMENT_TYPE_SINGLE = "PUE"; // Pago en una sola exhibición
     const PAYMENT_TYPE_PARTIAL = "PPD"; // Pago en parcialidades o diferido
 
+
+    public static function SATRootCertificatePEM(): ?string
+    {
+        return PathUtility::join(__DIR__, '/../resources/certificates/sat-trusted-ca-prod.pem');
+    }
 
     ## Helper methods, according to the spec
 
