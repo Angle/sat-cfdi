@@ -72,7 +72,6 @@ class XmlLoader
      *
      * @param string $xmlString
      * @return CFDI|null
-     * @throws \Exception
      */
     public function stringToCFDI(string $xmlString): ?CFDI
     {
