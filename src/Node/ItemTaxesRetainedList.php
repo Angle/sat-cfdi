@@ -1,30 +1,28 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
-use Angle\CFDI\Node\RelatedCFDI;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMText;
 
 /**
- * @method static RelatedCFDIList createFromDOMNode(DOMNode $node)
+ * @method static ItemTaxesRetainedList createFromDOMNode(DOMNode $node)
  */
-
-class RelatedCFDIList extends CFDINode
+class ItemTaxesRetainedList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "CfdiRelacionados";
-    const NS_NODE_NAME = "cfdi:CfdiRelacionados";
+    const NODE_NAME = "Retenciones";
+    const NS_NODE_NAME = "cfdi:Retenciones";
 
     protected static $baseAttributes = [];
 
@@ -33,29 +31,20 @@ class RelatedCFDIList extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [
-        // PropertyName => [spanish (official SAT), english]
-        'type'           => [
-            'keywords' => ['TipoRelacion', 'type'],
-            'type' => CFDI::ATTR_REQUIRED
-        ],
-    ];
+    protected static $attributes = [];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
-    /**
-     * @var string
-     */
-    protected $type;
 
     // CHILDREN NODES
     /**
-     * @var RelatedCFDI[]
+     * @var ItemTaxesRetained[]
      */
-    protected $related = [];
+    protected $retentions = [];
+
 
 
     #########################
@@ -77,9 +66,9 @@ class RelatedCFDIList extends CFDINode
             }
 
             switch ($node->localName) {
-                case RelatedCFDI::NODE_NAME:
-                    $related = Item::createFromDomNode($node);
-                    $this->addRelated($related);
+                case ItemTaxesRetained::NODE_NAME:
+                    $retention = ItemTaxesRetained::createFromDomNode($node);
+                    $this->addRetention($retention);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
@@ -89,7 +78,7 @@ class RelatedCFDIList extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -100,10 +89,10 @@ class RelatedCFDIList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Related node (array)
-        foreach ($this->related as $related) {
-            $relatedNode = $related->toDOMElement($dom);
-            $node->appendChild($relatedNode);
+        // Retentions node (array)
+        foreach ($this->retentions as $retention) {
+            $retentionNode = $retention->toDOMElement($dom);
+            $node->appendChild($retentionNode);
         }
 
         return $node;
@@ -126,24 +115,7 @@ class RelatedCFDIList extends CFDINode
     ## GETTERS AND SETTERS ##
     #########################
 
-    /**
-     * @return string
-     */
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     * @return RelatedCFDIList
-     */
-    public function setType(?string $type): self
-    {
-        $this->type = $type;
-        return $this;
-    }
-
+    // none
 
 
     #########################
@@ -151,32 +123,30 @@ class RelatedCFDIList extends CFDINode
     #########################
 
     /**
-     * @return RelatedCFDI[]
+     * @return ItemTaxesRetained[]
      */
-    public function getRelated(): ?array
+    public function getRetentions(): ?array
     {
-        return $this->related;
+        return $this->retentions;
     }
 
     /**
-     * @param RelatedCFDI $related
-     * @return RelatedCFDIList
+     * @param ItemTaxesRetained $retention
+     * @return ItemTaxesRetainedList
      */
-    public function addRelated(RelatedCFDI $related): self
+    public function addRetention(ItemTaxesRetained $retention): self
     {
-        $this->related[] = $related;
+        $this->retentions[] = $retention;
         return $this;
     }
 
     /**
-     * @param RelatedCFDI[] $related
-     * @return RelatedCFDIList
+     * @param ItemTaxesRetained[] $retentions
+     * @return ItemTaxesRetainedList
      */
-    public function setRelated(array $related): self
+    public function setRetentions(array $retentions): self
     {
-        $this->related = $related;
+        $this->retentions = $retentions;
         return $this;
     }
-
-
 }

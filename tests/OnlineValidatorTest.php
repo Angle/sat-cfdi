@@ -2,11 +2,10 @@
 
 namespace Angle\CFDI\Tests;
 
-use Angle\CFDI\Invoice\Invoice;
+use Angle\CFDI\CFDI;
 
 use Angle\CFDI\OnlineValidator;
 use Angle\CFDI\XmlLoader;
-use Angle\CFDI\XmlValidator;
 
 use PHPUnit\Framework\TestCase;
 
@@ -18,24 +17,28 @@ final class OnlineValidatorTest extends TestCase
 
         print_r($files);
 
+        $loader = new XmlLoader();
+
         foreach ($files as $filename) {
             $filename = realpath($filename);
 
-            try {
-                $invoice = XmlLoader::xmlFileToInvoice($filename);
-            } catch (\Exception $e) {
-                $this->fail($e->getMessage());
+            $cfdi = $loader->fileToCFDI($filename);
+
+            if (!$cfdi) {
+                // Loading failed!
+                echo "FAILED" . PHP_EOL;
+                print_r($loader->getErrors());
+                print_r($loader->getValidations());
+
+                $this->fail('CFDI could not be parsed from the XML file');
             }
 
-            if ($invoice === null) {
-                // The process failed
-                $this->fail('XML did not validate');
-            }
+            // Loading success!
 
-            $this->assertInstanceOf(Invoice::class, $invoice);
+            $this->assertInstanceOf(CFDI::class, $cfdi);
 
 
-            $r = OnlineValidator::validate($invoice);
+            $r = OnlineValidator::validate($cfdi);
 
             if ($r === OnlineValidator::RESULT_ERROR) {
                 print_r(OnlineValidator::lastErrors());
@@ -47,6 +50,8 @@ final class OnlineValidatorTest extends TestCase
 
             echo PHP_EOL;
         }
+
+        unset($loader);
 
 
     }

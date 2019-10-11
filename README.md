@@ -58,6 +58,7 @@ http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd
 
 http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Pagos/catPagos.xsd
 
+http://www.sat.gob.mx/sitio_internet/cfd/terceros/terceros11.xsd
 
 Download CSD
 https://portalsat.plataforma.sat.gob.mx/RecuperacionDeCertificados/faces/recuperaRFC.xhtml

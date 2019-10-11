@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI;
 
-use Angle\CFDI\Invoice\Invoice;
+use Angle\CFDI\CFDI;
 
 use SimpleXMLElement;
 
@@ -42,13 +42,13 @@ ENDSOAP;
     /**
      * Query the central SAT webservice to check the validity of a CFDI
      * Returns 1 on success, 0 on failure, -1 on error
-     * @param Invoice $invoice
+     * @param CFDI $cfdi
      * @return int
      */
-    public static function validate(Invoice $invoice): int
+    public static function validate(CFDI $cfdi): int
     {
         // This WebService is forked from the QR validation method that is found on printed representations of the CFDI
-        // so the implemention is a bit funky.
+        // so the implementation is a bit funky.
         // We query the service with a WS SOAP payload that contains the "URL Query" that would be used in a QR code, this
         // Query is passed inside the field <tem:expresionImpresa> as a CDATA blob. Why? Because México.
 
@@ -57,10 +57,10 @@ ENDSOAP;
 
         // Build the Query parameters
         $query = [
-            'id' => strtolower($invoice->getUuid()),
-            're' => $invoice->getIssuer()->getRfc(),
-            'rr' => $invoice->getRecipient()->getRfc(),
-            'tt' => $invoice->getTotal(),
+            'id' => strtolower($cfdi->getUuid()),
+            're' => $cfdi->getIssuer()->getRfc(),
+            'rr' => $cfdi->getRecipient()->getRfc(),
+            'tt' => $cfdi->getTotal(),
         ];
 
         // Insert the Query parameters in the special CDATA field blob

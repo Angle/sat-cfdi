@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\CFDI\Invoice;
+namespace Angle\CFDI;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;

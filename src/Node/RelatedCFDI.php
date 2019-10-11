@@ -1,11 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DOMDocument;
 use DOMElement;
@@ -13,16 +13,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemCustomsInformation createFromDOMNode(DOMNode $node)
+ * @method static RelatedCFDI createFromDOMNode(DOMNode $node)
  */
-class ItemCustomsInformation extends CFDINode
+class RelatedCFDI extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "InformacionAduanera";
-    const NS_NODE_NAME = "cfdi:InformacionAduanera";
+    const NODE_NAME = "CfdiRelacionado";
+    const NS_NODE_NAME = "cfdi:CfdiRelacionado";
 
     protected static $baseAttributes = [];
 
@@ -33,8 +33,8 @@ class ItemCustomsInformation extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'importDocumentNumber'           => [
-            'keywords' => ['NumeroPedimento', 'importDocumentNumber'],
+        'uuid'           => [
+            'keywords' => ['UUID', 'uuid'],
             'type' => CFDI::ATTR_REQUIRED
         ],
     ];
@@ -47,7 +47,11 @@ class ItemCustomsInformation extends CFDINode
     /**
      * @var string
      */
-    protected $importDocumentNumber;
+    protected $uuid;
+
+
+    // CHILDREN NODES
+    // none.
 
 
     #########################
@@ -62,12 +66,12 @@ class ItemCustomsInformation extends CFDINode
      */
     public function setChildren(array $children): void
     {
-        // void
+        // void.
     }
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -103,25 +107,20 @@ class ItemCustomsInformation extends CFDINode
     /**
      * @return string
      */
-    public function getImportDocumentNumber(): ?string
+    public function getUuid(): ?string
     {
-        return $this->importDocumentNumber;
+        return $this->uuid;
     }
 
     /**
-     * @param string $importDocumentNumber
-     * @return ItemCustomsInformation
+     * @param string $uuid
+     * @return RelatedCFDI
      */
-    public function setImportDocumentNumber(?string $importDocumentNumber): self
+    public function setUuid(?string $uuid): self
     {
-        $this->importDocumentNumber = $importDocumentNumber;
+        $this->uuid = $uuid;
         return $this;
     }
 
 
-    #########################
-    ## CHILDREN
-    #########################
-
-    // none.
 }

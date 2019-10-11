@@ -10,7 +10,7 @@ use Angle\CFDI\Utility\PathUtility;
 use PHPUnit\Framework\TestCase;
 
 use Angle\CFDI\XmlLoader;
-use Angle\CFDI\Invoice\Invoice;
+use Angle\CFDI\CFDI;
 
 final class ValidatorTest extends TestCase
 {
@@ -39,22 +39,22 @@ final class ValidatorTest extends TestCase
 
         foreach ($realFiles as $filename) {
 
-            $invoice = $loader->fileToInvoice($filename);
+            $cfdi = $loader->fileToCFDI($filename);
 
             print_r($loader->getValidations());
 
-            if (!$invoice) {
-                $this->fail('Invoice could not be parsed from the XML file. Please run ParserTest to debug.');
+            if (!$cfdi) {
+                $this->fail('CFDI could not be parsed from the XML file. Please run ParserTest to debug.');
             }
 
-            $this->assertInstanceOf(Invoice::class, $invoice);
+            $this->assertInstanceOf(CFDI::class, $cfdi);
 
 
             echo PHP_EOL;
             echo "XML: " . $filename . PHP_EOL;
-            echo "UUID: " . $invoice->getUuid() . PHP_EOL . PHP_EOL;
-            echo "Issuer Certificate: " . $invoice->getCertificateNumber() . PHP_EOL;
-            echo "SAT Certificate:    " . $invoice->getFiscalStamp()->getSatCertificateNumber() . PHP_EOL;
+            echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;
+            echo "Issuer Certificate: " . $cfdi->getCertificateNumber() . PHP_EOL;
+            echo "SAT Certificate:    " . $cfdi->getFiscalStamp()->getSatCertificateNumber() . PHP_EOL;
 
             // STEP 1: Parse (XML to Invoice)
             // STEP 2: Validate properties
@@ -63,20 +63,20 @@ final class ValidatorTest extends TestCase
             // STEP 5: Validate UUID against SAT <- optional ?
 
 
-            $r = $signatureValidator->checkInvoiceSignature($invoice);
+            $r = $signatureValidator->checkCfdiSignature($cfdi);
             print_r($signatureValidator->getValidations());
 
             //$this->assertEquals(true, $r);
 
 
 
-            $r = $signatureValidator->checkFiscalStampSignature($invoice);
+            $r = $signatureValidator->checkFiscalStampSignature($cfdi);
             print_r($signatureValidator->getValidations());
 
             $this->assertEquals(true, $r);
 
             // Online validation
-            $r = OnlineValidator::validate($invoice);
+            $r = OnlineValidator::validate($cfdi);
 
             if ($r == 1) {
                 $validations = [[

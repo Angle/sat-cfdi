@@ -1,11 +1,13 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
+
+use DateTime;
 
 use DOMDocument;
 use DOMElement;
@@ -13,16 +15,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemTaxesRetainedList createFromDOMNode(DOMNode $node)
+ * @method static ItemComplement createFromDOMNode(DOMNode $node)
  */
-class ItemTaxesRetainedList extends CFDINode
+class ItemComplement extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Retenciones";
-    const NS_NODE_NAME = "cfdi:Retenciones";
+    const NODE_NAME = "ComplementoConcepto";
+    const NS_NODE_NAME = "cfdi:ComplementoConcepto";
 
     protected static $baseAttributes = [];
 
@@ -31,20 +33,19 @@ class ItemTaxesRetainedList extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [];
+    protected static $attributes = [
+        // PropertyName => [spanish (official SAT), english]
+    ];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
-
-    // CHILDREN NODES
     /**
-     * @var ItemTaxesRetained[]
+     * @var array
      */
-    protected $retentions = [];
-
+    protected $complements = [];
 
 
     #########################
@@ -62,23 +63,21 @@ class ItemTaxesRetainedList extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
+                // TODO: DOMText
                 continue;
             }
 
-            switch ($node->localName) {
-                case ItemTaxesRetained::NODE_NAME:
-                    $retention = ItemTaxesRetained::createFromDomNode($node);
-                    $this->addRetention($retention);
-                    break;
+            // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
+            switch ($node->nodeName) {
                 default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    // TODO: implement other types of nodes
             }
         }
     }
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -89,10 +88,10 @@ class ItemTaxesRetainedList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Retentions node (array)
-        foreach ($this->retentions as $retention) {
-            $retentionNode = $retention->toDOMElement($dom);
-            $node->appendChild($retentionNode);
+        // Complements node (array)
+        foreach ($this->complements as $complement) {
+            $complementNode = $complement->toDOMElement($dom);
+            $node->appendChild($complementNode);
         }
 
         return $node;
@@ -122,31 +121,6 @@ class ItemTaxesRetainedList extends CFDINode
     ## CHILDREN
     #########################
 
-    /**
-     * @return ItemTaxesRetained[]
-     */
-    public function getRetentions(): ?array
-    {
-        return $this->retentions;
-    }
+    // TODO: implement complement nodes for items
 
-    /**
-     * @param ItemTaxesRetained $retention
-     * @return ItemTaxesRetainedList
-     */
-    public function addRetention(ItemTaxesRetained $retention): self
-    {
-        $this->retentions[] = $retention;
-        return $this;
-    }
-
-    /**
-     * @param ItemTaxesRetained[] $retentions
-     * @return ItemTaxesRetainedList
-     */
-    public function setItems(array $retentions): self
-    {
-        $this->retentions = $retentions;
-        return $this;
-    }
 }

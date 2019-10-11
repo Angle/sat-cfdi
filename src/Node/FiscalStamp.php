@@ -1,13 +1,12 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
-use Angle\CFDI\OpenSSLUtility;
 use DateTime;
 use DateTimeZone;
 
@@ -140,7 +139,7 @@ class FiscalStamp extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement

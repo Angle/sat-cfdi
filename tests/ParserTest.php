@@ -4,7 +4,7 @@ namespace Angle\CFDI\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-use Angle\CFDI\Invoice\Invoice;
+use Angle\CFDI\CFDI;
 use Angle\CFDI\XmlLoader;
 
 
@@ -28,15 +28,15 @@ final class ParserTest extends TestCase
             echo file_get_contents($filename);
             echo PHP_EOL;
 
-            $invoice = $loader->fileToInvoice($filename);
+            $cfdi = $loader->fileToCFDI($filename);
 
-            if (!$invoice) {
+            if (!$cfdi) {
                 // Loading failed!
                 echo "FAILED" . PHP_EOL;
                 print_r($loader->getErrors());
                 print_r($loader->getValidations());
 
-                $this->fail('Invoice could not be parsed from the XML file');
+                $this->fail('CFDI could not be parsed from the XML file');
             }
 
             // Loading success!
@@ -44,17 +44,18 @@ final class ParserTest extends TestCase
             print_r($loader->getErrors());
             print_r($loader->getValidations());
 
-            $this->assertInstanceOf(Invoice::class, $invoice);
+            $this->assertInstanceOf(CFDI::class, $cfdi);
 
             // Write out the XML, check if we match the same file
-            print_r($invoice);
+            print_r($cfdi);
 
-            echo serialize($invoice);
+            echo serialize($cfdi);
+            echo PHP_EOL;
 
             echo "Result XML:" . PHP_EOL;
-            echo $invoice->toXML();
+            echo $cfdi->toXML();
             echo PHP_EOL;
-            echo "UUID: " . $invoice->getUuid() . PHP_EOL . PHP_EOL;
+            echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;
 
             // STEP 1: Parse (XML to Invoice)
             // STEP 2: Validate properties

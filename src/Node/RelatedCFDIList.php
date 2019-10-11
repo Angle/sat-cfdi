@@ -1,30 +1,30 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
-use DateTime;
-
+use Angle\CFDI\Node\RelatedCFDI;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMText;
 
 /**
- * @method static Complement createFromDOMNode(DOMNode $node)
+ * @method static RelatedCFDIList createFromDOMNode(DOMNode $node)
  */
-class Complement extends CFDINode
+
+class RelatedCFDIList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Complemento";
-    const NS_NODE_NAME = "cfdi:Complemento";
+    const NODE_NAME = "CfdiRelacionados";
+    const NS_NODE_NAME = "cfdi:CfdiRelacionados";
 
     protected static $baseAttributes = [];
 
@@ -35,8 +35,11 @@ class Complement extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
+        'type'           => [
+            'keywords' => ['TipoRelacion', 'type'],
+            'type' => CFDI::ATTR_REQUIRED
+        ],
     ];
-
 
 
     #########################
@@ -44,9 +47,15 @@ class Complement extends CFDINode
     #########################
 
     /**
-     * @var array
+     * @var string
      */
-    protected $complements = [];
+    protected $type;
+
+    // CHILDREN NODES
+    /**
+     * @var RelatedCFDI[]
+     */
+    protected $related = [];
 
 
     #########################
@@ -64,26 +73,23 @@ class Complement extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
-                // TODO: DOMText
                 continue;
             }
 
             switch ($node->localName) {
-                case FiscalStamp::NODE_NAME:
-                    $stamp = FiscalStamp::createFromDOMNode($node);
-                    $this->addFiscalStamp($stamp);
+                case RelatedCFDI::NODE_NAME:
+                    $related = Item::createFromDomNode($node);
+                    $this->addRelated($related);
                     break;
                 default:
-                    // TODO: implement other types of nodes
-                    // Pagos (Pagos10.xsd)
-                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
     }
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -94,10 +100,10 @@ class Complement extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        // Related node (array)
+        foreach ($this->related as $related) {
+            $relatedNode = $related->toDOMElement($dom);
+            $node->appendChild($relatedNode);
         }
 
         return $node;
@@ -120,7 +126,24 @@ class Complement extends CFDINode
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return string
+     */
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     * @return RelatedCFDIList
+     */
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+        return $this;
+    }
+
 
 
     #########################
@@ -128,34 +151,32 @@ class Complement extends CFDINode
     #########################
 
     /**
-     * This method will return the first encountered FiscalStamp inside the Complements items
-     * @return FiscalStamp
+     * @return RelatedCFDI[]
      */
-    public function getFiscalStamp(): ?FiscalStamp
+    public function getRelated(): ?array
     {
-        foreach ($this->complements as $c) {
-            if ($c instanceof FiscalStamp) {
-                return $c;
-            }
-        }
-
-        return null;
+        return $this->related;
     }
 
     /**
-     * @param FiscalStamp $stamp
-     * @throws CFDIException
-     * @return Complement
+     * @param RelatedCFDI $related
+     * @return RelatedCFDIList
      */
-    public function addFiscalStamp(FiscalStamp $stamp): self
+    public function addRelated(RelatedCFDI $related): self
     {
-        // Check if there is another fiscal stamp
-        if ($this->getFiscalStamp() !== null) {
-            throw new CFDIException('Cannot add more than one FiscalStamp to the Invoice\'s Complements');
-        }
-        
-        $this->complements[] = $stamp;
+        $this->related[] = $related;
         return $this;
     }
+
+    /**
+     * @param RelatedCFDI[] $related
+     * @return RelatedCFDIList
+     */
+    public function setRelated(array $related): self
+    {
+        $this->related = $related;
+        return $this;
+    }
+
 
 }

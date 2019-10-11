@@ -1,11 +1,14 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
+
+use Angle\CFDI\Catalog\TaxFactorType;
+use Angle\CFDI\Catalog\TaxType;
 
 use DOMDocument;
 use DOMElement;
@@ -13,16 +16,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemTaxesRetained createFromDOMNode(DOMNode $node)
+ * @method static ItemTaxesTransferred createFromDOMNode(DOMNode $node)
  */
-class ItemTaxesRetained extends CFDINode
+class ItemTaxesTransferred extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Retencion";
-    const NS_NODE_NAME = "cfdi:Retencion";
+    const NODE_NAME = "Traslado";
+    const NS_NODE_NAME = "cfdi:Traslado";
 
     protected static $baseAttributes = [];
 
@@ -41,8 +44,8 @@ class ItemTaxesRetained extends CFDINode
             'keywords' => ['Impuesto', 'tax'],
             'type' => CFDI::ATTR_REQUIRED
         ],
-        'type'        => [
-            'keywords' => ['TipoFactor', 'type'],
+        'factorType'        => [
+            'keywords' => ['TipoFactor', 'factorType'],
             'type' => CFDI::ATTR_REQUIRED
         ],
         'rate'        => [
@@ -66,14 +69,16 @@ class ItemTaxesRetained extends CFDINode
     protected $base;
 
     /**
+     * @see TaxType
      * @var string
      */
     protected $tax;
 
     /**
+     * @see TaxFactorType
      * @var string
      */
-    protected $type;
+    protected $factorType;
 
     /**
      * @var string
@@ -108,7 +113,7 @@ class ItemTaxesRetained extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -138,6 +143,21 @@ class ItemTaxesRetained extends CFDINode
 
 
     #########################
+    ##   SPECIAL METHODS   ##
+    #########################
+
+    public function getTaxName($lang='es')
+    {
+        return TaxType::getName($this->tax, $lang);
+    }
+
+    public function getFactorTypeName($lang='es')
+    {
+        return TaxFactorType::getName($this->factorType, $lang);
+    }
+
+
+    #########################
     ## GETTERS AND SETTERS ##
     #########################
 
@@ -151,7 +171,7 @@ class ItemTaxesRetained extends CFDINode
 
     /**
      * @param string $base
-     * @return ItemTaxesRetained
+     * @return ItemTaxesTransferred
      */
     public function setBase(?string $base): self
     {
@@ -169,10 +189,11 @@ class ItemTaxesRetained extends CFDINode
 
     /**
      * @param string $tax
-     * @return ItemTaxesRetained
+     * @return ItemTaxesTransferred
      */
     public function setTax(?string $tax): self
     {
+        // TODO: Use TaxType
         $this->tax = $tax;
         return $this;
     }
@@ -180,18 +201,19 @@ class ItemTaxesRetained extends CFDINode
     /**
      * @return string
      */
-    public function getType(): ?string
+    public function getFactorType(): ?string
     {
-        return $this->type;
+        return $this->factorType;
     }
 
     /**
-     * @param string $type
-     * @return ItemTaxesRetained
+     * @param string $factorType
+     * @return ItemTaxesTransferred
      */
-    public function setType(?string $type): self
+    public function setFactorType(?string $factorType): self
     {
-        $this->type = $type;
+        // TODO: use TaxFactorType
+        $this->factorType = $factorType;
         return $this;
     }
 
@@ -205,7 +227,7 @@ class ItemTaxesRetained extends CFDINode
 
     /**
      * @param string $rate
-     * @return ItemTaxesRetained
+     * @return ItemTaxesTransferred
      */
     public function setRate(?string $rate): self
     {
@@ -223,7 +245,7 @@ class ItemTaxesRetained extends CFDINode
 
     /**
      * @param string $amount
-     * @return ItemTaxesRetained
+     * @return ItemTaxesTransferred
      */
     public function setAmount(?string $amount): self
     {

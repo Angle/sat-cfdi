@@ -1,11 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DOMDocument;
 use DOMElement;
@@ -13,16 +13,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static Item createFromDOMNode(DOMNode $node)
+ * @method static ItemPart createFromDOMNode(DOMNode $node)
  */
-class Item extends CFDINode
+class ItemPart extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Concepto";
-    const NS_NODE_NAME = "cfdi:Concepto";
+    const NODE_NAME = "Parte";
+    const NS_NODE_NAME = "cfdi:Parte";
 
     protected static $baseAttributes = [];
 
@@ -45,10 +45,6 @@ class Item extends CFDINode
             'keywords' => ['Cantidad', 'quantity'],
             'type' => CFDI::ATTR_REQUIRED
         ],
-        'unitCode'        => [
-            'keywords' => ['ClaveUnidad', 'unitCode'],
-            'type' => CFDI::ATTR_REQUIRED
-        ],
         'unit'        => [
             'keywords' => ['Unidad', 'unit'],
             'type' => CFDI::ATTR_OPTIONAL
@@ -59,14 +55,10 @@ class Item extends CFDINode
         ],
         'unitPrice'        => [
             'keywords' => ['ValorUnitario', 'unitPrice'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDI::ATTR_OPTIONAL
         ],
         'amount'        => [
             'keywords' => ['Importe', 'amount'],
-            'type' => CFDI::ATTR_REQUIRED
-        ],
-        'discount'        => [
-            'keywords' => ['Descuento', 'discount'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
     ];
@@ -94,11 +86,6 @@ class Item extends CFDINode
     /**
      * @var string
      */
-    protected $unitCode;
-
-    /**
-     * @var string
-     */
     protected $unit;
 
     /**
@@ -116,37 +103,12 @@ class Item extends CFDINode
      */
     protected $amount;
 
-    /**
-     * @var string
-     */
-    protected $discount;
-
 
     // CHILDREN NODES
-    /**
-     * @var ItemTaxes|null
-     */
-    protected $taxes;
-
     /**
      * @var ItemCustomsInformation[]
      */
     protected $customsInformation = [];
-
-    /**
-     * @var ItemPropertyTaxAccount|null
-     */
-    protected $propertyTaxAccount;
-
-    /**
-     * @var ItemComplement|null
-     */
-    protected $complements;
-
-    /**
-     * @var ItemPart[]
-     */
-    protected $parts = [];
 
 
     #########################
@@ -168,35 +130,19 @@ class Item extends CFDINode
             }
 
             switch ($node->localName) {
-                case ItemTaxes::NODE_NAME:
-                    $taxes = ItemTaxes::createFromDOMNode($node);
-                    $this->setTaxes($taxes);
-                    break;
-                case ItemPropertyTaxAccount::NODE_NAME:
-                    $propertyTaxAccount = ItemPropertyTaxAccount::createFromDOMNode($node);
-                    $this->setPropertyTaxAccount($propertyTaxAccount);
-                    break;
-                case ItemComplement::NODE_NAME:
-                    $complement = ItemComplement::createFromDOMNode($node);
-                    $this->setComplement($complement);
-                    break;
-                case ItemPart::NODE_NAME:
-                    $part = ItemPart::createFromDOMNode($node);
-                    $this->addPart($part);
-                    break;
                 case ItemCustomsInformation::NODE_NAME:
                     $customs = ItemCustomsInformation::createFromDOMNode($node);
                     $this->addCustomsInformation($customs);
                     break;
                 default:
-                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
         }
     }
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -207,34 +153,10 @@ class Item extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        if ($this->taxes) {
-            // taxes is optional, can be null
-            $taxesNode = $this->taxes->toDOMElement($dom);
-            $node->appendChild($taxesNode);
-        }
-
         // Custom Information node (array)
         foreach ($this->customsInformation as $customs) {
             $customsNode = $customs->toDOMElement($dom);
             $node->appendChild($customsNode);
-        }
-
-        if ($this->propertyTaxAccount) {
-            // propertyTaxAccount is optional, can be null
-            $propertyTaxAccountNode = $this->propertyTaxAccount->toDOMElement($dom);
-            $node->appendChild($propertyTaxAccountNode);
-        }
-
-        if ($this->complements) {
-            // propertyTaxAccount is optional, can be null
-            $complementsNode = $this->complements->toDOMElement($dom);
-            $node->appendChild($complementsNode);
-        }
-
-        // Item Part node (array)
-        foreach ($this->parts as $part) {
-            $partNode = $part->toDOMElement($dom);
-            $node->appendChild($partNode);
         }
 
         return $node;
@@ -314,24 +236,6 @@ class Item extends CFDINode
     /**
      * @return string
      */
-    public function getUnitCode(): ?string
-    {
-        return $this->unitCode;
-    }
-
-    /**
-     * @param string $unitCode
-     * @return Item
-     */
-    public function setUnitCode(?string $unitCode): self
-    {
-        $this->unitCode = $unitCode;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
     public function getUnit(): ?string
     {
         return $this->unit;
@@ -401,110 +305,10 @@ class Item extends CFDINode
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getDiscount(): ?string
-    {
-        return $this->discount;
-    }
-
-    /**
-     * @param string $discount
-     * @return Item
-     */
-    public function setDiscount(?string $discount): self
-    {
-        $this->discount = $discount;
-        return $this;
-    }
-
 
     #########################
     ## CHILDREN
     #########################
-
-    /**
-     * @return ItemTaxes|null
-     */
-    public function getTaxes(): ?ItemTaxes
-    {
-        return $this->taxes;
-    }
-
-    /**
-     * @param ItemTaxes|null $taxes
-     * @return Item
-     */
-    public function setTaxes(?ItemTaxes $taxes): self
-    {
-        $this->taxes = $taxes;
-        return $this;
-    }
-
-    /**
-     * @return ItemPropertyTaxAccount|null
-     */
-    public function getPropertyTaxAccount(): ?ItemPropertyTaxAccount
-    {
-        return $this->propertyTaxAccount;
-    }
-
-    /**
-     * @param ItemPropertyTaxAccount|null $propertyTaxAccount
-     * @return Item
-     */
-    public function setPropertyTaxAccount(?ItemPropertyTaxAccount $propertyTaxAccount): self
-    {
-        $this->propertyTaxAccount = $propertyTaxAccount;
-        return $this;
-    }
-
-    /**
-     * @return ItemComplement|null
-     */
-    public function getComplements(): ?ItemComplement
-    {
-        return $this->complements;
-    }
-
-    /**
-     * @param ItemComplement|null $complements
-     * @return Item
-     */
-    public function setComplements(?ItemComplement $complements): self
-    {
-        $this->complements = $complements;
-        return $this;
-    }
-
-    /**
-     * @return ItemPart[]
-     */
-    public function getParts(): ?array
-    {
-        return $this->parts;
-    }
-
-    /**
-     * @param ItemPart $part
-     * @return Item
-     */
-    public function addPart(ItemPart $part): self
-    {
-        $this->parts[] = $part;
-        return $this;
-    }
-
-    /**
-     * @param ItemPart[] $parts
-     * @return Item
-     */
-    public function setPart(array $parts): self
-    {
-        $this->parts = $parts;
-        return $this;
-    }
 
     /**
      * @return ItemCustomsInformation[]
@@ -516,7 +320,7 @@ class Item extends CFDINode
 
     /**
      * @param ItemCustomsInformation $customs
-     * @return Item
+     * @return ItemPart
      */
     public function addCustomsInformation(ItemCustomsInformation $customs): self
     {
@@ -526,7 +330,7 @@ class Item extends CFDINode
 
     /**
      * @param ItemCustomsInformation[] $customs
-     * @return Item
+     * @return ItemPart
      */
     public function setCustomsInformation(array $customs): self
     {

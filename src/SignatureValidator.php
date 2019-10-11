@@ -6,8 +6,8 @@ use Angle\CFDI\CertificateStorage\CertificateStorageInterface;
 
 use Angle\CFDI\Utility\OpenSSLUtility;
 
-use Angle\CFDI\Invoice\Invoice;
-use Angle\CFDI\Invoice\Node\FiscalStamp;
+use Angle\CFDI\CFDI;
+use Angle\CFDI\Node\FiscalStamp;
 
 class SignatureValidator
 {
@@ -31,16 +31,16 @@ class SignatureValidator
     /**
      * @return bool
      */
-    public function checkInvoiceSignature(Invoice $invoice)
+    public function checkCfdiSignature(CFDI $cfdi)
     {
         // Reset any previous validations
         $this->validations = [];
 
-        if ($invoice->getVersion() != CFDI::VERSION_3_3) {
+        if ($cfdi->getVersion() != CFDI::VERSION_3_3) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'Invoice Signature check is only implemented for CFDI v3.3',
+                'message' => 'CFDI Signature check is only implemented for CFDI v3.3',
             ];
             return false;
         }
@@ -55,7 +55,7 @@ class SignatureValidator
         /////////
         // VALIDATE THE CERTIFICATE
 
-        if (!$invoice->getCertificate()) {
+        if (!$cfdi->getCertificate()) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -64,7 +64,7 @@ class SignatureValidator
             return false;
         }
 
-        $certificatePem = OpenSSLUtility::coerceBase64Certificate($invoice->getCertificate());
+        $certificatePem = OpenSSLUtility::coerceBase64Certificate($cfdi->getCertificate());
 
         $certificate = openssl_x509_read($certificatePem);
 
@@ -97,7 +97,7 @@ class SignatureValidator
         $issuerRfc = explode('/', $parsedCertificate['subject']['x500UniqueIdentifier']);
         $issuerRfc = trim($issuerRfc[0]);
 
-        if (!$invoice->getIssuer()) {
+        if (!$cfdi->getIssuer()) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -106,7 +106,7 @@ class SignatureValidator
             return false;
         }
 
-        if ($invoice->getIssuer()->getRfc() != $issuerRfc) {
+        if ($cfdi->getIssuer()->getRfc() != $issuerRfc) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -118,7 +118,7 @@ class SignatureValidator
 
         // LCO COMPARE
         // Load the Issuer's Certificate from SAT LCO (Lista de Contribuyentes Obligados) and make sure that it matches the on in the CFDI
-        $lcoCertificatePem = $this->certificateStorage->getCertificatePEM($invoice->getCertificateNumber());
+        $lcoCertificatePem = $this->certificateStorage->getCertificatePEM($cfdi->getCertificateNumber());
 
         if (!$lcoCertificatePem) {
             $this->validations[] = [
@@ -204,7 +204,7 @@ class SignatureValidator
         ////////////////
         /// VALIDATE THE SIGNATURE
 
-        if (!$invoice->getSignature()) {
+        if (!$cfdi->getSignature()) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -213,7 +213,7 @@ class SignatureValidator
             return false;
         }
 
-        $signature = base64_decode($invoice->getSignature(), true);
+        $signature = base64_decode($cfdi->getSignature(), true);
 
         if ($signature === false) {
             $this->validations[] = [
@@ -226,7 +226,7 @@ class SignatureValidator
 
         // Build the Original Chain Sequence
         // TODO: Check if the "original chain sequence" is properly built and compare it against the signature
-        $chain = $invoice->getChainSequence();
+        $chain = $cfdi->getChainSequence();
 
         $publicKey = openssl_pkey_get_public($certificate);
 
@@ -285,15 +285,15 @@ class SignatureValidator
      *
      * On success, returns 0
      * On failure, returns an array with any validation errors encountered.
-     * @param Invoice $invoice
+     * @param CFDI $cfdi
      * @return array|int
      */
-    public function checkFiscalStampSignature(Invoice $invoice)
+    public function checkFiscalStampSignature(CFDI $cfdi)
     {
         // Reset any previous validations
         $this->validations = [];
 
-        $fiscalStamp = $invoice->getFiscalStamp();
+        $fiscalStamp = $cfdi->getFiscalStamp();
 
         if (!$fiscalStamp || !($fiscalStamp instanceof FiscalStamp)) {
             $this->validations[] = [
@@ -322,7 +322,7 @@ class SignatureValidator
         ];
 
         // The CFDI signature should be exactly the same as the one in the FiscalStamp node
-        if ($invoice->getSignature() !== $fiscalStamp->getCfdiSignature()) {
+        if ($cfdi->getSignature() !== $fiscalStamp->getCfdiSignature()) {
             // CFDI Signature mismatched
             $this->validations[] = [
                 'type' => 'signature:tfd',

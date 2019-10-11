@@ -1,27 +1,28 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 
 /**
- * @method static ItemPropertyTaxAccount createFromDOMNode(DOMNode $node)
+ * @method static ItemCustomsInformation createFromDOMNode(DOMNode $node)
  */
-class ItemPropertyTaxAccount extends CFDINode
+class ItemCustomsInformation extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "CuentaPredial";
-    const NS_NODE_NAME = "cfdi:CuentaPredial";
+    const NODE_NAME = "InformacionAduanera";
+    const NS_NODE_NAME = "cfdi:InformacionAduanera";
 
     protected static $baseAttributes = [];
 
@@ -32,8 +33,8 @@ class ItemPropertyTaxAccount extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'number'           => [
-            'keywords' => ['Numero', 'number'],
+        'importDocumentNumber'           => [
+            'keywords' => ['NumeroPedimento', 'importDocumentNumber'],
             'type' => CFDI::ATTR_REQUIRED
         ],
     ];
@@ -46,7 +47,7 @@ class ItemPropertyTaxAccount extends CFDINode
     /**
      * @var string
      */
-    protected $number;
+    protected $importDocumentNumber;
 
 
     #########################
@@ -66,7 +67,7 @@ class ItemPropertyTaxAccount extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -77,7 +78,7 @@ class ItemPropertyTaxAccount extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // no child nodes
+        // no children
 
         return $node;
     }
@@ -102,18 +103,25 @@ class ItemPropertyTaxAccount extends CFDINode
     /**
      * @return string
      */
-    public function getNumber(): ?string
+    public function getImportDocumentNumber(): ?string
     {
-        return $this->number;
+        return $this->importDocumentNumber;
     }
 
     /**
-     * @param string $number
-     * @return ItemPropertyTaxAccount
+     * @param string $importDocumentNumber
+     * @return ItemCustomsInformation
      */
-    public function setNumber(?string $number): self
+    public function setImportDocumentNumber(?string $importDocumentNumber): self
     {
-        $this->number = $number;
+        $this->importDocumentNumber = $importDocumentNumber;
         return $this;
     }
+
+
+    #########################
+    ## CHILDREN
+    #########################
+
+    // none.
 }

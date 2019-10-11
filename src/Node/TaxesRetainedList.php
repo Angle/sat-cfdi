@@ -1,11 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DOMDocument;
 use DOMElement;
@@ -13,16 +13,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemTaxesTransferredList createFromDOMNode(DOMNode $node)
+ * @method static TaxesRetainedList createFromDOMNode(DOMNode $node)
  */
-class ItemTaxesTransferredList extends CFDINode
+class TaxesRetainedList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Traslados";
-    const NS_NODE_NAME = "cfdi:Traslados";
+    const NODE_NAME = "Retenciones";
+    const NS_NODE_NAME = "cfdi:Retenciones";
 
     protected static $baseAttributes = [];
 
@@ -41,9 +41,9 @@ class ItemTaxesTransferredList extends CFDINode
 
     // CHILDREN NODES
     /**
-     * @var ItemTaxesTransferred[]
+     * @var TaxesRetained[]
      */
-    protected $transfers = [];
+    protected $retentions = [];
 
 
 
@@ -66,9 +66,9 @@ class ItemTaxesTransferredList extends CFDINode
             }
 
             switch ($node->localName) {
-                case ItemTaxesTransferred::NODE_NAME:
-                    $transfer = ItemTaxesTransferred::createFromDomNode($node);
-                    $this->addTransfer($transfer);
+                case TaxesRetained::NODE_NAME:
+                    $retention = TaxesRetained::createFromDomNode($node);
+                    $this->addRetention($retention);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
@@ -78,7 +78,7 @@ class ItemTaxesTransferredList extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -89,10 +89,10 @@ class ItemTaxesTransferredList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Transfers node (array)
-        foreach ($this->transfers as $transfer) {
-            $transferNode = $transfer->toDOMElement($dom);
-            $node->appendChild($transferNode);
+        // Retentions node (array)
+        foreach ($this->retentions as $retention) {
+            $retentionNode = $retention->toDOMElement($dom);
+            $node->appendChild($retentionNode);
         }
 
         return $node;
@@ -123,30 +123,31 @@ class ItemTaxesTransferredList extends CFDINode
     #########################
 
     /**
-     * @return ItemTaxesTransferred[]
+     * @return TaxesRetained[]
      */
-    public function getTransfers(): ?array
+    public function getRetentions(): ?array
     {
-        return $this->transfers;
+        return $this->retentions;
     }
 
     /**
-     * @param ItemTaxesTransferred $transfer
-     * @return ItemTaxesTransferredList
+     * @param TaxesRetained $retention
+     * @return TaxesRetainedList
      */
-    public function addTransfer(ItemTaxesTransferred $transfer): self
+    public function addRetention(TaxesRetained $retention): self
     {
-        $this->transfers[] = $transfer;
+        $this->retentions[] = $retention;
         return $this;
     }
 
     /**
-     * @param ItemTaxesTransferred[] $transfers
-     * @return ItemTaxesTransferredList
+     * @param TaxesRetained[] $retentions
+     * @return TaxesRetainedList
      */
-    public function setItems(array $transfers): self
+    public function setRetentions(array $retentions): self
     {
-        $this->transfers = $transfers;
+        $this->retentions = $retentions;
         return $this;
     }
+
 }

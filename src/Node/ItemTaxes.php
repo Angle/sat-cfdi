@@ -1,11 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DOMDocument;
 use DOMElement;
@@ -13,17 +13,16 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemList createFromDOMNode(DOMNode $node)
+ * @method static ItemTaxes createFromDOMNode(DOMNode $node)
  */
-class ItemList extends CFDINode
+class ItemTaxes extends CFDINode
 {
-
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Conceptos";
-    const NS_NODE_NAME = "cfdi:Conceptos";
+    const NODE_NAME = "Impuestos";
+    const NS_NODE_NAME = "cfdi:Impuestos";
 
     protected static $baseAttributes = [];
 
@@ -39,13 +38,17 @@ class ItemList extends CFDINode
     ##      PROPERTIES     ##
     #########################
 
-
     // CHILDREN NODES
-    /**
-     * @var Item[]
-     */
-    protected $items = [];
 
+    /**
+     * @var ItemTaxesTransferredList|null
+     */
+    protected $transferredList;
+
+    /**
+     * @var ItemTaxesRetainedList|null
+     */
+    protected $retainedList;
 
 
     #########################
@@ -67,9 +70,13 @@ class ItemList extends CFDINode
             }
 
             switch ($node->localName) {
-                case Item::NODE_NAME:
-                    $item = Item::createFromDomNode($node);
-                    $this->addItem($item);
+                case ItemTaxesTransferredList::NODE_NAME:
+                    $transferred = ItemTaxesTransferredList::createFromDomNode($node);
+                    $this->setTransferredList($transferred);
+                    break;
+                case ItemTaxesRetainedList::NODE_NAME:
+                    $retained = ItemTaxesRetainedList::createFromDomNode($node);
+                    $this->setRetainedList($retained);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
@@ -79,7 +86,7 @@ class ItemList extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -90,10 +97,18 @@ class ItemList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Items node (array)
-        foreach ($this->items as $item) {
-            $itemNode = $item->toDOMElement($dom);
-            $node->appendChild($itemNode);
+        // TransferredList Node
+        if ($this->transferredList) {
+            // This can be null, no problem if not found
+            $transferredListNode = $this->transferredList->toDOMElement($dom);
+            $node->appendChild($transferredListNode);
+        }
+
+        // RetainedList Node
+        if ($this->retainedList) {
+            // This can be null, no problem if not found
+            $retainedListNode = $this->retainedList->toDOMElement($dom);
+            $node->appendChild($retainedListNode);
         }
 
         return $node;
@@ -124,30 +139,38 @@ class ItemList extends CFDINode
     #########################
 
     /**
-     * @return Item[]
+     * @return ItemTaxesTransferredList|null
      */
-    public function getItems(): ?array
+    public function getTransferredList(): ?ItemTaxesTransferredList
     {
-        return $this->items;
+        return $this->transferredList;
     }
 
     /**
-     * @param Item $item
-     * @return ItemList
+     * @param ItemTaxesTransferredList|null $transferredList
+     * @return ItemTaxes
      */
-    public function addItem(Item $item): self
+    public function setTransferredList(?ItemTaxesTransferredList $transferredList): self
     {
-        $this->items[] = $item;
+        $this->transferredList = $transferredList;
         return $this;
     }
 
     /**
-     * @param Item[] $items
-     * @return ItemList
+     * @return ItemTaxesRetainedList|null
      */
-    public function setItems(array $items): self
+    public function getRetainedList(): ?ItemTaxesRetainedList
     {
-        $this->items = $items;
+        return $this->retainedList;
+    }
+
+    /**
+     * @param ItemTaxesRetainedList|null $retainedList
+     * @return ItemTaxes
+     */
+    public function setRetainedList(?ItemTaxesRetainedList $retainedList): self
+    {
+        $this->retainedList = $retainedList;
         return $this;
     }
 }

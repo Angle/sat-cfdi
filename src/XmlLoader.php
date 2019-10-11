@@ -7,7 +7,7 @@ use Angle\CFDI\Utility\PathUtility;
 use LibXMLError;
 use DOMDocument;
 
-use Angle\CFDI\Invoice\Invoice;
+use Angle\CFDI\CFDI;
 
 class XmlLoader
 {
@@ -20,6 +20,7 @@ class XmlLoader
         'TimbreFiscalDigitalv11.xsd',
         'Pagos10.xsd',
         'catPagos.xsd',
+        'terceros11.xsd',
     ];
 
     // This schema file should be inside the resources directory
@@ -66,14 +67,14 @@ class XmlLoader
 
 
     /**
-     * Attempt to parse an Invoice from an XML string.
+     * Attempt to parse a CFDI from an XML string.
      * Returns null if the parsing failed
      *
      * @param string $xmlString
-     * @return Invoice|null
+     * @return CFDI|null
      * @throws \Exception
      */
-    public function stringToInvoice(string $xmlString): ?Invoice
+    public function stringToCFDI(string $xmlString): ?CFDI
     {
         // Clear any previous validations & errors
         $this->validations = [];
@@ -89,7 +90,7 @@ class XmlLoader
             return null;
         }
 
-        return $this->domToInvoice();
+        return $this->domToCFDI();
     }
 
     /**
@@ -97,9 +98,9 @@ class XmlLoader
      * Returns null if the parsing failed
      *
      * @param string $xmlFilePath
-     * @return Invoice|null
+     * @return CFDI|null
      */
-    public function fileToInvoice(string $xmlFilePath): ?Invoice
+    public function fileToCFDI(string $xmlFilePath): ?CFDI
     {
         // Clear any previous validations & errors
         $this->validations = [];
@@ -130,28 +131,28 @@ class XmlLoader
             return null;
         }
 
-        return $this->domToInvoice();
+        return $this->domToCFDI();
     }
 
-    private function domToInvoice(): ?Invoice
+    private function domToCFDI(): ?CFDI
     {
-        $invoiceNode = $this->dom->firstChild;
+        $cfdiNode = $this->dom->firstChild;
 
         try {
-            $invoice = Invoice::createFromDomNode($invoiceNode);
+            $cfdi = CFDI::createFromDOMNode($cfdiNode);
         } catch (CFDIException $e) {
             $this->errors[] = "CFDIException: " . $e->getMessage();
 
             $this->validations[] = [
                 'type' => 'xml',
                 'success' => false,
-                'message' => 'Internal system error [Invoice cannot be created from parsed DOM]',
+                'message' => 'Internal system error [CFDI cannot be created from parsed DOM]',
             ];
 
             return null;
         }
 
-        return $invoice;
+        return $cfdi;
     }
 
     /**

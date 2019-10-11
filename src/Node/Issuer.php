@@ -1,11 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DateTime;
 
@@ -14,16 +14,16 @@ use DOMElement;
 use DOMNode;
 
 /**
- * @method static Recipient createFromDOMNode(DOMNode $node)
+ * @method static Issuer createFromDOMNode(DOMNode $node)
  */
-class Recipient extends CFDINode
+class Issuer extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Receptor";
-    const NS_NODE_NAME = "cfdi:Receptor";
+    const NODE_NAME = "Emisor";
+    const NS_NODE_NAME = "cfdi:Emisor";
 
     protected static $baseAttributes = [];
 
@@ -42,19 +42,12 @@ class Recipient extends CFDINode
             'keywords' => ['Nombre', 'name'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
-        'foreignCountry'          => [
-            'keywords' => ['ResidenciaFiscal', 'foreignCountry'],
-            'type' => CFDI::ATTR_OPTIONAL
-        ],
-        'foreignTaxCode'          => [
-            'keywords' => ['NumRegIdTrib', 'foreignTaxCode'],
-            'type' => CFDI::ATTR_OPTIONAL
-        ],
-        'invoiceUse'    => [
-            'keywords' => ['UsoCFDI', 'invoiceUse'],
+        'regime'        => [
+            'keywords' => ['RegimenFiscal', 'regime'],
             'type' => CFDI::ATTR_REQUIRED
         ],
     ];
+
 
 
     #########################
@@ -74,17 +67,8 @@ class Recipient extends CFDINode
     /**
      * @var string
      */
-    protected $invoiceUse; // UsoCFDI
+    protected $regime; // RegimenFiscal
 
-    /**
-     * @var string
-     */
-    protected $foreignCountry; // ResidenciaFiscal
-
-    /**
-     * @var string
-     */
-    protected $foreignTaxCode; // Número de Registro de Identidad Fiscal para residentes en el extranjero
 
 
     #########################
@@ -104,7 +88,7 @@ class Recipient extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -115,7 +99,8 @@ class Recipient extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // no child nodes for Recipient
+
+        // no child nodes for Issuer
 
         return $node;
     }
@@ -133,7 +118,6 @@ class Recipient extends CFDINode
     }
 
 
-
     #########################
     ## GETTERS AND SETTERS ##
     #########################
@@ -141,16 +125,16 @@ class Recipient extends CFDINode
     /**
      * @return string
      */
-    public function getRfc(): ?string
+    public function getRfc(): string
     {
         return $this->rfc;
     }
 
     /**
      * @param string $rfc
-     * @return Recipient
+     * @return Issuer
      */
-    public function setRfc(?string $rfc): self
+    public function setRfc(string $rfc): self
     {
         $this->rfc = $rfc;
         return $this;
@@ -159,16 +143,16 @@ class Recipient extends CFDINode
     /**
      * @return string
      */
-    public function getName(): ?string
+    public function getName(): string
     {
         return $this->name;
     }
 
     /**
      * @param string $name
-     * @return Recipient
+     * @return Issuer
      */
-    public function setName(?string $name): self
+    public function setName(string $name): self
     {
         $this->name = $name;
         return $this;
@@ -177,54 +161,19 @@ class Recipient extends CFDINode
     /**
      * @return string
      */
-    public function getInvoiceUse(): ?string
+    public function getRegime(): string
     {
-        return $this->invoiceUse;
+        return $this->regime;
     }
 
     /**
-     * @param string $invoiceUse
-     * @return Recipient
+     * @param string $regime
+     * @return Issuer
      */
-    public function setInvoiceUse(?string $invoiceUse): self
+    public function setRegime(string $regime): self
     {
-        $this->invoiceUse = $invoiceUse;
+        $this->regime = $regime;
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getForeignCountry(): ?string
-    {
-        return $this->foreignCountry;
-    }
-
-    /**
-     * @param string $foreignCountry
-     * @return Recipient
-     */
-    public function setForeignCountry(?string $foreignCountry): self
-    {
-        $this->foreignCountry = $foreignCountry;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getForeignTaxCode(): ?string
-    {
-        return $this->foreignTaxCode;
-    }
-
-    /**
-     * @param string $foreignTaxCode
-     * @return Recipient
-     */
-    public function setForeignTaxCode(?string $foreignTaxCode): self
-    {
-        $this->foreignTaxCode = $foreignTaxCode;
-        return $this;
-    }
 }

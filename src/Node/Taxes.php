@@ -1,11 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Invoice\Node;
+namespace Angle\CFDI\Node;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Invoice\CFDINode;
+use Angle\CFDI\CFDINode;
 
 use DOMDocument;
 use DOMElement;
@@ -13,11 +13,11 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemTaxes createFromDOMNode(DOMNode $node)
+ * @method static Taxes createFromDOMNode(DOMNode $node)
  */
-class ItemTaxes extends CFDINode
+class Taxes extends CFDINode
 {
-    #########################
+#########################
     ##        PRESETS      ##
     #########################
 
@@ -31,22 +31,43 @@ class ItemTaxes extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [];
+    protected static $attributes = [
+        // PropertyName => [spanish (official SAT), english]
+        'totalRetainedAmount'           => [
+            'keywords' => ['TotalImpuestosRetenidos', 'totalRetainedAmount'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+        'totalTranslatedAmount'          => [
+            'keywords' => ['TotalImpuestosTrasladados', 'totalTranslatedAmount'],
+            'type' => CFDI::ATTR_OPTIONAL
+        ],
+    ];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
+    /**
+     * @var string|null
+     */
+    protected $totalRetainedAmount;
+
+    /**
+     * @var string|null
+     */
+    protected $totalTranslatedAmount;
+
+
     // CHILDREN NODES
 
     /**
-     * @var ItemTaxesTransferredList|null
+     * @var TaxesTransferredList|null
      */
     protected $transferredList;
 
     /**
-     * @var ItemTaxesRetainedList|null
+     * @var TaxesRetainedList|null
      */
     protected $retainedList;
 
@@ -70,12 +91,12 @@ class ItemTaxes extends CFDINode
             }
 
             switch ($node->localName) {
-                case ItemTaxesTransferredList::NODE_NAME:
-                    $transferred = ItemTaxesTransferredList::createFromDomNode($node);
+                case TaxesTransferredList::NODE_NAME:
+                    $transferred = TaxesTransferredList::createFromDomNode($node);
                     $this->setTransferredList($transferred);
                     break;
-                case ItemTaxesRetainedList::NODE_NAME:
-                    $retained = ItemTaxesRetainedList::createFromDomNode($node);
+                case TaxesRetainedList::NODE_NAME:
+                    $retained = TaxesRetainedList::createFromDomNode($node);
                     $this->setRetainedList($retained);
                     break;
                 default:
@@ -86,7 +107,7 @@ class ItemTaxes extends CFDINode
 
 
     #########################
-    ## INVOICE TO DOM TRANSLATION
+    ## CFDI NODE TO DOM TRANSLATION
     #########################
 
     public function toDOMElement(DOMDocument $dom): DOMElement
@@ -131,7 +152,41 @@ class ItemTaxes extends CFDINode
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return string|null
+     */
+    public function getTotalRetainedAmount(): ?string
+    {
+        return $this->totalRetainedAmount;
+    }
+
+    /**
+     * @param string|null $totalRetainedAmount
+     * @return Taxes
+     */
+    public function setTotalRetainedAmount(?string $totalRetainedAmount): self
+    {
+        $this->totalRetainedAmount = $totalRetainedAmount;
+        return $this;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTotalTranslatedAmount(): ?string
+    {
+        return $this->totalTranslatedAmount;
+    }
+
+    /**
+     * @param string|null $totalTranslatedAmount
+     * @return Taxes
+     */
+    public function setTotalTranslatedAmount(?string $totalTranslatedAmount): self
+    {
+        $this->totalTranslatedAmount = $totalTranslatedAmount;
+        return $this;
+    }
 
 
     #########################
@@ -139,36 +194,36 @@ class ItemTaxes extends CFDINode
     #########################
 
     /**
-     * @return ItemTaxesTransferredList|null
+     * @return TaxesTransferredList|null
      */
-    public function getTransferredList(): ?ItemTaxesTransferredList
+    public function getTransferredList(): ?TaxesTransferredList
     {
         return $this->transferredList;
     }
 
     /**
-     * @param ItemTaxesTransferredList|null $transferredList
-     * @return ItemTaxes
+     * @param TaxesTransferredList|null $transferredList
+     * @return Taxes
      */
-    public function setTransferredList(?ItemTaxesTransferredList $transferredList): self
+    public function setTransferredList(?TaxesTransferredList $transferredList): self
     {
         $this->transferredList = $transferredList;
         return $this;
     }
 
     /**
-     * @return ItemTaxesRetainedList|null
+     * @return TaxesRetainedList|null
      */
-    public function getRetainedList(): ?ItemTaxesRetainedList
+    public function getRetainedList(): ?TaxesRetainedList
     {
         return $this->retainedList;
     }
 
     /**
-     * @param ItemTaxesRetainedList|null $retainedList
-     * @return ItemTaxes
+     * @param TaxesRetainedList|null $retainedList
+     * @return Taxes
      */
-    public function setRetainedList(?ItemTaxesRetainedList $retainedList): self
+    public function setRetainedList(?TaxesRetainedList $retainedList): self
     {
         $this->retainedList = $retainedList;
         return $this;
