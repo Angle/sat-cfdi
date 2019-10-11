@@ -230,10 +230,6 @@ class SignatureValidator
 
         $publicKey = openssl_pkey_get_public($certificate);
 
-
-        // FIXME: remove this
-        echo "Public Key: " . var_dump($publicKey);
-
         if ($publicKey === false) {
             //return ['Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
 
