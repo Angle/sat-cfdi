@@ -253,7 +253,9 @@ class XmlLoader
 
     private function validateDOM()
     {
-        if (strtoupper($this->dom->encoding) == 'UTF-8') {
+        // Validate the encoding.
+        // We'll also allow "null" encoding, since that usually means the XML does not contain an <?xml> opening tag
+        if ($this->dom->encoding === null || strtoupper($this->dom->encoding) == 'UTF-8') {
             $this->validations[] = [
                 'type' => 'xml',
                 'success' => true,

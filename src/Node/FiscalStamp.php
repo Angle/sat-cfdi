@@ -157,6 +157,27 @@ class FiscalStamp extends CFDINode
 
 
     #########################
+    ## TFD TO XML
+    #########################
+
+    public function toDOMDocument(): DOMDocument
+    {
+        $dom = new \DOMDocument('1.0','UTF-8');
+        $dom->preserveWhiteSpace = false;
+
+        $tfdNode = $this->toDOMElement($dom);
+        $dom->appendChild($tfdNode);
+
+        return $dom;
+    }
+
+    public function toXML(): string
+    {
+        return $this->toDOMDocument()->saveXML();
+    }
+
+
+    #########################
     ## VALIDATION
     #########################
 
@@ -169,8 +190,8 @@ class FiscalStamp extends CFDINode
 
     /**
      * Builds the Original Chain Sequence for the Fiscal Stamp
-     * @return string
-     * @throws CFDIException
+     * Returns false on failure
+     * @return string|false
      */
     public function getChainSequence(): string
     {
@@ -180,7 +201,8 @@ class FiscalStamp extends CFDINode
         $items[] = $this->uuid;
 
         if (!($this->stampDate instanceof DateTime)) {
-            throw new CFDIException('StampDate is not a valid DateTime');
+            //throw new CFDIException('StampDate is not a valid DateTime');
+            return false;
         }
 
         $items[] = $this->stampDate->format(CFDI::DATETIME_FORMAT);

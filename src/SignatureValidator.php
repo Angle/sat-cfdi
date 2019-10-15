@@ -225,8 +225,27 @@ class SignatureValidator
         }
 
         // Build the Original Chain Sequence
-        // TODO: Check if the "original chain sequence" is properly built and compare it against the signature
+
+        // Option 1: Building it manually
         $chain = $cfdi->getChainSequence();
+
+        // Option 2: Building it automatically with an XLS Processor
+        //$chainProcessor = new OriginalChainGenerator();
+        //$chain = $chainProcessor->generateForCFDI($cfdi);
+
+        // FIXME: remove this
+        echo "CHAIN: " . $chain . PHP_EOL;
+
+        if ($chain === false) {
+            // Validations are only supported on automatic XLS Processor
+            // $this->validations = array_merge($this->validations, $chainProcessor->getValidations());
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'CFDI OriginalChainSequence could not be generated',
+            ];
+            return false;
+        }
 
         $publicKey = openssl_pkey_get_public($certificate);
 
@@ -428,13 +447,25 @@ class SignatureValidator
 
 
         // Build the Original Chain Sequence
-        try {
-            $chain = $fiscalStamp->getChainSequence();
-        } catch (CFDIException $e) {
+
+        // Option 1: Building it manually
+        $chain = $fiscalStamp->getChainSequence();
+
+        // Option 2: Building it automatically with an XLS Processor
+        //$chainProcessor = new OriginalChainGenerator();
+        //$chain = $chainProcessor->generateForTFD($fiscalStamp);
+
+        // FIXME: remove this
+        echo "CHAIN: " . $chain . PHP_EOL;
+
+        if ($chain === false) {
+            // Validations are only supported on automatic XLS Processor
+            //$this->validations = array_merge($this->validations, $chainProcessor->getValidations());
+
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
-                'message' => 'TFD Chain Sequence cannot be generated',
+                'message' => 'TFD OriginalChainSequence could not be generated',
             ];
             return false;
         }
