@@ -53,8 +53,6 @@ final class ValidatorTest extends TestCase
             echo PHP_EOL;
             echo "XML: " . $filename . PHP_EOL;
             echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;
-            echo "Issuer Certificate: " . $cfdi->getCertificateNumber() . PHP_EOL;
-            echo "SAT Certificate:    " . $cfdi->getFiscalStamp()->getSatCertificateNumber() . PHP_EOL;
 
             // STEP 1: Parse (XML to Invoice)
             // STEP 2: Validate properties

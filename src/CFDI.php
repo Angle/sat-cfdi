@@ -11,6 +11,7 @@ use Angle\CFDI\Node\Issuer;
 use Angle\CFDI\Node\Recipient;
 use Angle\CFDI\Node\ItemList;
 use Angle\CFDI\Node\RelatedCFDIList;
+use Angle\CFDI\Node\Taxes;
 use Angle\CFDI\Node\Complement;
 
 use DateTime;
@@ -274,9 +275,17 @@ class CFDI extends CFDINode
     protected $itemList;
 
     /**
+     * @var Taxes|null
+     */
+    protected $taxes;
+
+    /**
      * @var Complement[]
      */
     protected $complements = [];
+
+
+    // TODO: Addendum
 
 
     #########################
@@ -314,6 +323,10 @@ class CFDI extends CFDINode
                 case ItemList::NODE_NAME:
                     $itemList = ItemList::createFromDOMNode($node);
                     $this->setItemList($itemList);
+                    break;
+                case Taxes::NODE_NAME:
+                    $taxes = Taxes::createFromDOMNode($node);
+                    $this->setTaxes($taxes);
                     break;
                 case Complement::NODE_NAME:
                     $complement = Complement::createFromDOMNode($node);
@@ -412,10 +425,188 @@ class CFDI extends CFDINode
         return true;
     }
 
+    /**
+     * @deprecated Use a robust XLS transpiler instead
+     * @return string
+     */
     public function getChainSequence(): string
     {
-        // TODO: generate the Chain sequence for the CFDI
-        return '';
+        $items = [];
+
+        // 1. Comprobante
+        $items[] = $this->version;
+
+        if ($this->series) $items[] = $this->series;
+        if ($this->folio) $items[] = $this->folio;
+
+        if (!($this->date instanceof DateTime)) {
+            //throw new CFDIException('Date is not a valid DateTime');
+            return false;
+        }
+
+        $items[] = $this->date->format(CFDI::DATETIME_FORMAT);
+
+        if ($this->paymentMethod) $items[] = $this->paymentMethod;
+
+        $items[] = $this->certificateNumber;
+
+        if ($this->paymentConditions) $items[] = $this->paymentConditions;
+
+        $items[] = $this->subTotal;
+
+        if ($this->discount) $items[] = $this->discount;
+
+        $items[] = $this->currency;
+
+        if ($this->exchangeRate) $items[] = $this->exchangeRate;
+
+        $items[] = $this->total;
+        $items[] = $this->cfdiType;
+
+        if ($this->paymentType) $items[] = $this->paymentType;
+
+        $items[] = $this->postalCode;
+
+        if ($this->confirmation) $items[] = $this->confirmation;
+
+
+        // 2. CFDIRelacionados
+        if ($this->relatedCFDIList) {
+            $items[] = $this->relatedCFDIList->getType();
+
+            foreach ($this->relatedCFDIList->getRelated() as $related) {
+                $items[] = $related->getUuid();
+            }
+        }
+
+        // 3. Emisor
+        if (!$this->issuer) {
+            // An issuer is required in the CFDI
+            return false;
+        }
+
+        $items[] = $this->issuer->getRfc();
+
+        if ($this->issuer->getName()) $items[] = $this->issuer->getName();
+
+        $items[] = $this->issuer->getRegime();
+
+
+        // 4. Receptor
+        if (!$this->recipient) {
+            // A recipient is required in the CFDI
+            return false;
+        }
+
+        $items[] = $this->recipient->getRfc();
+
+        if ($this->recipient->getName()) $items[] = $this->recipient->getName();
+        if ($this->recipient->getForeignCountry()) $items[] = $this->recipient->getForeignCountry();
+        if ($this->recipient->getForeignTaxCode()) $items[] = $this->recipient->getForeignTaxCode();
+
+        $items[] = $this->recipient->getCfdiUse();
+
+
+        // 5. Conceptos
+        if (!$this->itemList) {
+            // An item list is required in the CFDI
+            return false;
+        }
+
+        foreach ($this->itemList->getItems() as $it) {
+            $items[] = $it->getCode();
+            if ($it->getId()) $items[] = $it->getId();
+            $items[] = $it->getQuantity();
+            $items[] = $it->getUnitCode();
+            if ($it->getUnit()) $items[] = $it->getUnit();
+            $items[] = $it->getDescription();
+            $items[] = $it->getUnitPrice();
+            $items[] = $it->getAmount();
+            if ($it->getDiscount()) $items[] = $it->getDiscount();
+
+
+            if ($it->getTaxes() && $it->getTaxes()->getTransferredList()) {
+                foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $tax) {
+                    $items[] = $tax->getBase();
+                    $items[] = $tax->getTax();
+                    $items[] = $tax->getFactorType();
+                    if ($tax->getRate()) $items[] = $tax->getRate();
+                    if ($tax->getAmount()) $items[] = $tax->getAmount();
+                }
+            }
+
+            if ($it->getTaxes() && $it->getTaxes()->getRetainedList()) {
+                foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $tax) {
+                    $items[] = $tax->getBase();
+                    $items[] = $tax->getTax();
+                    $items[] = $tax->getFactorType();
+                    $items[] = $tax->getRate();
+                    $items[] = $tax->getAmount();
+                }
+            }
+
+            foreach ($it->getCustomsInformation() as $customs) {
+                $items[] = $customs->getImportDocumentNumber();
+            }
+
+            if ($it->getPropertyTaxAccount()) {
+                $items[] = $it->getPropertyTaxAccount()->getNumber();
+            }
+
+            // TODO: Item Complements
+
+            foreach ($it->getParts() as $part) {
+                $items[] = $part->getCode();
+                if ($part->getId()) $items[] = $part->getId();
+                $items[] = $part->getQuantity();
+                if ($part->getUnit()) $items[] = $part->getUnit();
+                $items[] = $part->getDescription();
+                if ($part->getUnitPrice()) $items[] = $part->getUnitPrice();
+                if ($part->getAmount()) $items[] = $part->getAmount();
+
+                foreach ($part->getCustomsInformation() as $customs) {
+                    $items[] = $customs->getImportDocumentNumber();
+                }
+            }
+        }
+
+
+        // 6-9. Impuestos
+        if ($this->taxes) {
+            // 6. Impuestos:Retención
+            if ($this->taxes->getRetainedList()) {
+                foreach ($this->taxes->getRetainedList()->getRetentions() as $ret) {
+                    $items[] = $ret->getTax();
+                    $items[] = $ret->getAmount();
+                }
+            }
+
+            // 7. Impuestos: TotalRetención
+            if ($this->taxes->getTotalRetainedAmount()) $items[] = $this->taxes->getTotalRetainedAmount();
+
+            // 8. Impuestos:Traslado
+            if ($this->taxes->getTransferredList()) {
+                foreach ($this->taxes->getTransferredList()->getTransfers() as $tra) {
+                    $items[] = $tra->getTax();
+                    $items[] = $tra->getFactorType();
+                    $items[] = $tra->getRate();
+                    $items[] = $tra->getAmount();
+                }
+            }
+
+            // 9. Impuestos: TotalTrasladados
+            if ($this->taxes->getTotalTranslatedAmount()) $items[] = $this->taxes->getTotalTranslatedAmount();
+        }
+
+        // 12. Complement
+
+        // TODO: Complement
+
+
+        // Prepare the items to be written as a string
+        $items = array_map('Angle\CFDI\CFDI::cleanWhitespace', $items);
+
+        return '||' . implode('|', $items) . '||';
     }
 
 
@@ -920,8 +1111,23 @@ class CFDI extends CFDINode
         return $this;
     }
 
+    /**
+     * @return Taxes|null
+     */
+    public function getTaxes(): ?Taxes
+    {
+        return $this->taxes;
+    }
 
-
+    /**
+     * @param Taxes|null $taxes
+     * @return CFDI
+     */
+    public function setTaxes(?Taxes $taxes): self
+    {
+        $this->taxes = $taxes;
+        return $this;
+    }
 
 
     #########################

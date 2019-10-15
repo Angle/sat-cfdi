@@ -8,6 +8,10 @@ use XSLTProcessor;
 use DOMDocument;
 use LibXMLError;
 
+use Genkgo\Xsl\Cache\ArrayCache;
+use Genkgo\Xsl\ProcessorFactory;
+use Genkgo\Xsl\XsltProcessor;
+
 use Angle\CFDI\CFDI;
 use Angle\CFDI\Node\FiscalStamp;
 
@@ -51,8 +55,7 @@ class OriginalChainGenerator
         libxml_use_internal_errors(true);
         libxml_clear_errors(); // clean up any previous errors found in other validations
 
-        // Initialize the XSLT processor
-        $proc = new XSLTProcessor;
+
 
         // Check that the version is correct
         if ($cfdi->getVersion() != CFDI::VERSION_3_3) {
@@ -64,6 +67,11 @@ class OriginalChainGenerator
 
             return false;
         }
+
+        // Initialize the XSLT processor
+        //$processor = new XSLTProcessor; // old method using the XSLTProcessor built-in library (does not support XSL 2.0)
+        $factory = new ProcessorFactory(new ArrayCache());
+        $processor = $factory->newProcessor();
 
         // Load the XSLT transformation rules as a DOMDocument
         $xsltFile = PathUtility::join($this->resourceDir, 'CFDI_3_3.xslt');
@@ -81,7 +89,7 @@ class OriginalChainGenerator
             return false;
         }
 
-        $r = $proc->importStyleSheet($xslt);
+        $r = $processor->importStyleSheet($xslt);
 
         if ($r === false) {
             $this->validations[] = [
@@ -94,7 +102,7 @@ class OriginalChainGenerator
         }
 
         // Everything's loaded, now generate the chain
-        return $proc->transformToXML($cfdi->toDOMDocument());
+        return $processor->transformToXML($cfdi->toDOMDocument());
     }
 
     /**
@@ -108,8 +116,6 @@ class OriginalChainGenerator
         libxml_use_internal_errors(true);
         libxml_clear_errors(); // clean up any previous errors found in other validations
 
-        // Initialize the XSLT processor
-        $proc = new XSLTProcessor;
 
         // Check that the version is correct
         if ($tfd->getVersion() != FiscalStamp::VERSION_1_1) {
@@ -121,6 +127,12 @@ class OriginalChainGenerator
 
             return false;
         }
+
+        // Initialize the XSLT processor
+        //$processor = new XSLTProcessor; // old method using the XSLTProcessor built-in library (does not support XSL 2.0)
+        $factory = new ProcessorFactory(new ArrayCache());
+        $processor = $factory->newProcessor();
+
 
         // Load the XSLT transformation rules as a DOMDocument
         $xsltFile = PathUtility::join($this->resourceDir, 'TFD_1_1.xslt');
@@ -138,7 +150,7 @@ class OriginalChainGenerator
             return false;
         }
 
-        $r = $proc->importStyleSheet($xslt);
+        $r = $processor->importStyleSheet($xslt);
 
         if ($r === false) {
             $this->validations[] = [
@@ -154,7 +166,7 @@ class OriginalChainGenerator
         print_r($this->libxmlErrors());
 
         // Everything's loaded, now generate the chain
-        return $proc->transformToXML($tfd->toDOMDocument());
+        return $processor->transformToXML($tfd->toDOMDocument());
     }
 
     public function getValidations()

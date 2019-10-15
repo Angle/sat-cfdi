@@ -30,14 +30,16 @@
     }
   ],
   "require": {
-    "php": ">=7.1",
+    "php": ">=7.2",
     "ext-json": "*",
     "ext-libxml": "*",
     "ext-simplexml": "*",
-    "ext-xsl": "*",
     "ext-dom": "*",
     "ext-openssl": "*",
-    "ext-curl": "*"
+    "ext-curl": "*",
+    "ext-xsl": "*",
+    "ext-intl": "*",
+    "genkgo/xsl": "^1.0"
   },
   "suggest": {
   },
