@@ -6,13 +6,16 @@ use Angle\CFDI\Utility\PathUtility;
 
 use Angle\CFDI\CFDIException;
 
-use Angle\CFDI\Node\FiscalStamp;
 use Angle\CFDI\Node\Issuer;
 use Angle\CFDI\Node\Recipient;
 use Angle\CFDI\Node\ItemList;
 use Angle\CFDI\Node\RelatedCFDIList;
 use Angle\CFDI\Node\Taxes;
+
 use Angle\CFDI\Node\Complement;
+use Angle\CFDI\Node\Complement\FiscalStamp;
+
+use Angle\CFDI\Node\Addendum;
 
 use DateTime;
 use DateTimeZone;
@@ -332,6 +335,9 @@ class CFDI extends CFDINode
                     $complement = Complement::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
+                case Addendum::NODE_NAME:
+                    // TODO: implement Addendum
+                    break;
                 default:
                     //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }
@@ -426,8 +432,12 @@ class CFDI extends CFDINode
     }
 
     /**
-     * @deprecated Use a robust XLS transpiler instead
-     * @return string
+     * DEPRECATED: Use the OriginalChainGenerator instead, it employs a robust XLS transpiler
+     * @deprecated
+     *
+     * Builds the Original Chain Sequence for the CFDI
+     * Returns false on failure
+     * @return string|false
      */
     public function getChainSequence(): string
     {

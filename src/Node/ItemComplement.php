@@ -70,7 +70,8 @@ class ItemComplement extends CFDINode
             // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
             switch ($node->nodeName) {
                 default:
-                    // TODO: implement other types of nodes
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+
             }
         }
     }

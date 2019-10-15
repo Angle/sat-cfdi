@@ -6,7 +6,7 @@ use Angle\CFDI\Utility\PathUtility;
 
 class XsdStreamWrapper
 {
-    const PROTOCOL = 'anglemx.sat.cfdi';
+    const PROTOCOL = 'anglemx.sat.cfdi.xsd';
 
     // resource dir
     public static $RESOURCE_DIR;
@@ -23,7 +23,8 @@ class XsdStreamWrapper
     // temporal file handle (resource)
     private $handle;
 
-    public function stream_open($uri, $mode, $options, &$opened_path) {
+    public function stream_open($uri, $mode, $options, &$opened_path)
+    {
         $this->uri = $uri;
 
         $target = $this->getTarget();

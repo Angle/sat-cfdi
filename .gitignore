@@ -13,3 +13,6 @@ test-data/
 
 # JetBrains
 .idea/
+
+# Composer
+/vendor/

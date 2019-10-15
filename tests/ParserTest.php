@@ -12,7 +12,7 @@ final class ParserTest extends TestCase
 {
     public function testValidate(): void
     {
-        $files = glob(__DIR__ . '/../test-data/*.xml', GLOB_ERR);
+        $files = glob(__DIR__ . '/../test-data/tactik-valid/*.xml', GLOB_ERR);
 
         $realFiles = [];
         foreach ($files as $filename) {

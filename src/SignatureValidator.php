@@ -7,7 +7,7 @@ use Angle\CFDI\CertificateStorage\CertificateStorageInterface;
 use Angle\CFDI\Utility\OpenSSLUtility;
 
 use Angle\CFDI\CFDI;
-use Angle\CFDI\Node\FiscalStamp;
+use Angle\CFDI\Node\Complement\FiscalStamp;
 
 class SignatureValidator
 {
@@ -226,7 +226,7 @@ class SignatureValidator
 
         // Build the Original Chain Sequence
 
-        // Option 1: Building it manually
+        // Option 1: Building it manually [DEPRECATED]
         $chain = $cfdi->getChainSequence();
 
         // Option 2: Building it automatically with an XLS Processor
@@ -237,8 +237,8 @@ class SignatureValidator
         echo "CHAIN: " . $chain . PHP_EOL;
 
         if ($chain === false) {
-            // Validations are only supported on automatic XLS Processor
-            // $this->validations = array_merge($this->validations, $chainProcessor->getValidations());
+            //$this->validations = array_merge($this->validations, $chainProcessor->getValidations());
+
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -448,7 +448,7 @@ class SignatureValidator
 
         // Build the Original Chain Sequence
 
-        // Option 1: Building it manually
+        // Option 1: Building it manually [DEPRECATED]
         $chain = $fiscalStamp->getChainSequence();
 
         // Option 2: Building it automatically with an XLS Processor
@@ -459,7 +459,6 @@ class SignatureValidator
         echo "CHAIN: " . $chain . PHP_EOL;
 
         if ($chain === false) {
-            // Validations are only supported on automatic XLS Processor
             //$this->validations = array_merge($this->validations, $chainProcessor->getValidations());
 
             $this->validations[] = [

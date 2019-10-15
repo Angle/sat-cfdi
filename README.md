@@ -5,7 +5,7 @@
 La librería está escrita en inglés para mantener consistencia en código.
 A continuación la lista de Keywords que fueron utilizados:
 
-| Español | Ingles |
+| Español | English |
 | ------------- | ------------- |
 | Comprobante | Invoice |
 | Relacionados | Related |
@@ -39,6 +39,11 @@ http://omawww.sat.gob.mx/tramitesyservicios/Paginas/certificado_sello_digital.ht
 ## Official
 
 http://omawww.sat.gob.mx/tramitesyservicios/Paginas/anexo_20_version3-3.htm
+
+THIS LIBRARY INCLUDES A LOCAL COPY OF THE XSD AND XSLT REFERENCE FILES.
+
+Some of them have been adapted to work locally __ no need for an active internet connection.
+Performance.
 
 ### Resources
 

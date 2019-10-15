@@ -6,6 +6,7 @@ use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
+use Angle\CFDI\Node\Complement\FiscalStamp;
 
 use DateTime;
 
@@ -75,7 +76,9 @@ class Complement extends CFDINode
                     $this->addFiscalStamp($stamp);
                     break;
                 default:
-                    // TODO: implement other types of nodes
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+
+                // TODO: implement other types of nodes
                     // Pagos (Pagos10.xsd)
                     //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
             }

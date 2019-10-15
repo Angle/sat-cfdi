@@ -4,25 +4,62 @@ namespace Angle\CFDI;
 
 use Angle\CFDI\Utility\PathUtility;
 
-use XSLTProcessor;
 use DOMDocument;
 use LibXMLError;
 
 use Genkgo\Xsl\Cache\ArrayCache;
+use Genkgo\Xsl\Cache\NullCache;
 use Genkgo\Xsl\ProcessorFactory;
 use Genkgo\Xsl\XsltProcessor;
+use Genkgo\Xsl\Exception\TransformationException;
 
 use Angle\CFDI\CFDI;
-use Angle\CFDI\Node\FiscalStamp;
+use Angle\CFDI\Node\Complement\FiscalStamp;
 
 class OriginalChainGenerator
 {
     // Relative to the project directory
     const XSLT_RESOURCES_DIR = '/resources/xslt-processor/';
-    const XSD_WHITELIST = [
+    const XSLT_WHITELIST = [
         'CFDI_3_3.xslt',
         'TFD_1_1.xslt',
+        
+        "cfd/2/cadenaoriginal_2_0/utilerias.xslt",
+        "cfd/EstadoDeCuentaCombustible/ecc11.xslt",
+        "cfd/donat/donat11.xslt",
+        "cfd/divisas/divisas.xslt",
+        "cfd/implocal/implocal.xslt",
+        "cfd/leyendasFiscales/leyendasFisc.xslt",
+        "cfd/pfic/pfic.xslt",
+        "cfd/TuristaPasajeroExtranjero/TuristaPasajeroExtranjero.xslt",
+        "cfd/nomina/nomina12.xslt",
+        "cfd/cfdiregistrofiscal/cfdiregistrofiscal.xslt",
+        "cfd/pagoenespecie/pagoenespecie.xslt",
+        "cfd/aerolineas/aerolineas.xslt",
+        "cfd/valesdedespensa/valesdedespensa.xslt",
+        "cfd/consumodecombustibles/consumodecombustibles.xslt",
+        "cfd/notariospublicos/notariospublicos.xslt",
+        "cfd/vehiculousado/vehiculousado.xslt",
+        "cfd/servicioparcialconstruccion/servicioparcialconstruccion.xslt",
+        "cfd/renovacionysustitucionvehiculos/renovacionysustitucionvehiculos.xslt",
+        "cfd/certificadodestruccion/certificadodedestruccion.xslt",
+        "cfd/arteantiguedades/obrasarteantiguedades.xslt",
+        "cfd/ComercioExterior11/ComercioExterior11.xslt",
+        "cfd/ine/ine11.xslt",
+        "cfd/iedu/iedu.xslt",
+        "cfd/ventavehiculos/ventavehiculos11.xslt",
+        "cfd/terceros/terceros11.xslt",
+        "cfd/Pagos/Pagos10.xslt",
+        "cfd/detallista/detallista.xslt",
+        "cfd/EstadoDeCuentaCombustible/ecc12.xslt",
+        "cfd/consumodecombustibles/consumodeCombustibles11.xslt",
+        "cfd/GastosHidrocarburos10/GastosHidrocarburos10.xslt",
+        "cfd/IngresosHidrocarburos10/IngresosHidrocarburos.xslt",
     ];
+
+    // This stylesheet file should be inside the resources directory
+    const CFDI_STYLESHEET = 'CFDI_3_3.xslt';
+    const TFD_STYLESHEET = 'TFD_1_1.xslt';
 
     /**
      * Library directory
@@ -40,8 +77,23 @@ class OriginalChainGenerator
     public function __construct()
     {
         $libDir = PathUtility::join(__DIR__, '/../');
+        $this->resourceDir = realpath(PathUtility::join($libDir, self::XSLT_RESOURCES_DIR));
 
-        $this->resourceDir = PathUtility::join($libDir, self::XSLT_RESOURCES_DIR);
+        // Create the Stream Wrapper to manipulate our XSLT stylesheet file
+        if (in_array(XsltStreamWrapper::PROTOCOL, stream_get_wrappers())) {
+            // the stream was previously registered, we'll destroy it and recreate it
+            stream_wrapper_unregister(XsltStreamWrapper::PROTOCOL);
+        }
+        stream_wrapper_register(XsltStreamWrapper::PROTOCOL, XsltStreamWrapper::class, STREAM_IS_URL);
+
+        // Configure our XSLT Stream Wrapper
+        XsltStreamWrapper::$RESOURCE_DIR = PathUtility::join($libDir, self::XSLT_RESOURCES_DIR);
+        XsltStreamWrapper::$WHITELIST   = self::XSLT_WHITELIST;
+    }
+
+    public function __destruct()
+    {
+        stream_wrapper_unregister(XsltStreamWrapper::PROTOCOL);
     }
 
     /**
@@ -52,11 +104,6 @@ class OriginalChainGenerator
      */
     public function generateForCFDI(CFDI $cfdi)
     {
-        libxml_use_internal_errors(true);
-        libxml_clear_errors(); // clean up any previous errors found in other validations
-
-
-
         // Check that the version is correct
         if ($cfdi->getVersion() != CFDI::VERSION_3_3) {
             $this->validations[] = [
@@ -69,15 +116,16 @@ class OriginalChainGenerator
         }
 
         // Initialize the XSLT processor
-        //$processor = new XSLTProcessor; // old method using the XSLTProcessor built-in library (does not support XSL 2.0)
-        $factory = new ProcessorFactory(new ArrayCache());
-        $processor = $factory->newProcessor();
+        //$factory = new ProcessorFactory(new ArrayCache());
+        //$processor = $factory->newProcessor();
+
+        $processor = new XsltProcessor(new NullCache());
 
         // Load the XSLT transformation rules as a DOMDocument
-        $xsltFile = PathUtility::join($this->resourceDir, 'CFDI_3_3.xslt');
+        $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::CFDI_STYLESHEET;
 
         $xslt = new DOMDocument();
-        $r = $xslt->load($xsltFile);
+        $r = $xslt->load($stylesheet);
 
         if ($r === false) {
             $this->validations[] = [
@@ -101,8 +149,22 @@ class OriginalChainGenerator
             return false;
         }
 
-        // Everything's loaded, now generate the chain
-        return $processor->transformToXML($cfdi->toDOMDocument());
+        // Everything's loaded, now try to generate the chain
+        try {
+            $chain = $processor->transformToXML($cfdi->toDOMDocument());
+        } catch (TransformationException $t) {
+            $this->validations[] = [
+                'type' => 'chain:cfdi',
+                'success' => false,
+                'message' => 'CFDv3.3 XLST ' . $t->getMessage(),
+            ];
+
+            return false;
+        }
+
+        if ($chain === null) return false;
+
+        return $chain;
     }
 
     /**
@@ -113,10 +175,6 @@ class OriginalChainGenerator
      */
     public function generateForTFD(FiscalStamp $tfd)
     {
-        libxml_use_internal_errors(true);
-        libxml_clear_errors(); // clean up any previous errors found in other validations
-
-
         // Check that the version is correct
         if ($tfd->getVersion() != FiscalStamp::VERSION_1_1) {
             $this->validations[] = [
@@ -129,16 +187,15 @@ class OriginalChainGenerator
         }
 
         // Initialize the XSLT processor
-        //$processor = new XSLTProcessor; // old method using the XSLTProcessor built-in library (does not support XSL 2.0)
         $factory = new ProcessorFactory(new ArrayCache());
+        //$processor = new XsltProcessor(new NullCache());
         $processor = $factory->newProcessor();
 
-
         // Load the XSLT transformation rules as a DOMDocument
-        $xsltFile = PathUtility::join($this->resourceDir, 'TFD_1_1.xslt');
+        $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::TFD_STYLESHEET;
 
         $xslt = new DOMDocument();
-        $r = $xslt->load($xsltFile);
+        $r = $xslt->load($stylesheet);
 
         if ($r === false) {
             $this->validations[] = [
@@ -162,42 +219,27 @@ class OriginalChainGenerator
             return false;
         }
 
-        // FIXME: debugging this
-        print_r($this->libxmlErrors());
+        // Everything's loaded, now try to generate the chain
+        try {
+            $chain = $processor->transformToXML($tfd->toDOMDocument());
+        } catch (TransformationException $t) {
 
-        // Everything's loaded, now generate the chain
-        return $processor->transformToXML($tfd->toDOMDocument());
+            $this->validations[] = [
+                'type' => 'chain:tfd',
+                'success' => false,
+                'message' => 'TFD1.1 XLST ' . $t->getMessage(),
+            ];
+
+            return false;
+        }
+
+        if ($chain === null) return false;
+
+        return $chain;
     }
 
     public function getValidations()
     {
         return $this->validations;
-    }
-
-    /**
-     * @return array
-     */
-    private function libxmlErrors()
-    {
-        $errors = libxml_get_errors();
-        $result = [];
-        foreach ($errors as $error) {
-            $result[] = $this->libxmlErrorAsString($error);
-        }
-        libxml_clear_errors();
-        return $result;
-    }
-
-    /**
-     * @param LibXMLError object $error
-     * @return string
-     */
-    private function libxmlErrorAsString($error)
-    {
-        /*
-        $errorString = "Error $error->code in $error->file (Line:{$error->line}): ";
-        $errorString .= trim($error->message);
-        */
-        return sprintf("Error %d (Line:%d): %s", $error->code, $error->line, trim($error->message));
     }
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xs:schema xmlns:pago10="http://www.sat.gob.mx/Pagos" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:catCFDI="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" xmlns:tdCFDI="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" xmlns:catPagos="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Pagos" targetNamespace="http://www.sat.gob.mx/Pagos" elementFormDefault="qualified" attributeFormDefault="unqualified">
-    <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" schemaLocation="anglemx.sat.cfdi://catCFDI.xsd"/>
-    <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" schemaLocation="anglemx.sat.cfdi://tdCFDI.xsd"/>
-    <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Pagos" schemaLocation="anglemx.sat.cfdi://catPagos.xsd"/>
+    <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" schemaLocation="anglemx.sat.cfdi.xsd://catCFDI.xsd"/>
+    <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" schemaLocation="anglemx.sat.cfdi.xsd://tdCFDI.xsd"/>
+    <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Pagos" schemaLocation="anglemx.sat.cfdi.xsd://catPagos.xsd"/>
     <xs:element name="Pagos">
         <xs:annotation>
             <xs:documentation>
