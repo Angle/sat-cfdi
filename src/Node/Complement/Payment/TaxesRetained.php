@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\CFDI\Node;
+namespace Angle\CFDI\Node\Complement\Payment;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
@@ -16,18 +16,18 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemTaxesTransferred createFromDOMNode(DOMNode $node)
+ * @method static TaxesRetained createFromDOMNode(DOMNode $node)
  */
-class ItemTaxesTransferred extends CFDINode
+class TaxesRetained extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Traslado";
+    const NODE_NAME = "Retencion";
 
-    const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS = "pago10";
+    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -39,25 +39,13 @@ class ItemTaxesTransferred extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'base'           => [
-            'keywords' => ['Base', 'base'],
-            'type' => CFDI::ATTR_REQUIRED
-        ],
         'tax'          => [
             'keywords' => ['Impuesto', 'tax'],
             'type' => CFDI::ATTR_REQUIRED
         ],
-        'factorType'        => [
-            'keywords' => ['TipoFactor', 'factorType'],
-            'type' => CFDI::ATTR_REQUIRED
-        ],
-        'rate'        => [
-            'keywords' => ['TasaOCuota', 'rate'],
-            'type' => CFDI::ATTR_OPTIONAL
-        ],
         'amount'        => [
             'keywords' => ['Importe', 'amount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDI::ATTR_REQUIRED
         ],
     ];
 
@@ -67,26 +55,10 @@ class ItemTaxesTransferred extends CFDINode
     #########################
 
     /**
-     * @var string
-     */
-    protected $base;
-
-    /**
      * @see TaxType
      * @var string
      */
     protected $tax;
-
-    /**
-     * @see TaxFactorType
-     * @var string
-     */
-    protected $factorType;
-
-    /**
-     * @var string
-     */
-    protected $rate;
 
     /**
      * @var string
@@ -154,33 +126,10 @@ class ItemTaxesTransferred extends CFDINode
         return TaxType::getName($this->tax, $lang);
     }
 
-    public function getFactorTypeName($lang='es')
-    {
-        return TaxFactorType::getName($this->factorType, $lang);
-    }
-
 
     #########################
     ## GETTERS AND SETTERS ##
     #########################
-
-    /**
-     * @return string
-     */
-    public function getBase(): ?string
-    {
-        return $this->base;
-    }
-
-    /**
-     * @param string $base
-     * @return ItemTaxesTransferred
-     */
-    public function setBase(?string $base): self
-    {
-        $this->base = $base;
-        return $this;
-    }
 
     /**
      * @return string
@@ -192,49 +141,12 @@ class ItemTaxesTransferred extends CFDINode
 
     /**
      * @param string $tax
-     * @return ItemTaxesTransferred
+     * @return TaxesRetained
      */
     public function setTax(?string $tax): self
     {
         // TODO: Use TaxType
         $this->tax = $tax;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getFactorType(): ?string
-    {
-        return $this->factorType;
-    }
-
-    /**
-     * @param string $factorType
-     * @return ItemTaxesTransferred
-     */
-    public function setFactorType(?string $factorType): self
-    {
-        // TODO: use TaxFactorType
-        $this->factorType = $factorType;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getRate(): ?string
-    {
-        return $this->rate;
-    }
-
-    /**
-     * @param string $rate
-     * @return ItemTaxesTransferred
-     */
-    public function setRate(?string $rate): self
-    {
-        $this->rate = $rate;
         return $this;
     }
 
@@ -248,7 +160,7 @@ class ItemTaxesTransferred extends CFDINode
 
     /**
      * @param string $amount
-     * @return ItemTaxesTransferred
+     * @return TaxesRetained
      */
     public function setAmount(?string $amount): self
     {

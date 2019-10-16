@@ -43,6 +43,12 @@ final class ValidatorTest extends TestCase
             echo "## Source XML: " . $filename . PHP_EOL;
             echo "#################################################################" . PHP_EOL . PHP_EOL;
 
+            // STEP 1: Parse (XML to Invoice)
+            // STEP 2: Validate properties
+            // STEP 3: Validate CFDI signature
+            // STEP 4: Validate Fiscal Stamp
+            // STEP 5: Validate UUID against SAT
+
             $errors = [];
             $validations = [];
 
@@ -63,12 +69,6 @@ final class ValidatorTest extends TestCase
             echo PHP_EOL;
             echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;
 
-            // STEP 1: Parse (XML to Invoice)
-            // STEP 2: Validate properties
-            // STEP 3: Validate signature
-            // STEP 4: Validate Fiscal Stamp (TODO: should we check in here if the CFDI Signature matches the TFD?)
-            // STEP 5: Validate UUID against SAT <- optional ?
-
 
             $r = $signatureValidator->checkCfdiSignature($cfdi);
             $errors = array_merge($errors, $signatureValidator->getErrors());
@@ -85,6 +85,8 @@ final class ValidatorTest extends TestCase
 
                 $this->fail('CFDI signature failed.');
             }
+
+            $this->assertEquals(true, $r);
 
 
 
@@ -103,6 +105,10 @@ final class ValidatorTest extends TestCase
 
                 $this->fail('TFD signature failed.');
             }
+
+            $this->assertEquals(true, $r);
+
+
 
             // Online validation
             $r = OnlineValidator::validate($cfdi);

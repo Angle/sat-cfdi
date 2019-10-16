@@ -50,6 +50,8 @@ final class ParserTest extends TestCase
                 $this->fail('CFDI could not be parsed from the XML file');
             }
 
+            $this->assertInstanceOf(CFDI::class, $cfdi);
+
             // Loading success!
             echo "-> Parse SUCCESS!!" . PHP_EOL;
 
@@ -60,8 +62,6 @@ final class ParserTest extends TestCase
             echo "Validations:" . PHP_EOL;
             print_r($loader->getValidations());
             echo PHP_EOL;
-
-            $this->assertInstanceOf(CFDI::class, $cfdi);
 
             echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
             print_r($cfdi);

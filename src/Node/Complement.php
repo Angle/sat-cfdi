@@ -7,6 +7,7 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
 use Angle\CFDI\Node\Complement\FiscalStamp;
+use Angle\CFDI\Node\Complement\Payment\Payments;
 
 use DateTime;
 
@@ -48,7 +49,7 @@ class Complement extends CFDINode
     #########################
 
     /**
-     * @var array
+     * @var CFDINode[]|array
      */
     protected $complements = [];
 
@@ -78,12 +79,14 @@ class Complement extends CFDINode
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
                     break;
+                case Payments::NODE_NS_NAME:
+                    $payments = Payments::createFromDOMNode($node);
+                    $this->addComplement($payments);
+                    break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
 
                 // TODO: implement other types of nodes
-                    // Pagos (Pagos10.xsd)
-                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
             }
         }
     }
@@ -149,6 +152,8 @@ class Complement extends CFDINode
         return null;
     }
 
+
+
     /**
      * @param FiscalStamp $stamp
      * @throws CFDIException
@@ -163,6 +168,28 @@ class Complement extends CFDINode
         
         $this->complements[] = $stamp;
         return $this;
+    }
+
+
+    /**
+     * Add a generic Complement that implements CFDINode
+     * @param CFDINode $node
+     * @return Complement
+     */
+    public function addComplement(CFDINode $node): self
+    {
+        $this->complements[] = $node;
+        return $this;
+    }
+
+
+    /**
+     * Get Complements as CFDINode
+     * @return CFDINode[]
+     */
+    public function getComplements(): array
+    {
+        return $this->complements;
     }
 
 }
