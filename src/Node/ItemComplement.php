@@ -24,7 +24,10 @@ class ItemComplement extends CFDINode
     #########################
 
     const NODE_NAME = "ComplementoConcepto";
-    const NS_NODE_NAME = "cfdi:ComplementoConcepto";
+
+    const NODE_NS = "cfdi";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
 
@@ -70,7 +73,7 @@ class ItemComplement extends CFDINode
             // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
             switch ($node->nodeName) {
                 default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
 
             }
         }
@@ -83,7 +86,7 @@ class ItemComplement extends CFDINode
 
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
-        $node = $dom->createElement(self::NS_NODE_NAME);
+        $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);

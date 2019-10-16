@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:catNomina="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Nomina" xmlns:xs="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/Nomina" elementFormDefault="unqualified" attributeFormDefault="unqualified">
+    <!-- Se modifica el tipo c_Banco ya que en las validaciones adicionales ya se verifica contra una enumeración -->
+    <xs:simpleType name="c_Banco">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{3}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_OrigenRecurso">
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="collapse"/>
+      <xs:enumeration value="IP"/>
+      <xs:enumeration value="IF"/>
+      <xs:enumeration value="IM"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_PeriodicidadPago">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{2}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoContrato">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{2}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoDeduccion">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{3}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoHoras">
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="collapse"/>
+      <xs:enumeration value="01"/>
+      <xs:enumeration value="02"/>
+      <xs:enumeration value="03"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoIncapacidad">
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="collapse"/>
+      <xs:enumeration value="01"/>
+      <xs:enumeration value="02"/>
+      <xs:enumeration value="03"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoJornada">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{2}"/>
+      <xs:whiteSpace value="collapse" />
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoNomina">
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="collapse"/>
+      <xs:enumeration value="O"/>
+      <xs:enumeration value="E"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoOtroPago">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{3}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoPercepcion">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{3}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_TipoRegimen">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{2}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+  <xs:simpleType name="c_RiesgoPuesto">
+    <xs:restriction base="xs:string">
+      <xs:pattern value="[0-9]{1,2}"/>
+      <xs:whiteSpace value="collapse"/>
+    </xs:restriction>
+  </xs:simpleType>
+</xs:schema>

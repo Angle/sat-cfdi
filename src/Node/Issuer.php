@@ -23,7 +23,10 @@ class Issuer extends CFDINode
     #########################
 
     const NODE_NAME = "Emisor";
-    const NS_NODE_NAME = "cfdi:Emisor";
+
+    const NODE_NS = "cfdi";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
 
@@ -93,7 +96,7 @@ class Issuer extends CFDINode
 
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
-        $node = $dom->createElement(self::NS_NODE_NAME);
+        $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);

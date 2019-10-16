@@ -26,7 +26,10 @@ class ThirdParties extends CFDINode
     const VERSION_1_1 = "1.1";
 
     const NODE_NAME = "PorCuentadeTerceros";
-    const NS_NODE_NAME = "terceros:PorCuentadeTerceros";
+
+    const NODE_NS = "terceros";
+    const NODE_NS_URI = "http://www.sat.gob.mx/terceros";
+    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [
         'xmlns:terceros' => "http://www.sat.gob.mx/terceros",
@@ -144,7 +147,7 @@ class ThirdParties extends CFDINode
 
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
-        $node = $dom->createElement(self::NS_NODE_NAME);
+        $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);

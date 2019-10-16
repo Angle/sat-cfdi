@@ -1,10 +1,55 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<xs:schema xmlns:cfdi="http://www.sat.gob.mx/cfd/3" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:catCFDI="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" xmlns:tdCFDI="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" targetNamespace="http://www.sat.gob.mx/cfd/3" elementFormDefault="qualified" attributeFormDefault="unqualified">
-  <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" schemaLocation="anglemx.sat.cfdi.xsd://catCFDI.xsd"/>
-  <xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" schemaLocation="anglemx.sat.cfdi.xsd://tdCFDI.xsd"/>
-  <xs:import namespace="http://www.sat.gob.mx/TimbreFiscalDigital" schemaLocation="anglemx.sat.cfdi.xsd://TimbreFiscalDigitalv11.xsd"/>
-  <xs:import namespace="http://www.sat.gob.mx/Pagos" schemaLocation="anglemx.sat.cfdi.xsd://Pagos10.xsd"/>
-  <xs:import namespace="http://www.sat.gob.mx/terceros" schemaLocation="anglemx.sat.cfdi.xsd://terceros11.xsd"/>
+<xs:schema xmlns:cfdi="http://www.sat.gob.mx/cfd/3"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:catCFDI="http://www.sat.gob.mx/sitio_internet/cfd/catalogos"
+           xmlns:tdCFDI="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI"
+           targetNamespace="http://www.sat.gob.mx/cfd/3"
+           elementFormDefault="qualified"
+           attributeFormDefault="unqualified">
+
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/tdCFDI.xsd"/>
+
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catCFDI.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catCombustible.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catComExt.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catNomina.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catPagos.xsd"/>
+
+
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://TimbreFiscalDigitalv11.xsd"/>
+
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/AcreditamientoIEPS10.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/aerolineas.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/certificadodedestruccion.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/cfdiregistrofiscal.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ComercioExterior10.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ComercioExterior11.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/consumodecombustibles.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/consumodeCombustibles11.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/detallista.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/Divisas.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/donat11.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ecc.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ecc11.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ecc12.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/iedu.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/implocal.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ine11.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/leyendasFisc.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/nomina12.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/notariospublicos.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/obrasarteantiguedades.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/pagoenespecie.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/Pagos10.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/pfic.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/renovacionysustitucionvehiculos.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/servicioparcialconstruccion.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/terceros11.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/TuristaPasajeroExtranjero.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/valesdedespensa.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/vehiculousado.xsd"/>
+  <xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ventavehiculos11.xsd"/>
+
     <xs:element name="Comprobante">
       <xs:annotation>
         <xs:documentation>Estándar de Comprobante Fiscal Digital por Internet.</xs:documentation>
@@ -569,7 +614,7 @@
             </xs:annotation>
             <xs:complexType>
               <xs:sequence>
-                <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+                <xs:any minOccurs="0" maxOccurs="unbounded"/>
               </xs:sequence>
             </xs:complexType>
           </xs:element>
@@ -579,7 +624,7 @@
             </xs:annotation>
             <xs:complexType>
               <xs:sequence>
-                <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/>
+                <xs:any minOccurs="0" maxOccurs="unbounded" processContents="skip"/> <!-- added "skip" by Angle -->
               </xs:sequence>
             </xs:complexType>
           </xs:element>

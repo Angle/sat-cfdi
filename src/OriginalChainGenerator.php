@@ -5,6 +5,10 @@ namespace Angle\CFDI;
 use Angle\CFDI\Utility\PathUtility;
 
 use DOMDocument;
+use Genkgo\Xsl\Callback\FunctionCollection;
+use Genkgo\Xsl\TransformationContext;
+use Genkgo\Xsl\Transpiler;
+use Genkgo\Xsl\Util\TransformerCollection;
 use LibXMLError;
 
 use Genkgo\Xsl\Cache\ArrayCache;
@@ -13,6 +17,8 @@ use Genkgo\Xsl\ProcessorFactory;
 use Genkgo\Xsl\XsltProcessor;
 use Genkgo\Xsl\Exception\TransformationException;
 
+use XSLTProcessor as PhpXsltProcessor;
+
 use Angle\CFDI\CFDI;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 
@@ -20,42 +26,6 @@ class OriginalChainGenerator
 {
     // Relative to the project directory
     const XSLT_RESOURCES_DIR = '/resources/xslt-processor/';
-    const XSLT_WHITELIST = [
-        'CFDI_3_3.xslt',
-        'TFD_1_1.xslt',
-        
-        "cfd/2/cadenaoriginal_2_0/utilerias.xslt",
-        "cfd/EstadoDeCuentaCombustible/ecc11.xslt",
-        "cfd/donat/donat11.xslt",
-        "cfd/divisas/divisas.xslt",
-        "cfd/implocal/implocal.xslt",
-        "cfd/leyendasFiscales/leyendasFisc.xslt",
-        "cfd/pfic/pfic.xslt",
-        "cfd/TuristaPasajeroExtranjero/TuristaPasajeroExtranjero.xslt",
-        "cfd/nomina/nomina12.xslt",
-        "cfd/cfdiregistrofiscal/cfdiregistrofiscal.xslt",
-        "cfd/pagoenespecie/pagoenespecie.xslt",
-        "cfd/aerolineas/aerolineas.xslt",
-        "cfd/valesdedespensa/valesdedespensa.xslt",
-        "cfd/consumodecombustibles/consumodecombustibles.xslt",
-        "cfd/notariospublicos/notariospublicos.xslt",
-        "cfd/vehiculousado/vehiculousado.xslt",
-        "cfd/servicioparcialconstruccion/servicioparcialconstruccion.xslt",
-        "cfd/renovacionysustitucionvehiculos/renovacionysustitucionvehiculos.xslt",
-        "cfd/certificadodestruccion/certificadodedestruccion.xslt",
-        "cfd/arteantiguedades/obrasarteantiguedades.xslt",
-        "cfd/ComercioExterior11/ComercioExterior11.xslt",
-        "cfd/ine/ine11.xslt",
-        "cfd/iedu/iedu.xslt",
-        "cfd/ventavehiculos/ventavehiculos11.xslt",
-        "cfd/terceros/terceros11.xslt",
-        "cfd/Pagos/Pagos10.xslt",
-        "cfd/detallista/detallista.xslt",
-        "cfd/EstadoDeCuentaCombustible/ecc12.xslt",
-        "cfd/consumodecombustibles/consumodeCombustibles11.xslt",
-        "cfd/GastosHidrocarburos10/GastosHidrocarburos10.xslt",
-        "cfd/IngresosHidrocarburos10/IngresosHidrocarburos.xslt",
-    ];
 
     // This stylesheet file should be inside the resources directory
     const CFDI_STYLESHEET = 'CFDI_3_3.xslt';
@@ -73,6 +43,12 @@ class OriginalChainGenerator
      */
     private $validations = [];
 
+    /**
+     * Formatted libxml Error details
+     * @var array
+     */
+    private $errors = [];
+
 
     public function __construct()
     {
@@ -88,7 +64,6 @@ class OriginalChainGenerator
 
         // Configure our XSLT Stream Wrapper
         XsltStreamWrapper::$RESOURCE_DIR = PathUtility::join($libDir, self::XSLT_RESOURCES_DIR);
-        XsltStreamWrapper::$WHITELIST   = self::XSLT_WHITELIST;
     }
 
     public function __destruct()
@@ -115,11 +90,18 @@ class OriginalChainGenerator
             return false;
         }
 
+        libxml_use_internal_errors(true);
+
         // Initialize the XSLT processor
+        // Option 1: Genkgo XSLT Processor with Cache
         //$factory = new ProcessorFactory(new ArrayCache());
         //$processor = $factory->newProcessor();
 
-        $processor = new XsltProcessor(new NullCache());
+        // Option 2: Genkgo XSLT Processor without cache
+        //$processor = new XsltProcessor(new NullCache());
+
+        // Option 3: Built-in PHP XSLT Processor, using a Transpiled XSLT generated with Genkgo's library
+        $processor = new PhpXsltProcessor();
 
         // Load the XSLT transformation rules as a DOMDocument
         $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::CFDI_STYLESHEET;
@@ -128,6 +110,8 @@ class OriginalChainGenerator
         $r = $xslt->load($stylesheet);
 
         if ($r === false) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
@@ -140,6 +124,8 @@ class OriginalChainGenerator
         $r = $processor->importStyleSheet($xslt);
 
         if ($r === false) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
@@ -152,11 +138,13 @@ class OriginalChainGenerator
         // Everything's loaded, now try to generate the chain
         try {
             $chain = $processor->transformToXML($cfdi->toDOMDocument());
-        } catch (TransformationException $t) {
+        } catch (\Exception $e) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
-                'message' => 'CFDv3.3 XLST ' . $t->getMessage(),
+                'message' => 'CFDv3.3 XLST ' . $e->getMessage(),
             ];
 
             return false;
@@ -186,10 +174,18 @@ class OriginalChainGenerator
             return false;
         }
 
+        libxml_use_internal_errors(true);
+
         // Initialize the XSLT processor
-        $factory = new ProcessorFactory(new ArrayCache());
+        // Option 1: Genkgo XSLT Processor with Cache
+        //$factory = new ProcessorFactory(new ArrayCache());
+        //$processor = $factory->newProcessor();
+
+        // Option 2: Genkgo XSLT Processor without cache
         //$processor = new XsltProcessor(new NullCache());
-        $processor = $factory->newProcessor();
+
+        // Option 3: Built-in PHP XSLT Processor, using a Transpiled XSLT generated with Genkgo's library
+        $processor = new PhpXsltProcessor();
 
         // Load the XSLT transformation rules as a DOMDocument
         $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::TFD_STYLESHEET;
@@ -198,6 +194,8 @@ class OriginalChainGenerator
         $r = $xslt->load($stylesheet);
 
         if ($r === false) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+
             $this->validations[] = [
                 'type' => 'chain:tfd',
                 'success' => false,
@@ -210,6 +208,8 @@ class OriginalChainGenerator
         $r = $processor->importStyleSheet($xslt);
 
         if ($r === false) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
+
             $this->validations[] = [
                 'type' => 'chain:tfd',
                 'success' => false,
@@ -222,12 +222,13 @@ class OriginalChainGenerator
         // Everything's loaded, now try to generate the chain
         try {
             $chain = $processor->transformToXML($tfd->toDOMDocument());
-        } catch (TransformationException $t) {
+        } catch (\Exception $e) {
+            $this->errors = array_merge($this->errors, $this->libxmlErrors());
 
             $this->validations[] = [
                 'type' => 'chain:tfd',
                 'success' => false,
-                'message' => 'TFD1.1 XLST ' . $t->getMessage(),
+                'message' => 'TFD1.1 XLST ' . $e->getMessage(),
             ];
 
             return false;
@@ -238,8 +239,30 @@ class OriginalChainGenerator
         return $chain;
     }
 
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
     public function getValidations()
     {
         return $this->validations;
+    }
+
+    /**
+     * @return array
+     */
+    private function libxmlErrors()
+    {
+        $errors = libxml_get_errors();
+        $result = [];
+        foreach ($errors as $error) {
+            $result[] = sprintf("Error %d (Line:%d): %s", $error->code, $error->line, trim($error->message));
+        }
+        libxml_clear_errors();
+        return $result;
     }
 }

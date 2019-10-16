@@ -2,9 +2,8 @@
 
 namespace Angle\CFDI;
 
-use Angle\CFDI\Utility\PathUtility;
-
 use Angle\CFDI\CFDIException;
+use Angle\CFDI\Utility\PathUtility;
 
 use Angle\CFDI\Node\Issuer;
 use Angle\CFDI\Node\Recipient;
@@ -47,7 +46,10 @@ class CFDI extends CFDINode
     #########################
 
     const NODE_NAME = 'Comprobante';
-    const NS_NODE_NAME = 'cfdi:Comprobante';
+
+    const NODE_NS = "cfdi";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     const SERIES_WRONG_LENGTH_ERROR = 1;
 
@@ -339,7 +341,7 @@ class CFDI extends CFDINode
                     // TODO: implement Addendum
                     break;
                 default:
-                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
             }
         }
     }
@@ -351,7 +353,7 @@ class CFDI extends CFDINode
 
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
-        $node = $dom->createElement(self::NS_NODE_NAME);
+        $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);
@@ -385,6 +387,13 @@ class CFDI extends CFDINode
             $node->appendChild($itemListNode);
         }
 
+        // Taxes Node
+        if ($this->taxes) {
+            // TODO: What happens if the taxes is not set?
+            $taxesNode = $this->taxes->toDOMElement($dom);
+            $node->appendChild($taxesNode);
+        }
+
         // Complements Node
         foreach ($this->complements as $complement) {
             $complementNode = $complement->toDOMElement($dom);
@@ -410,6 +419,7 @@ class CFDI extends CFDINode
         return $dom;
     }
 
+    // TODO: DOMDocument duplicates the Namespace declarations of any child
     public function toXML(): string
     {
         return $this->toDOMDocument()->saveXML();

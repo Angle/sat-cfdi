@@ -11,9 +11,6 @@ class XsdStreamWrapper
     // resource dir
     public static $RESOURCE_DIR;
 
-    // resource filename whitelist
-    public static $WHITELIST = [];
-
     // this will be modified by PHP to show the context passed in the current call.
     public $context;
 
@@ -28,14 +25,10 @@ class XsdStreamWrapper
         $this->uri = $uri;
 
         $target = $this->getTarget();
-        if (!in_array($target, self::$WHITELIST)) {
-            // Target file is not in whitelist
-            throw new \RuntimeException(sprintf('Target XSD file "%s" is not configured in the XsdStreamWrapper whitelist', $target));
-        }
 
         $path = $this->getLocalPath();
 
-        $this->handle = $options & STREAM_REPORT_ERRORS ? fopen($path, $mode) : @fopen($path, $mode);
+        $this->handle = ($options & STREAM_REPORT_ERRORS) ? fopen($path, $mode) : @fopen($path, $mode);
 
         if ((bool) $this->handle && $options & STREAM_USE_PATH) {
             $opened_path = $path;
@@ -80,13 +73,8 @@ class XsdStreamWrapper
         $this->uri = $uri;
 
         $target = $this->getTarget();
-        if (!in_array($target, self::$WHITELIST)) {
-            // Target file is not in whitelist
-            throw new \RuntimeException(sprintf('Target XSD file "%s" is not configured in the XsdStreamWrapper whitelist', $target));
-        }
 
         $path = $this->getLocalPath();
-
 
         // Suppress warnings if requested or if the file or directory does not
         // exist. This is consistent with PHP's plain filesystem stream wrapper.

@@ -81,3 +81,7 @@ Validations
 - STEP 4: Validate Signature cryptographic integrity
 - STEP 5: Validate FiscalStamp cryptographic integrity
 - STEP 6: Validate UUID against SAT <- optional ?
+
+
+TO FIX:
+- Duplicated Namespace declarations on `CFDI::toXML()` when we have any child (even if not on the root node) with a different namespace than the default for the Document. We should clean this up when pretty printing our XMLs.

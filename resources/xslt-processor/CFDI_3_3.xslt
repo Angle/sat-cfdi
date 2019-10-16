@@ -39,43 +39,49 @@
   <!--
 		En esta sección se define la inclusión de las plantillas de utilerías para colapsar espacios
 	-->
-  <!--<xsl:include href="anglemx.sat.cfdi.xslt://cfd/2/cadenaoriginal_2_0/utilerias.xslt"/>-->
-  <xsl:include href="http://www.sat.gob.mx/sitio_internet/cfd/2/cadenaoriginal_2_0/utilerias.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/cadenaoriginal_2_0_utilerias.xslt"/>
   <!--
 		En esta sección se define la inclusión de las demás plantillas de transformación para 
 		la generación de las cadenas originales de los complementos fiscales 
 	-->
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/EstadoDeCuentaCombustible/ecc11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/donat/donat11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/divisas/divisas.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/implocal/implocal.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/leyendasFiscales/leyendasFisc.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/pfic/pfic.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/TuristaPasajeroExtranjero/TuristaPasajeroExtranjero.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/nomina/nomina12.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/cfdiregistrofiscal/cfdiregistrofiscal.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/pagoenespecie/pagoenespecie.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/aerolineas/aerolineas.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/valesdedespensa/valesdedespensa.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/consumodecombustibles/consumodecombustibles.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/notariospublicos/notariospublicos.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/vehiculousado/vehiculousado.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/servicioparcialconstruccion/servicioparcialconstruccion.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/renovacionysustitucionvehiculos/renovacionysustitucionvehiculos.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/certificadodestruccion/certificadodedestruccion.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/arteantiguedades/obrasarteantiguedades.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/ComercioExterior11/ComercioExterior11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/ine/ine11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/iedu/iedu.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/ventavehiculos/ventavehiculos11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/terceros/terceros11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/Pagos/Pagos10.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/detallista/detallista.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/EstadoDeCuentaCombustible/ecc12.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/consumodecombustibles/consumodeCombustibles11.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/GastosHidrocarburos10/GastosHidrocarburos10.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://cfd/IngresosHidrocarburos10/IngresosHidrocarburos.xslt"/>
 
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/AcreditamientoIEPS10.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/aerolineas.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/certificadodedestruccion.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/cfdiregistrofiscal.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior10.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/consumodecombustibles.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/consumodecombustibles11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/detallista.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/divisas.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/donat11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ecb.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ecc.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ecc11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ecc12.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/GastosHidrocarburos10.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/iedu.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/implocal.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ine11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/IngresosHidrocarburos.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/leyendasFisc.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/nomina11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/nomina12.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/notariospublicos.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/obrasarteantiguedades.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/pagoenespecie.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/Pagos10.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/pfic.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/psgecfd.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/renovacionysustitucionvehiculos.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/servicioparcialconstruccion.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/spei.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/terceros11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/TuristaPasajeroExtranjero.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/valesdedespensa.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/vehiculousado.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/ventavehiculos11.xslt"/>
 
   <!-- Aquí iniciamos el procesamiento de la cadena original con su | inicial y el terminador || -->
   <xsl:template match="/">|<xsl:apply-templates select="/cfdi:Comprobante"/>||</xsl:template>

@@ -21,6 +21,12 @@ class SignatureValidator
     private $validations = [];
 
     /**
+     * Formatted libxml Error details
+     * @var array
+     */
+    private $errors = [];
+
+    /**
      * @param CertificateStorageInterface $certificateStorage used to query for certificates
      */
     public function __construct(CertificateStorageInterface $certificateStorage)
@@ -227,17 +233,18 @@ class SignatureValidator
         // Build the Original Chain Sequence
 
         // Option 1: Building it manually [DEPRECATED]
-        $chain = $cfdi->getChainSequence();
+        //$chain = $cfdi->getChainSequence();
 
         // Option 2: Building it automatically with an XLS Processor
-        //$chainProcessor = new OriginalChainGenerator();
-        //$chain = $chainProcessor->generateForCFDI($cfdi);
+        $chainProcessor = new OriginalChainGenerator();
+        $chain = $chainProcessor->generateForCFDI($cfdi);
 
         // FIXME: remove this
-        echo "CHAIN: " . $chain . PHP_EOL;
+        echo "CFDI CHAIN: " . PHP_EOL . $chain . PHP_EOL . PHP_EOL;
 
         if ($chain === false) {
-            //$this->validations = array_merge($this->validations, $chainProcessor->getValidations());
+            $this->errors = array_merge($this->errors, $chainProcessor->getErrors());
+            $this->validations = array_merge($this->validations, $chainProcessor->getValidations());
 
             $this->validations[] = [
                 'type' => 'signature:cfdi',
@@ -246,6 +253,10 @@ class SignatureValidator
             ];
             return false;
         }
+
+        // Free resources and clear streams
+        unset($chainProcessor);
+
 
         $publicKey = openssl_pkey_get_public($certificate);
 
@@ -449,17 +460,18 @@ class SignatureValidator
         // Build the Original Chain Sequence
 
         // Option 1: Building it manually [DEPRECATED]
-        $chain = $fiscalStamp->getChainSequence();
+        //$chain = $fiscalStamp->getChainSequence();
 
         // Option 2: Building it automatically with an XLS Processor
-        //$chainProcessor = new OriginalChainGenerator();
-        //$chain = $chainProcessor->generateForTFD($fiscalStamp);
+        $chainProcessor = new OriginalChainGenerator();
+        $chain = $chainProcessor->generateForTFD($fiscalStamp);
 
         // FIXME: remove this
-        echo "CHAIN: " . $chain . PHP_EOL;
+        echo "TFD CHAIN: " . PHP_EOL . $chain . PHP_EOL . PHP_EOL;
 
         if ($chain === false) {
-            //$this->validations = array_merge($this->validations, $chainProcessor->getValidations());
+            $this->errors = array_merge($this->errors, $chainProcessor->getErrors());
+            $this->validations = array_merge($this->validations, $chainProcessor->getValidations());
 
             $this->validations[] = [
                 'type' => 'signature:tfd',
@@ -468,6 +480,10 @@ class SignatureValidator
             ];
             return false;
         }
+
+        // Free resources and clear streams
+        unset($chainProcessor);
+
 
         $publicKey = openssl_pkey_get_public($certificate);
 
@@ -516,6 +532,17 @@ class SignatureValidator
         return true;
     }
 
+    /**
+     * @return array
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @return array
+     */
     public function getValidations()
     {
         return $this->validations;

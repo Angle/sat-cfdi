@@ -2,6 +2,15 @@
 
 namespace Angle\CFDI;
 
+use DOMDocument;
+
+use Genkgo\Xsl\Transpiler;
+use Genkgo\Xsl\Cache\NullCache;
+use Genkgo\Xsl\Cache\ArrayCache;
+use Genkgo\Xsl\Callback\FunctionCollection;
+use Genkgo\Xsl\TransformationContext;
+use Genkgo\Xsl\Util\TransformerCollection;
+
 use Angle\CFDI\Utility\PathUtility;
 
 class XsltStreamWrapper
@@ -10,9 +19,6 @@ class XsltStreamWrapper
 
     // resource dir
     public static $RESOURCE_DIR;
-
-    // resource filename whitelist
-    public static $WHITELIST = [];
 
     // this will be modified by PHP to show the context passed in the current call.
     public $context;
@@ -28,18 +34,38 @@ class XsltStreamWrapper
         $this->uri = $uri;
 
         $target = $this->getTarget();
-        if (!in_array($target, self::$WHITELIST)) {
-            // Target file is not in whitelist
-            throw new \RuntimeException(sprintf('Target XSLT file "%s" is not configured in the XsltStreamWrapper whitelist', $target));
-        }
 
         $path = $this->getLocalPath();
 
-        $this->handle = $options & STREAM_REPORT_ERRORS ? fopen($path, $mode) : @fopen($path, $mode);
+        $this->handle = ($options & STREAM_REPORT_ERRORS) ? fopen($path, $mode) : @fopen($path, $mode);
 
         if ((bool) $this->handle && $options & STREAM_USE_PATH) {
             $opened_path = $path;
         }
+
+
+        // File exists and was opened, we can perform a transpilation now
+
+        ///// XSLT TRANSPILATION 2.0 -> 1.0 /////
+        // Initialize a basic Transpiler
+        // TODO: can this be optimized? this will be initialized on every new call..
+        $transpiler = new Transpiler(
+            new TransformationContext(new DOMDocument('1.0', 'UTF-8'), new TransformerCollection(), new FunctionCollection()),
+            new NullCache() // TODO: Enable some kind of cache.. see psr/simple-cache
+        );
+
+        try {
+            $transpiledString = $transpiler->transpileFile($path);
+        } catch (\DOMException $e) {
+            // Stylesheet could not be parsed
+            // TODO: error handling
+            return false;
+        }
+
+        // Finally, we'll create a new "stream" from a in-memory string, and this is what we'll return
+        $this->handle = fopen('php://temp', 'r+');
+        fwrite($this->handle, $transpiledString);
+        rewind($this->handle);
 
         return (bool) $this->handle;
     }
@@ -80,10 +106,6 @@ class XsltStreamWrapper
         $this->uri = $uri;
 
         $target = $this->getTarget();
-        if (!in_array($target, self::$WHITELIST)) {
-            // Target file is not in whitelist
-            throw new \RuntimeException(sprintf('Target XSLT file "%s" is not configured in the XsltStreamWrapper whitelist', $target));
-        }
 
         $path = $this->getLocalPath();
 

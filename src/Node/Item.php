@@ -22,7 +22,10 @@ class Item extends CFDINode
     #########################
 
     const NODE_NAME = "Concepto";
-    const NS_NODE_NAME = "cfdi:Concepto";
+
+    const NODE_NS = "cfdi";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
 
@@ -189,7 +192,7 @@ class Item extends CFDINode
                     $this->addCustomsInformation($customs);
                     break;
                 default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->localName, self::NODE_NAME));
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
             }
         }
     }
@@ -201,7 +204,7 @@ class Item extends CFDINode
 
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
-        $node = $dom->createElement(self::NS_NODE_NAME);
+        $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);

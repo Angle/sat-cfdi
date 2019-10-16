@@ -13,15 +13,6 @@ class XmlLoader
 {
     // Relative to the project directory
     const XSD_RESOURCES_DIR = '/resources/xml-schema/';
-    const XSD_WHITELIST = [
-        'cfdv33.xsd',
-        'catCFDI.xsd',
-        'tdCFDI.xsd',
-        'TimbreFiscalDigitalv11.xsd',
-        'Pagos10.xsd',
-        'catPagos.xsd',
-        'terceros11.xsd',
-    ];
 
     // This schema file should be inside the resources directory
     const CFDI_SCHEMA = 'cfdv33.xsd';
@@ -57,7 +48,6 @@ class XmlLoader
 
         // Configure our XSD Stream Wrapper
         XsdStreamWrapper::$RESOURCE_DIR = PathUtility::join($libDir, self::XSD_RESOURCES_DIR);
-        XsdStreamWrapper::$WHITELIST = self::XSD_WHITELIST;
     }
 
     public function __destruct()
@@ -145,7 +135,7 @@ class XmlLoader
             $this->validations[] = [
                 'type' => 'xml',
                 'success' => false,
-                'message' => 'Internal system error [CFDI cannot be created from parsed DOM]',
+                'message' => 'Internal system error [' . $e->getMessage() . ']',
             ];
 
             return null;
@@ -325,20 +315,6 @@ class XmlLoader
         return $this->validations;
     }
 
-
-    /**
-     * @param LibXMLError object $error
-     * @return string
-     */
-    private function libxmlErrorAsString($error)
-    {
-        /*
-        $errorString = "Error $error->code in $error->file (Line:{$error->line}): ";
-        $errorString .= trim($error->message);
-        */
-        return sprintf("Error %d (Line:%d): %s", $error->code, $error->line, trim($error->message));
-    }
-
     /**
      * @return array
      */
@@ -347,7 +323,7 @@ class XmlLoader
         $errors = libxml_get_errors();
         $result = [];
         foreach ($errors as $error) {
-            $result[] = $this->libxmlErrorAsString($error);
+            $result[] = sprintf("Error %d (Line:%d): %s", $error->code, $error->line, trim($error->message));
         }
         libxml_clear_errors();
         return $result;

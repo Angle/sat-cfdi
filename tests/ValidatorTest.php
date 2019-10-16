@@ -39,11 +39,21 @@ final class ValidatorTest extends TestCase
 
         foreach ($realFiles as $filename) {
 
+            echo "#################################################################" . PHP_EOL;
+            echo "## Source XML: " . $filename . PHP_EOL;
+            echo "#################################################################" . PHP_EOL . PHP_EOL;
+
+            $errors = [];
+            $validations = [];
+
             $cfdi = $loader->fileToCFDI($filename);
 
-            print_r($loader->getValidations());
+            $validations = array_merge($validations, $loader->getValidations());
 
             if (!$cfdi) {
+                echo "Validations:" . PHP_EOL;
+                print_r($validations);
+                echo PHP_EOL;
                 $this->fail('CFDI could not be parsed from the XML file. Please run ParserTest to debug.');
             }
 
@@ -51,7 +61,6 @@ final class ValidatorTest extends TestCase
 
 
             echo PHP_EOL;
-            echo "XML: " . $filename . PHP_EOL;
             echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;
 
             // STEP 1: Parse (XML to Invoice)
@@ -62,45 +71,69 @@ final class ValidatorTest extends TestCase
 
 
             $r = $signatureValidator->checkCfdiSignature($cfdi);
-            print_r($signatureValidator->getValidations());
+            $errors = array_merge($errors, $signatureValidator->getErrors());
+            $validations = array_merge($validations, $signatureValidator->getValidations());
 
-            //$this->assertEquals(true, $r);
+            if ($r === false) {
+                echo "Errors:" . PHP_EOL;
+                print_r($errors);
+                echo PHP_EOL;
+
+                echo "Validations:" . PHP_EOL;
+                print_r($validations);
+                echo PHP_EOL;
+
+                $this->fail('CFDI signature failed.');
+            }
 
 
 
             $r = $signatureValidator->checkFiscalStampSignature($cfdi);
-            print_r($signatureValidator->getValidations());
+            $errors = array_merge($errors, $signatureValidator->getErrors());
+            $validations = array_merge($validations, $signatureValidator->getValidations());
 
-            $this->assertEquals(true, $r);
+            if ($r === false) {
+                echo "Errors:" . PHP_EOL;
+                print_r($errors);
+                echo PHP_EOL;
+
+                echo "Validations:" . PHP_EOL;
+                print_r($validations);
+                echo PHP_EOL;
+
+                $this->fail('TFD signature failed.');
+            }
 
             // Online validation
             $r = OnlineValidator::validate($cfdi);
 
             if ($r == 1) {
-                $validations = [[
+                $validations[] = [
                     'type' => 'online',
                     'success' => true,
                     'message' => 'CFDI is valid',
-                ]];
+                ];
             } elseif ($r == 0) {
-                $validations = [[
+                $validations[] = [
                     'type' => 'online',
                     'success' => false,
                     'message' => 'CFDI is no longer valid',
-                ]];
+                ];
             } else {
                 // Error on the validation
-                $validations = [[
+                $validations[] = [
                     'type' => 'online',
                     'success' => false,
                     'message' => 'Online verification failed',
-                ]];
+                ];
             }
 
             $this->assertEquals(1, $r);
 
 
+            echo "Validations:" . PHP_EOL;
             print_r($validations);
+            echo PHP_EOL;
 
         }
 
