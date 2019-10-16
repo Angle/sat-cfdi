@@ -65,6 +65,9 @@ final class ValidatorTest extends TestCase
 
             $this->assertInstanceOf(CFDI::class, $cfdi);
 
+            //print_r($cfdi);
+            //echo PHP_EOL;
+
 
             echo PHP_EOL;
             echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;

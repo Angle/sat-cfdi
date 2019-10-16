@@ -6,6 +6,7 @@ use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
+use Angle\CFDI\Node\Complement\CFDIFiscalRegistry;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\Payment\Payments;
 
@@ -82,6 +83,10 @@ class Complement extends CFDINode
                 case Payments::NODE_NS_NAME:
                     $payments = Payments::createFromDOMNode($node);
                     $this->addComplement($payments);
+                    break;
+                case CFDIFiscalRegistry::NODE_NS_NAME:
+                    $complement = CFDIFiscalRegistry::createFromDOMNode($node);
+                    $this->addComplement($complement);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));

@@ -31,7 +31,7 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         $certificateFile = $certificateNumber . '.cer';
 
         // First check if we have it locally
-        // TODO: how do we check if the file has been too long in tmp?
+        // TODO: how do we check if the file has been too long in tmp? Clear cache periodically?
         $localPath = PathUtility::join(self::TMP_DIRECTORY, $certificatePath, $certificateFile);
 
         if (file_exists($localPath)) {

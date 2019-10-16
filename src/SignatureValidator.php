@@ -11,6 +11,8 @@ use Angle\CFDI\Node\Complement\FiscalStamp;
 
 class SignatureValidator
 {
+    const SAT_RFC = 'SAT970701NN3';
+
     /** @var CertificateStorageInterface */
     private $certificateStorage;
 
@@ -112,7 +114,16 @@ class SignatureValidator
             return false;
         }
 
-        if ($cfdi->getIssuer()->getRfc() != $issuerRfc) {
+        // We have to consider one special case, in which the CFDI is signed by SAT itself. In this case, the certificate
+        // won't match the Issuer's RFC.
+        if ($issuerRfc === self::SAT_RFC) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer used SAT\'s official X.509 Certificate (' . self::SAT_RFC . ') to sign the CFDI',
+            ];
+            // continue processing..
+        } elseif ($cfdi->getIssuer()->getRfc() != $issuerRfc) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -120,7 +131,6 @@ class SignatureValidator
             ];
             return false;
         }
-
 
         // LCO COMPARE
         // Load the Issuer's Certificate from SAT LCO (Lista de Contribuyentes Obligados) and make sure that it matches the on in the CFDI

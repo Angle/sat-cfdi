@@ -81,7 +81,7 @@ class RelatedCFDIList extends CFDINode
 
             switch ($node->localName) {
                 case RelatedCFDI::NODE_NAME:
-                    $related = Item::createFromDomNode($node);
+                    $related = RelatedCFDI::createFromDomNode($node);
                     $this->addRelated($related);
                     break;
                 default:
