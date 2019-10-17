@@ -2,6 +2,7 @@
 
 namespace Angle\CFDI;
 
+use Angle\CFDI\Catalog\RegimeType;
 use Angle\CFDI\CertificateStorage\CertificateStorageInterface;
 
 use Angle\CFDI\Utility\OpenSSLUtility;
@@ -102,8 +103,8 @@ class SignatureValidator
         }
 
         // Extract and clean up the RFC
-        $issuerRfc = explode('/', $parsedCertificate['subject']['x500UniqueIdentifier']);
-        $issuerRfc = trim($issuerRfc[0]);
+        $issuerCertificateRfc = explode('/', $parsedCertificate['subject']['x500UniqueIdentifier']);
+        $issuerCertificateRfc = trim($issuerCertificateRfc[0]);
 
         if (!$cfdi->getIssuer()) {
             $this->validations[] = [
@@ -114,16 +115,18 @@ class SignatureValidator
             return false;
         }
 
-        // We have to consider one special case, in which the CFDI is signed by SAT itself. In this case, the certificate
-        // won't match the Issuer's RFC.
-        if ($issuerRfc === self::SAT_RFC) {
+        // Check that the Certificate matches the Issuer's RFC
+        // However, there is _one_ special case in which the CFDI could be signed by SAT itself instead of the actual Issuer.
+        // This case only applies for Issuer's that are on "RIF" (Regimen de Incorporacion Fiscal). In this case, the certificate
+        // won't match the Issuer's RFC, but it should match SAT's.
+        if ($cfdi->getIssuer()->getRegime() === RegimeType::INCORPORACION_FISCAL && $issuerCertificateRfc === self::SAT_RFC) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'Issuer used SAT\'s official X.509 Certificate (' . self::SAT_RFC . ') to sign the CFDI',
+                'message' => 'Issuer is RIF and used SAT\'s official X.509 Certificate (' . self::SAT_RFC . ') to sign the CFDI',
             ];
-            // continue processing..
-        } elseif ($cfdi->getIssuer()->getRfc() != $issuerRfc) {
+            // continue processing, this is allowed..
+        } elseif ($cfdi->getIssuer()->getRfc() != $issuerCertificateRfc) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
