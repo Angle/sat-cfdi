@@ -52,7 +52,7 @@
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior10.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior11.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/consumodecombustibles.xslt"/>
-  <xsl:include href="anglemx.sat.cfdi.xslt://complements/consumodecombustibles11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/consumodeCombustibles11.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/detallista.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/divisas.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/donat11.xslt"/>
