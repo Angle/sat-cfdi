@@ -9,6 +9,7 @@ use Angle\CFDI\Utility\OpenSSLUtility;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\Node\Complement\FiscalStamp;
+use Angle\CFDI\Utility\RFC;
 
 class SignatureValidator
 {
@@ -117,13 +118,23 @@ class SignatureValidator
 
         // Check that the Certificate matches the Issuer's RFC
         // However, there is _one_ special case in which the CFDI could be signed by SAT itself instead of the actual Issuer.
-        // This case only applies for Issuer's that are on "RIF" (Regimen de Incorporacion Fiscal). In this case, the certificate
-        // won't match the Issuer's RFC, but it should match SAT's.
-        if ($cfdi->getIssuer()->getRegime() === RegimeType::INCORPORACION_FISCAL && $issuerCertificateRfc === self::SAT_RFC) {
+        // This case only applies for Issuer's that are Natural Persons. In this case, the certificate may not match the Issuer's RFC,
+        // but it should match SAT's.
+        $issuerRfc = RFC::createFromString( $cfdi->getIssuer()->getRfc() );
+        if ($issuerRfc === null) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'Issuer is RIF and used SAT\'s official X.509 Certificate (' . self::SAT_RFC . ') to sign the CFDI',
+                'message' => 'CFDI Issuer\'s RFC is invalid',
+            ];
+            return false;
+        }
+
+        if ($issuerRfc->isNaturalPerson() && $issuerCertificateRfc === self::SAT_RFC) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer is P.F. and used SAT\'s official X.509 Certificate (' . self::SAT_RFC . ') to sign the CFDI',
             ];
             // continue processing, this is allowed..
         } elseif ($cfdi->getIssuer()->getRfc() != $issuerCertificateRfc) {
