@@ -2,6 +2,7 @@
 
 namespace Angle\CFDI\Tests;
 
+use Angle\CFDI\Catalog\CFDIType;
 use Angle\CFDI\CertificateStorage\LocalCertificateStorage;
 use Angle\CFDI\CertificateStorage\OnlineCertificateStorage;
 use Angle\CFDI\OnlineValidator;
@@ -70,8 +71,8 @@ final class ValidatorTest extends TestCase
 
 
             echo PHP_EOL;
-            echo "UUID: " . $cfdi->getUuid() . PHP_EOL . PHP_EOL;
-
+            echo "UUID: " . $cfdi->getUuid() . PHP_EOL;
+            echo "CFDI Type: " . $cfdi->getCfdiType() .  ' ' . CFDIType::getName($cfdi->getCfdiType()) . PHP_EOL . PHP_EOL;
 
             $r = $signatureValidator->checkCfdiSignature($cfdi);
             $errors = array_merge($errors, $signatureValidator->getErrors());
@@ -92,7 +93,6 @@ final class ValidatorTest extends TestCase
             $this->assertEquals(true, $r);
 
 
-
             $r = $signatureValidator->checkFiscalStampSignature($cfdi);
             $errors = array_merge($errors, $signatureValidator->getErrors());
             $validations = array_merge($validations, $signatureValidator->getValidations());
@@ -110,7 +110,6 @@ final class ValidatorTest extends TestCase
             }
 
             $this->assertEquals(true, $r);
-
 
 
             // Online validation

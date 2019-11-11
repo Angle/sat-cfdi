@@ -666,6 +666,7 @@ class CFDI extends CFDINode
         return null;
     }
 
+
     #########################
     ## GETTERS AND SETTERS ##
     #########################
