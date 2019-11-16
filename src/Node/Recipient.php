@@ -2,6 +2,7 @@
 
 namespace Angle\CFDI\Node;
 
+use Angle\CFDI\Catalog\CFDIUse;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
@@ -76,6 +77,7 @@ class Recipient extends CFDINode
 
     /**
      * @var string
+     * @see CFDIUse
      */
     protected $cfdiUse; // UsoCFDI
 

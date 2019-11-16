@@ -2,6 +2,7 @@
 
 namespace Angle\CFDI;
 
+use Angle\CFDI\Catalog\PaymentType;
 use Angle\CFDI\CFDIException;
 use Angle\CFDI\Utility\PathUtility;
 
@@ -221,6 +222,7 @@ class CFDI extends CFDINode
 
     /**
      * @var string
+     * @see PaymentType
      */
     protected $paymentType; // Método de Pago
 

@@ -6,9 +6,6 @@ use RuntimeException;
 
 /**
  * c_MetodoPago
- *
- * Class PaymentType
- * @package Angle\CFDI\Catalog
  */
 abstract class PaymentType
 {
