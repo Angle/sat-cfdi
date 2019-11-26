@@ -53,6 +53,8 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
 
         $response = curl_exec($ch);
 
@@ -60,6 +62,7 @@ class OnlineCertificateStorage implements CertificateStorageInterface
 
         if (!$response) {
             // request failed, there is nothing much we can do
+            error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
             return null;
         }
 
