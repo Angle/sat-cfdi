@@ -157,6 +157,20 @@ class Complement extends CFDINode
         return null;
     }
 
+    /**
+     * This method will return the first encountered Payments inside the Complements items
+     * @return Payments
+     */
+    public function getPayment(): ?Payments
+    {
+        foreach ($this->complements as $c) {
+            if ($c instanceof Payments) {
+                return $c;
+            }
+        }
+
+        return null;
+    }
 
 
     /**

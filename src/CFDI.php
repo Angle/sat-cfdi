@@ -14,6 +14,7 @@ use Angle\CFDI\Node\Taxes;
 
 use Angle\CFDI\Node\Complement;
 use Angle\CFDI\Node\Complement\FiscalStamp;
+use Angle\CFDI\Node\Complement\Payment\Payments;
 
 use Angle\CFDI\Node\Addendum;
 
@@ -661,6 +662,40 @@ class CFDI extends CFDINode
         foreach ($this->complements as $complement) {
             if ($complement->getFiscalStamp() instanceof FiscalStamp) {
                 return $complement->getFiscalStamp();
+            }
+        }
+
+        // nothing found
+        return null;
+    }
+
+    /**
+     * This will return the first PaymentComplement found in the Complements
+     */
+    public function getPaymentComplement(): ?Payments
+    {
+        foreach ($this->complements as $complement) {
+            if ($complement->getPayment() instanceof Payments) {
+                return $complement->getPayment();
+            }
+        }
+
+        // nothing found
+        return null;
+    }
+
+    /**
+     * This will return the first Complement of the given class
+     * @param string $class classname
+     * @return CFDINode|null
+     */
+    public function getComplement($class): ?CFDINode
+    {
+        foreach ($this->complements as $complement) {
+            foreach ($complement->getComplements() as $node) {
+                if ($node instanceof $class) {
+                    return $node;
+                }
             }
         }
 
