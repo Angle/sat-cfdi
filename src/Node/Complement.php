@@ -7,6 +7,7 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
 use Angle\CFDI\Node\Complement\CFDIFiscalRegistry;
+use Angle\CFDI\Node\Complement\FiscalLegends\FiscalLegends;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\Payment\Payments;
 
@@ -86,6 +87,10 @@ class Complement extends CFDINode
                     break;
                 case CFDIFiscalRegistry::NODE_NS_NAME:
                     $complement = CFDIFiscalRegistry::createFromDOMNode($node);
+                    $this->addComplement($complement);
+                    break;
+                case FiscalLegends::NODE_NS_NAME:
+                    $complement = FiscalLegends::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 default:

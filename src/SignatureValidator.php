@@ -151,55 +151,71 @@ class SignatureValidator
         $lcoCertificatePem = $this->certificateStorage->getCertificatePEM($cfdi->getCertificateNumber());
 
         if (!$lcoCertificatePem) {
+            if ($this->certificateStorage->getLastErrorType() != CertificateStorageInterface::NETWORK_ERROR) {
+                $this->validations[] = [
+                    'type' => 'signature:cfdi',
+                    'success' => false,
+                    'message' => 'Issuer Certificate was not found in SAT LCO repository',
+                ];
+                return false;
+            } else {
+                // The SAT LCO Certificate query failed, but we determined that it was a network error.. we'll let it pass this time.
+
+                $this->validations[] = [
+                    'type' => 'signature:cfdi',
+                    'success' => true,
+                    'message' => 'SAT LCO connection error, skipping fingerprint validations',
+                ];
+
+            }
+
+        } else {
+
+            // SAT LCO Certificate validations
+            $lcoCertificate = openssl_x509_read($lcoCertificatePem);
+
+            if ($lcoCertificate === false) {
+                //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+
+                $this->validations[] = [
+                    'type' => 'signature:cfdi',
+                    'success' => false,
+                    'message' => 'Issuer Certificate data from SAT LCO cannot be read as a X.509 Certificate',
+                ];
+                return false;
+            }
+
+            $cerFingerprint = (string)openssl_x509_fingerprint($certificate, 'sha256');
+            $lcoFingerprint = (String)openssl_x509_fingerprint($lcoCertificate, 'sha256');
+
+            if ($cerFingerprint === false || $lcoFingerprint === false) {
+                //return ['Certificate X.509 fingerprint failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+
+                $this->validations[] = [
+                    'type' => 'signature:cfdi',
+                    'success' => false,
+                    'message' => 'X.509 Certificate fingerprint generation failed',
+                ];
+                return false;
+            }
+
+            if ($cerFingerprint !== $lcoFingerprint) {
+                $this->validations[] = [
+                    'type' => 'signature:cfdi',
+                    'success' => false,
+                    'message' => 'Issuer CFDI X.509 Certificate does not match SAT LCO',
+                ];
+                return false;
+            }
+
             $this->validations[] = [
                 'type' => 'signature:cfdi',
-                'success' => false,
-                'message' => 'Issuer Certificate was not found in SAT LCO repository',
+                'success' => true,
+                'message' => 'Issuer X.509 Certificate found on SAT LCO',
             ];
-            return false;
         }
 
-        $lcoCertificate = openssl_x509_read($lcoCertificatePem);
 
-        if ($lcoCertificate === false) {
-            //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-
-            $this->validations[] = [
-                'type' => 'signature:cfdi',
-                'success' => false,
-                'message' => 'Issuer Certificate data from SAT LCO cannot be read as a X.509 Certificate',
-            ];
-            return false;
-        }
-
-        $cerFingerprint = (string)openssl_x509_fingerprint($certificate, 'sha256');
-        $lcoFingerprint = (String)openssl_x509_fingerprint($lcoCertificate, 'sha256');
-
-        if ($cerFingerprint === false || $lcoFingerprint === false) {
-            //return ['Certificate X.509 fingerprint failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-
-            $this->validations[] = [
-                'type' => 'signature:cfdi',
-                'success' => false,
-                'message' => 'X.509 Certificate fingerprint generation failed',
-            ];
-            return false;
-        }
-
-        if ($cerFingerprint !== $lcoFingerprint) {
-            $this->validations[] = [
-                'type' => 'signature:cfdi',
-                'success' => false,
-                'message' => 'Issuer CFDI X.509 Certificate does not match SAT LCO',
-            ];
-            return false;
-        }
-
-        $this->validations[] = [
-            'type' => 'signature:cfdi',
-            'success' => true,
-            'message' => 'Issuer X.509 Certificate found on SAT LCO',
-        ];
 
 
         // Check the certificate's CA

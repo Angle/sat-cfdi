@@ -11,13 +11,21 @@ class OnlineCertificateStorage implements CertificateStorageInterface
     const BASE_URL = 'https://rdc.sat.gob.mx/rccf/';
     const TMP_DIRECTORY = '/tmp/sat-cfdi-certificates/';
 
+    /**
+     * @var int $lastErrorType
+     */
+    private $lastErrorType = self::NO_ERROR;
+
     public function getCertificatePEM($certificateNumber): ?string
     {
+        $this->lastErrorType = self::NO_ERROR;
+
         // Clean the incoming string, only numbers allowed
         $certificateNumber = preg_replace('/[^0-9]+/', '', $certificateNumber);
 
         if (strlen($certificateNumber) != 20) {
             // Invalid length
+            $this->lastErrorType = self::INVALID_CERTIFICATE_NUMBER;
             return null;
         }
 
@@ -39,6 +47,8 @@ class OnlineCertificateStorage implements CertificateStorageInterface
             $certificateData = file_get_contents($localPath);
 
             if ($certificateData === false) {
+                // TODO: Cannot read from our local filepath
+                $this->lastErrorType = self::NOT_FOUND;
                 return null;
             }
 
@@ -63,8 +73,13 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         if (!$response) {
             // request failed, there is nothing much we can do
             error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
+            $this->lastErrorType = self::NETWORK_ERROR;
             return null;
         }
+
+
+        // Request good, now we only have to convert it to the appropriate formats
+        $this->lastErrorType = self::NO_ERROR;
 
         // All good, we'll have to convert it into a PEM
         if (strpos($response, '-----BEGIN CERTIFICATE-----') === 0) {
@@ -92,4 +107,8 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         return $pem;
     }
 
+    public function getLastErrorType(): int
+    {
+        return $this->lastErrorType;
+    }
 }

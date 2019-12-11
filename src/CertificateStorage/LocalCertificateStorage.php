@@ -11,6 +11,11 @@ class LocalCertificateStorage implements CertificateStorageInterface
     /** @var string $directory */
     private $directory;
 
+    /**
+     * @var int $lastErrorType
+     */
+    private $lastErrorType = self::NO_ERROR;
+
     public function __construct(string $directory)
     {
         $this->directory = $directory;
@@ -20,6 +25,7 @@ class LocalCertificateStorage implements CertificateStorageInterface
 
     public function getCertificatePEM($certificateNumber): ?string
     {
+        $this->lastErrorType = self::NOT_FOUND;
         // Clean the incoming string, only numbers allowed
         $certificateNumber = preg_replace('/[^0-9]+/', '', $certificateNumber);
 
@@ -27,6 +33,7 @@ class LocalCertificateStorage implements CertificateStorageInterface
 
         if (!file_exists($filename)) {
             // TODO: error not found
+            $this->lastErrorType = self::NOT_FOUND;
             return null;
         }
 
@@ -41,7 +48,14 @@ class LocalCertificateStorage implements CertificateStorageInterface
             $pem = OpenSSLUtility::coerceBinaryCertificate($certificateData);
         }
 
+        $this->lastErrorType = self::NO_ERROR;
+
         return $pem;
+    }
+
+    public function getLastErrorType(): int
+    {
+        return $this->lastErrorType;
     }
 
 }
