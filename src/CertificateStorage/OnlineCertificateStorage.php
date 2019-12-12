@@ -21,6 +21,10 @@ class OnlineCertificateStorage implements CertificateStorageInterface
 
     public function __construct(?string $directory = null)
     {
+        if (!$directory) {
+            $directory = realpath(__DIR__ . '/../resources/certificates/csd-sat/');
+        }
+
         $this->fallbackDirectory = $directory;
 
         // TODO: check if the file or directory exists..
