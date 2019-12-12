@@ -34,7 +34,9 @@ final class ValidatorTest extends TestCase
             PathUtility::join(__DIR__, '/../resources/certificates/csd-sat/')
         );
 
-        $storage = new OnlineCertificateStorage();
+        $storage = new OnlineCertificateStorage(
+            PathUtility::join(__DIR__, '/../resources/certificates/csd-sat/')
+        );
 
         $signatureValidator = new SignatureValidator($storage);
 

@@ -11,10 +11,20 @@ class OnlineCertificateStorage implements CertificateStorageInterface
     const BASE_URL = 'https://rdc.sat.gob.mx/rccf/';
     const TMP_DIRECTORY = '/tmp/sat-cfdi-certificates/';
 
+    /** @var string $fallbackDirectory */
+    private $fallbackDirectory;
+
     /**
      * @var int $lastErrorType
      */
     private $lastErrorType = self::NO_ERROR;
+
+    public function __construct(?string $directory = null)
+    {
+        $this->fallbackDirectory = $directory;
+
+        // TODO: check if the file or directory exists..
+    }
 
     public function getCertificatePEM($certificateNumber): ?string
     {
@@ -71,10 +81,25 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         curl_close($ch);
 
         if (!$response) {
-            // request failed, there is nothing much we can do
+            // request failed, attempt to load from a local file
             error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
-            $this->lastErrorType = self::NETWORK_ERROR;
-            return null;
+
+            if ($this->fallbackDirectory === null) {
+                // we don't have a fallback directory set, there's nothing else we can do
+                $this->lastErrorType = self::NETWORK_ERROR;
+                return null;
+            }
+
+            $filename = realpath(PathUtility::join($this->fallbackDirectory,  $certificateNumber . '.cer'));
+
+            if (!file_exists($filename)) {
+                // file was not found on our local storage, we'll set the error as a Network error
+                $this->lastErrorType = self::NETWORK_ERROR;
+                return null;
+            }
+
+            // TODO: error cant read
+            $response = file_get_contents($filename);
         }
 
 
@@ -93,13 +118,13 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         // now we'll write it into a temporary file
         if (!mkdir(PathUtility::join(self::TMP_DIRECTORY, $certificatePath), 0777, true)) {
             // could not create the directory
-            // we'll simply return the string as is, we'll figure out the writting part later on..
+            // we'll simply return the string as is, we'll figure out the writing part later on..
             return $pem;
         }
 
         if (file_put_contents($localPath, $pem) === false) {
             // file write failed
-            // we'll simply return the string as is, we'll figure out the writting part later on..
+            // we'll simply return the string as is, we'll figure out the writing part later on..
             return $pem;
         }
 

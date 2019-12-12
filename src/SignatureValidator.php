@@ -164,7 +164,7 @@ class SignatureValidator
                 $this->validations[] = [
                     'type' => 'signature:cfdi',
                     'success' => true,
-                    'message' => 'SAT LCO connection error, skipping fingerprint validations',
+                    'message' => 'SAT LCO connection error, skipping fingerprint and authenticity validations',
                 ];
 
             }
@@ -214,7 +214,6 @@ class SignatureValidator
                 'message' => 'Issuer X.509 Certificate found on SAT LCO',
             ];
         }
-
 
 
 
