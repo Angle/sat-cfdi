@@ -10,6 +10,7 @@ use Angle\CFDI\Node\Complement\CFDIFiscalRegistry;
 use Angle\CFDI\Node\Complement\FiscalLegends\FiscalLegends;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\Payment\Payments;
+use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
 
 use DateTime;
 
@@ -93,6 +94,12 @@ class Complement extends CFDINode
                     $complement = FiscalLegends::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
+                /* this complement is used as an ItemComplement..
+                case ThirdParties::NODE_NS_NAME:
+                    $complement = ThirdParties::createFromDOMNode($node);
+                    $this->addComplement($complement);
+                    break;
+                */
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
 

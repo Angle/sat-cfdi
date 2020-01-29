@@ -1,14 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Node;
+namespace Angle\CFDI\Node\Complement\ThirdParties;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
-
-use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
-use DateTime;
 
 use DOMDocument;
 use DOMElement;
@@ -16,18 +13,18 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemComplement createFromDOMNode(DOMNode $node)
+ * @method static TaxesRetainedList createFromDOMNode(DOMNode $node)
  */
-class ItemComplement extends CFDINode
+class TaxesRetainedList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "ComplementoConcepto";
+    const NODE_NAME = "Retenciones";
 
-    const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS = "terceros";
+    const NODE_NS_URI = "http://www.sat.gob.mx/terceros";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -37,19 +34,20 @@ class ItemComplement extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [
-        // PropertyName => [spanish (official SAT), english]
-    ];
+    protected static $attributes = [];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
+
+    // CHILDREN NODES
     /**
-     * @var array
+     * @var TaxesRetained[]
      */
-    protected $complements = [];
+    protected $retentions = [];
+
 
 
     #########################
@@ -67,20 +65,16 @@ class ItemComplement extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
-                // TODO: DOMText
                 continue;
             }
 
-            // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
-            switch ($node->nodeName) {
-
-                case ThirdParties::NODE_NS_NAME:
-                    $complement = ThirdParties::createFromDOMNode($node);
-                    $this->addComplement($complement);
+            switch ($node->localName) {
+                case TaxesRetained::NODE_NAME:
+                    $retention = TaxesRetained::createFromDomNode($node);
+                    $this->addRetention($retention);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
-
             }
         }
     }
@@ -98,10 +92,10 @@ class ItemComplement extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        // Retentions node (array)
+        foreach ($this->retentions as $retention) {
+            $retentionNode = $retention->toDOMElement($dom);
+            $node->appendChild($retentionNode);
         }
 
         return $node;
@@ -131,25 +125,32 @@ class ItemComplement extends CFDINode
     ## CHILDREN
     #########################
 
+    /**
+     * @return TaxesRetained[]
+     */
+    public function getRetentions(): ?array
+    {
+        return $this->retentions;
+    }
 
     /**
-     * Add a generic Complement that implements CFDINode
-     * @param CFDINode $node
-     * @return ItemComplement
+     * @param TaxesRetained $retention
+     * @return TaxesRetainedList
      */
-    public function addComplement(CFDINode $node): self
+    public function addRetention(TaxesRetained $retention): self
     {
-        $this->complements[] = $node;
+        $this->retentions[] = $retention;
         return $this;
     }
 
     /**
-     * Get Complements as CFDINode
-     * @return CFDINode[]
+     * @param TaxesRetained[] $retentions
+     * @return TaxesRetainedList
      */
-    public function getComplements(): array
+    public function setRetentions(array $retentions): self
     {
-        return $this->complements;
+        $this->retentions = $retentions;
+        return $this;
     }
 
 }

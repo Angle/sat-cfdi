@@ -1,14 +1,11 @@
 <?php
 
-namespace Angle\CFDI\Node;
+namespace Angle\CFDI\Node\Complement\ThirdParties;
 
 use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
-
-use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
-use DateTime;
 
 use DOMDocument;
 use DOMElement;
@@ -16,18 +13,18 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static ItemComplement createFromDOMNode(DOMNode $node)
+ * @method static TaxesTransferredList createFromDOMNode(DOMNode $node)
  */
-class ItemComplement extends CFDINode
+class TaxesTransferredList extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "ComplementoConcepto";
+    const NODE_NAME = "Traslados";
 
-    const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS = "terceros";
+    const NODE_NS_URI = "http://www.sat.gob.mx/terceros";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -37,19 +34,20 @@ class ItemComplement extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [
-        // PropertyName => [spanish (official SAT), english]
-    ];
+    protected static $attributes = [];
 
 
     #########################
     ##      PROPERTIES     ##
     #########################
 
+
+    // CHILDREN NODES
     /**
-     * @var array
+     * @var TaxesTransferred[]
      */
-    protected $complements = [];
+    protected $transfers = [];
+
 
 
     #########################
@@ -67,20 +65,16 @@ class ItemComplement extends CFDINode
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
                 // TODO: we are skipping the actual text inside the Node.. is this useful?
-                // TODO: DOMText
                 continue;
             }
 
-            // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
-            switch ($node->nodeName) {
-
-                case ThirdParties::NODE_NS_NAME:
-                    $complement = ThirdParties::createFromDOMNode($node);
-                    $this->addComplement($complement);
+            switch ($node->localName) {
+                case TaxesTransferred::NODE_NAME:
+                    $transfer = TaxesTransferred::createFromDomNode($node);
+                    $this->addTransfer($transfer);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
-
             }
         }
     }
@@ -98,10 +92,10 @@ class ItemComplement extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        // Transfers node (array)
+        foreach ($this->transfers as $transfer) {
+            $transferNode = $transfer->toDOMElement($dom);
+            $node->appendChild($transferNode);
         }
 
         return $node;
@@ -131,25 +125,32 @@ class ItemComplement extends CFDINode
     ## CHILDREN
     #########################
 
+    /**
+     * @return TaxesTransferred[]
+     */
+    public function getTransfers(): ?array
+    {
+        return $this->transfers;
+    }
 
     /**
-     * Add a generic Complement that implements CFDINode
-     * @param CFDINode $node
-     * @return ItemComplement
+     * @param TaxesTransferred $transfer
+     * @return TaxesTransferredList
      */
-    public function addComplement(CFDINode $node): self
+    public function addTransfer(TaxesTransferred $transfer): self
     {
-        $this->complements[] = $node;
+        $this->transfers[] = $transfer;
         return $this;
     }
 
     /**
-     * Get Complements as CFDINode
-     * @return CFDINode[]
+     * @param TaxesTransferred[] $transfers
+     * @return TaxesTransferredList
      */
-    public function getComplements(): array
+    public function setTransfers(array $transfers): self
     {
-        return $this->complements;
+        $this->transfers = $transfers;
+        return $this;
     }
 
 }
