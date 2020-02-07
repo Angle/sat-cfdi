@@ -82,11 +82,13 @@ class OnlineCertificateStorage implements CertificateStorageInterface
 
         $response = curl_exec($ch);
 
+        $chErrno = curl_errno($ch);
         curl_close($ch);
 
-        if (!$response) {
-            // request failed, attempt to load from a local file
-            error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
+
+        if ($chErrno == CURLE_OPERATION_TIMEDOUT) {
+            // request failed for network reasons, attempt to load from a local file
+            error_log('SAT CFDI OnlineCertificateStorage query timedout for: ' . $url);
 
             if ($this->fallbackDirectory === null) {
                 // we don't have a fallback directory set, there's nothing else we can do
@@ -102,8 +104,20 @@ class OnlineCertificateStorage implements CertificateStorageInterface
                 return null;
             }
 
-            // TODO: error cant read
             $response = file_get_contents($filename);
+
+            if ($response === false) {
+                // TODO: Cannot read from our local filepath
+                $this->lastErrorType = self::NETWORK_ERROR;
+                return null;
+            }
+
+        } elseif (!$response) {
+            error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
+
+            // the file was not found in SAT's LCO repository
+            $this->lastErrorType = self::NOT_FOUND;
+            return null;
         }
 
 
