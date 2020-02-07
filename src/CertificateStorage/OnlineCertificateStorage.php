@@ -11,6 +11,8 @@ class OnlineCertificateStorage implements CertificateStorageInterface
     const BASE_URL = 'https://rdc.sat.gob.mx/rccf/';
     const TMP_DIRECTORY = '/tmp/sat-cfdi-certificates/';
 
+    const DEFAULT_FALLBACK_DIRECTORY = '/../../resources/certificates/csd-sat/';
+
     /** @var string $fallbackDirectory */
     private $fallbackDirectory;
 
@@ -22,7 +24,7 @@ class OnlineCertificateStorage implements CertificateStorageInterface
     public function __construct(?string $directory = null)
     {
         if (!$directory) {
-            $directory = realpath(__DIR__ . '/../resources/certificates/csd-sat/');
+            $directory = realpath(__DIR__ . self::DEFAULT_FALLBACK_DIRECTORY);
         }
 
         $this->fallbackDirectory = $directory;

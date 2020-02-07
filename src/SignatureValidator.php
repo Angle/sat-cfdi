@@ -151,14 +151,7 @@ class SignatureValidator
         $lcoCertificatePem = $this->certificateStorage->getCertificatePEM($cfdi->getCertificateNumber());
 
         if (!$lcoCertificatePem) {
-            if ($this->certificateStorage->getLastErrorType() != CertificateStorageInterface::NETWORK_ERROR) {
-                $this->validations[] = [
-                    'type' => 'signature:cfdi',
-                    'success' => false,
-                    'message' => 'Issuer Certificate was not found in SAT LCO repository',
-                ];
-                return false;
-            } else {
+            if ($this->certificateStorage->getLastErrorType() == CertificateStorageInterface::NETWORK_ERROR) {
                 // The SAT LCO Certificate query failed, but we determined that it was a network error.. we'll let it pass this time.
 
                 $this->validations[] = [
@@ -166,7 +159,13 @@ class SignatureValidator
                     'success' => true,
                     'message' => 'SAT LCO connection error, skipping fingerprint and authenticity validations',
                 ];
-
+            } else {
+                $this->validations[] = [
+                    'type' => 'signature:cfdi',
+                    'success' => false,
+                    'message' => sprintf('Issuer Certificate [%s] was not found in SAT LCO repository', $cfdi->getCertificateNumber()),
+                ];
+                return false;
             }
 
         } else {
@@ -415,11 +414,11 @@ class SignatureValidator
 
         if (!$certificatePem) {
             // Not found (get error?)
-            // TODO: Error, pull the errors from the certificate storage
+            // Note: our CertificateStorage instance should implement a fallback method for SAT certificates.. they are not that many and they don't change very often
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
-                'message' => 'SAT Certificate was not found',
+                'message' => sprintf('SAT Certificate [%s] was not found', $fiscalStamp->getSatCertificateNumber()),
             ];
             return false;
         }
