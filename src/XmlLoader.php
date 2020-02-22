@@ -52,7 +52,10 @@ class XmlLoader
 
     public function __destruct()
     {
-        stream_wrapper_unregister(XsdStreamWrapper::PROTOCOL);
+        // we'll only unregister the stream if we already had it online
+        if (in_array(XsdStreamWrapper::PROTOCOL, stream_get_wrappers())) {
+            stream_wrapper_unregister(XsdStreamWrapper::PROTOCOL);
+        }
     }
 
 

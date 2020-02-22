@@ -68,7 +68,11 @@ class OriginalChainGenerator
 
     public function __destruct()
     {
-        stream_wrapper_unregister(XsltStreamWrapper::PROTOCOL);
+        // we'll only unregister the stream if we already had it online
+        if (in_array(XsltStreamWrapper::PROTOCOL, stream_get_wrappers())) {
+            // the stream was previously registered, we'll destroy it and recreate it
+            stream_wrapper_unregister(XsltStreamWrapper::PROTOCOL);
+        }
     }
 
     /**
