@@ -189,6 +189,21 @@ class Complement extends CFDINode
         return null;
     }
 
+    /**
+     * This method will return the first encountered LocalTaxes inside the Complements items
+     * @return LocalTaxes
+     */
+    public function getLocalTaxes(): ?LocalTaxes
+    {
+        foreach ($this->complements as $c) {
+            if ($c instanceof LocalTaxes) {
+                return $c;
+            }
+        }
+
+        return null;
+    }
+
 
     /**
      * @param FiscalStamp $stamp

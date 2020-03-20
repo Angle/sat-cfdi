@@ -15,6 +15,7 @@ use Angle\CFDI\Node\Taxes;
 use Angle\CFDI\Node\Complement;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\Payment\Payments;
+use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
 
 use Angle\CFDI\Node\Addendum;
 
@@ -662,6 +663,21 @@ class CFDI extends CFDINode
         foreach ($this->complements as $complement) {
             if ($complement->getFiscalStamp() instanceof FiscalStamp) {
                 return $complement->getFiscalStamp();
+            }
+        }
+
+        // nothing found
+        return null;
+    }
+
+    /**
+     * This will return the first LocalTaxes found in the Complements
+     */
+    public function getLocalTaxes(): ?LocalTaxes
+    {
+        foreach ($this->complements as $complement) {
+            if ($complement->getLocalTaxes() instanceof LocalTaxes) {
+                return $complement->getLocalTaxes();
             }
         }
 
