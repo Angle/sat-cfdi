@@ -9,6 +9,7 @@ use Angle\CFDI\CFDINode;
 use Angle\CFDI\Node\Complement\CFDIFiscalRegistry;
 use Angle\CFDI\Node\Complement\FiscalLegends\FiscalLegends;
 use Angle\CFDI\Node\Complement\FiscalStamp;
+use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
 use Angle\CFDI\Node\Complement\Payment\Payments;
 use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
 
@@ -92,6 +93,10 @@ class Complement extends CFDINode
                     break;
                 case FiscalLegends::NODE_NS_NAME:
                     $complement = FiscalLegends::createFromDOMNode($node);
+                    $this->addComplement($complement);
+                    break;
+                case LocalTaxes::NODE_NS_NAME:
+                    $complement = LocalTaxes::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 /* this complement is used as an ItemComplement..
