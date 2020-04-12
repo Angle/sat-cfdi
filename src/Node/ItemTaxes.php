@@ -36,6 +36,10 @@ class ItemTaxes extends CFDINode
 
     protected static $attributes = [];
 
+    protected static $children = [
+        // PropertyName => ClassName (full namespace)
+    ];
+
 
     #########################
     ##      PROPERTIES     ##
@@ -64,7 +68,7 @@ class ItemTaxes extends CFDINode
      * @param DOMNode[]
      * @throws CFDIException
      */
-    public function setChildren(array $children): void
+    public function setChildrenFromDOMNodes(array $children): void
     {
         foreach ($children as $node) {
             if ($node instanceof DOMText) {

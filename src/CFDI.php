@@ -44,6 +44,9 @@ class CFDI extends CFDINode
     const ATTR_REQUIRED = 'R';
     const ATTR_OPTIONAL = 'O';
 
+    const CHILD_UNIQUE  = 'U';
+    const CHILD_ARRAY   = 'A';
+
     #########################
     ##        PRESETS      ##
     #########################
@@ -69,7 +72,7 @@ class CFDI extends CFDINode
     #########################
 
     protected static $attributes = [
-        // PropertyName => [spanish (official SAT), english]
+        // keywords => [spanish (official SAT), english]
         'version'           => [
             'keywords' => ['Version', 'version'],
             'type' => CFDI::ATTR_REQUIRED
@@ -137,6 +140,39 @@ class CFDI extends CFDINode
         'certificate'       => [
             'keywords' => ['Certificado', 'certificate'],
             'type' => CFDI::ATTR_REQUIRED
+        ],
+    ];
+
+    protected static $children = [
+        'relatedCFDIList' => [
+            'keywords'  => ['CfdiRelacionados', 'relatedCFDIList'],
+            'class'     => RelatedCFDIList::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'issuer' => [
+            'keywords'  => ['Emisor', 'issuer'],
+            'class'     => Issuer::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'recipient' => [
+            'keywords'  => ['Receptor', 'recipient'],
+            'class'     => Recipient::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'itemList' => [
+            'keywords'  => ['Conceptos', 'itemList'],
+            'class'     => ItemList::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'taxes' => [
+            'keywords'  => ['Impuestos', 'taxes'],
+            'class'     => Taxes::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'complements' => [
+            'keywords'  => ['Complemento', 'complements'],
+            'class'     => Complement::class,
+            'type'      => CFDI::CHILD_ARRAY,
         ],
     ];
 
@@ -307,7 +343,7 @@ class CFDI extends CFDINode
      * @param DOMNode[]
      * @throws CFDIException
      */
-    public function setChildren(array $children): void
+    public function setChildrenFromDOMNodes(array $children): void
     {
         foreach ($children as $node) {
             if ($node instanceof DOMText) {
@@ -812,6 +848,7 @@ class CFDI extends CFDINode
     {
         if ($rawDate instanceof DateTime) {
             $this->date = $rawDate;
+            return $this;
         }
 
         // sample format: 2019-09-06T10:09:46

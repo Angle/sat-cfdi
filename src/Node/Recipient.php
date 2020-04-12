@@ -60,6 +60,10 @@ class Recipient extends CFDINode
         ],
     ];
 
+    protected static $children = [
+        // PropertyName => ClassName (full namespace)
+    ];
+
 
     #########################
     ##      PROPERTIES     ##
@@ -102,7 +106,7 @@ class Recipient extends CFDINode
      * @param DOMNode[]
      * @throws CFDIException
      */
-    public function setChildren(array $children): void
+    public function setChildrenFromDOMNodes(array $children): void
     {
         // void
     }

@@ -14,10 +14,13 @@ use DOMNode;
 abstract class CFDINode implements CFDINodeInterface
 {
     private static $baseAttributes = [];
+    private static $attributes = [];
+    private static $children = [];
 
-    private static $attributes = [
-        // PropertyName => [spanish (official SAT), english]
-    ];
+    const PROPERTY_NOT_FOUND        = 0;
+    const PROPERTY_BASE_ATTRIBUTE   = 1;
+    const PROPERTY_ATTRIBUTE        = 2;
+    const PROPERTY_CHILDREN         = 3;
 
 
     #########################
@@ -26,49 +29,120 @@ abstract class CFDINode implements CFDINodeInterface
 
     /**
      * CFDINode constructor.
-     * @param array $attributes [$attributeName => $value]
+     * @param array $data [$attributeName => $value]
      * @throws CFDIException
      */
-    public function __construct(array $attributes, array $children)
+    public function __construct(array $data)
     {
         // Lookup each element in the given array, attempt to find the corresponding property even if the input is in english or spanish
-        foreach ($attributes as $key => $value) {
-            // If the property is in the "base attributes" list, ignore it.
-            if (array_key_exists($key, static::$baseAttributes)) {
+        foreach ($data as $key => $value) {
+            $propertyType = $this->findPropertyType($key);
+
+            if ($propertyType == self::PROPERTY_BASE_ATTRIBUTE) {
+                // If the property is in the "base attributes" list, ignore it.
                 continue;
-            }
 
-            // Find the corresponding propertyName from the current attribute key
-            $propertyName = $this->findPropertyName($key);
+            } elseif ($propertyType == self::PROPERTY_ATTRIBUTE) {
+                // Find the corresponding propertyName from the current attribute key
+                $propertyName = $this->findPropertyNameForAttribute($key);
 
-            if ($propertyName === null) {
-                // Attribute name not found.
-                try {
-                    $c = (new \ReflectionClass($this))->getShortName();
-                } catch (\Exception $e) {
-                    $c = '???';
+                if ($propertyName === null) {
+                    // Attribute name not found.
+                    throw new CFDIException(sprintf("Invalid Attribute Name given, '%s' not found in %s object definition.", $key, $this->getShortName()), -1); // TODO: Add a proper error code
                 }
 
-                throw new CFDIException("Invalid Attribute Name given, '$key' not found in $c object definition.", -1); // TODO: Add a proper error code
-            }
-
-            $setter = 'set' . ucfirst($propertyName);
-            if (!method_exists(static::class, $setter)) {
-                try {
-                    $c = (new \ReflectionClass($this))->getShortName();
-                } catch (\Exception $e) {
-                    $c = '???';
+                $setter = 'set' . ucfirst($propertyName);
+                if (!method_exists(static::class, $setter)) {
+                    // Setter not found
+                    throw new CFDIException(sprintf("Property '%s' has no setter method in %s", $propertyName, $this->getShortName()), -1); // TODO: Add a proper error code
                 }
 
-                throw new CFDIException("Property '$propertyName' has no setter method in $c.", -1); // TODO: Add a proper error code
-            }
+                // If the setter fails, it'll throw a CFDIException. We'll let it arise, the final library user should be the one catching and handling these type of exceptions.
+                $this->$setter($value);
 
-            // If the setter fails, it'll throw a CFDIException. We'll let it arise, the final library user should be the one catching and handling these type of exceptions.
-            $this->$setter($value);
+            } elseif ($propertyType == self::PROPERTY_CHILDREN) {
+                // Process each child node
+                if (!is_array($value)) {
+                    throw new CFDIException(sprintf("Data key '%s' is a Child Node of %s, expecting an array with the child properties, instead got: %s", $key, $this->getShortName(), gettype($value)), -1); // TODO: Add a proper error code
+                }
+
+                $this->setChildFromData($key, $value);
+
+            } else {
+                throw new CFDIException(sprintf("Data key '%s' is not a valid property for %s.", $key, $this->getShortName()), -1); // TODO: Add a proper error code
+            }
+        }
+    }
+
+    /**
+     * @param string $childName node/property name
+     * @param array $data [$attributeName => $value]
+     * @throws CFDIException
+     */
+    public function setChildFromData(string $childName, array $data): void
+    {
+        $propertyName = null;
+        $properties = null;
+        foreach (static::$children as $key => $prop) {
+            if (in_array($childName, $prop['keywords'])) {
+                // found a children with a matching name
+                $propertyName = $key;
+                $properties = $prop;
+            }
         }
 
-        // Process each child node
-        $this->setChildren($children);
+        if (!$properties) {
+            throw new CFDIException(sprintf("Missing child properties definition in %s for child '%s'", $this->getShortName(), $childName), -1); // TODO: Add a proper error code
+        }
+
+        if (!array_key_exists('class', $properties) || !array_key_exists('type', $properties)) {
+            throw new CFDIException(sprintf("Invalid child properties definition in %s for child '%s'", $this->getShortName(), $childName), -1); // TODO: Add a proper error code
+        }
+
+        $childClass = $properties['class'];
+        $childType = $properties['type'];
+
+        // The "Type" property dictates how we should append the Child to the working object
+        if ($childType == CFDI::CHILD_UNIQUE) {
+            // this is the only child of it's type, we can attach it with it's setter
+            $setter = 'set' . ucfirst($propertyName);
+            if (!method_exists(static::class, $setter)) {
+                // Setter not found
+                throw new CFDIException(sprintf("Setter method '%s' does not exist in %s", $setter, $this->getShortName()), -1); // TODO: Add a proper error code
+            }
+
+            // Initialize a Child entity
+            /** @var CFDINode $child */
+            $child = new $childClass($data);
+
+            // Set the child!
+            $this->$setter($child);
+
+        } elseif ($childType == CFDI::CHILD_ARRAY) {
+            // there are many of this child, we have to attach it with an "append" method
+            $append = 'add' . ucfirst($this->getClassName($childClass));
+            if (!method_exists(static::class, $append)) {
+                // Setter not found
+                throw new CFDIException(sprintf("Append method '%s' does not exist in %s", $append, $this->getShortName()), -1); // TODO: Add a proper error code
+            }
+
+            // now we must initialize and append a child for every item in the array
+            foreach ($data as $k => $v) {
+                if (!is_array($v)) {
+                    throw new CFDIException(sprintf("Child '%s' is registered as array in %s, expecting an array of arrays, got '%s' in child %d", $childName, $this->getShortName(), gettype($v), $k), -1); // TODO: Add a proper error code
+                }
+
+                // Initialize a Child entity
+                /** @var CFDINode $child */
+                $child = new $childClass($v);
+
+                // Append the child!
+                $this->$append($child);
+            }
+
+        } else {
+            throw new CFDIException(sprintf("Invalid child type definition in %s for child '%s'", $this->getShortName(), $childName), -1); // TODO: Add a proper error code
+        }
     }
 
     /**
@@ -83,7 +157,7 @@ abstract class CFDINode implements CFDINodeInterface
 
         if ($node->hasAttributes()) {
             foreach ($node->attributes as $attr) {
-                /* Removed. Some complements actually do use a pipe character
+                /* Removed. Some complements actually do use a pipe character, such as the original chain
                 // Pipe characters are strictly forbidden, they interfere with the Cryptographic signature validation
                 if (strpos($attr->nodeValue, '|') !== false) {
                     throw new CFDIException(sprintf("Pipe character '|' cannot appear on any attribute value. [%s - %s: %s]", $node->nodeName, $attr->nodeName, $attr->nodeValue));
@@ -100,7 +174,8 @@ abstract class CFDINode implements CFDINodeInterface
         }
 
         try {
-            $cfdiNode = new static($attributes, $children);
+            $cfdiNode = new static($attributes);
+            $cfdiNode->setChildrenFromDOMNodes($children);
         } catch (CFDIException $e) {
             // TODO: handle this exception
             throw $e;
@@ -122,13 +197,7 @@ abstract class CFDINode implements CFDINodeInterface
     {
         // TODO: should _this_ function trigger a validation???
         if (!$this->validate()) {
-            try {
-                $c = (new \ReflectionClass($this))->getShortName();
-            } catch (\Exception $e) {
-                $c = '???';
-            }
-
-            throw new CFDIException($c . ' is not validated, cannot pull attributes');
+            throw new CFDIException($this->getShortName() . ' is not validated, cannot pull attributes');
         }
 
         $attr = static::$baseAttributes;
@@ -142,13 +211,8 @@ abstract class CFDINode implements CFDINodeInterface
             }
 
             if ($prop['type'] == CFDI::ATTR_REQUIRED && ($value === null || $value === "")) {
-                try {
-                    $c = (new \ReflectionClass($this))->getShortName();
-                } catch (\Exception $e) {
-                    $c = '???';
-                }
-
-                throw new CFDIException(sprintf("Property '%s' is required in %s", ucfirst($key), $c));
+                // Required property is not set
+                throw new CFDIException(sprintf("Property '%s' is required in %s", ucfirst($key), $this->getShortName()));
             }
 
             if ($value !== null) {
@@ -159,7 +223,7 @@ abstract class CFDINode implements CFDINodeInterface
         return $attr;
     }
 
-    protected function findPropertyName($name): ?string
+    protected function findPropertyNameForAttribute($name): ?string
     {
         foreach (static::$attributes as $propertyName => $prop) {
             if (in_array($name, $prop['keywords'])) {
@@ -168,5 +232,61 @@ abstract class CFDINode implements CFDINodeInterface
         }
 
         return null;
+    }
+
+    protected function findPropertyNameForChild($name): ?string
+    {
+        foreach (static::$children as $propertyName => $prop) {
+            if (in_array($name, $prop['keywords'])) {
+                return $propertyName;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $name the property to lookup
+     * @return int
+     */
+    protected function findPropertyType($name): int
+    {
+        if (array_key_exists($name, static::$baseAttributes)) {
+            return self::PROPERTY_BASE_ATTRIBUTE;
+        }
+
+        foreach (static::$attributes as $propertyName => $prop) {
+            if (in_array($name, $prop['keywords'])) {
+                // found an attribute (self) with a matching name
+                return self::PROPERTY_ATTRIBUTE;
+            }
+        }
+
+        foreach (static::$children as $propertyName => $prop) {
+            if (in_array($name, $prop['keywords'])) {
+                // found an attribute (self) with a matching name
+                return self::PROPERTY_CHILDREN;
+            }
+        }
+
+        return self::PROPERTY_NOT_FOUND;
+    }
+
+    protected function getShortName()
+    {
+        try {
+            $c = (new \ReflectionClass($this))->getShortName();
+        } catch (\Exception $e) {
+            $c = '???';
+        }
+
+        return $c;
+    }
+
+    // non-namespaced
+    protected function getClassName($classname)
+    {
+        if ($pos = strrpos($classname, '\\')) return substr($classname, $pos + 1);
+        return $pos;
     }
 }
