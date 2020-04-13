@@ -32,7 +32,106 @@ abstract class RegimeType
             'natural_person'    => false,
             'legal_entity'      => true,
         ],
-        // TODO: write all of them...
+        self::PERSONAS_MORALES_CON_FINES_NO_LUCRATIVOS => [
+            'name'              => 'Personas Morales con Fines no Lucrativos',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::SUELDOS_SALARIOS_Y_ASIMILADOS => [
+            'name'              => 'Sueldos y Salarios e Ingresos Asimilados a Salarios',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::ARRENDAMIENTO => [
+            'name'              => 'Arrendamiento',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::DEMAS_INGRESOS => [
+            'name'              => 'Demás ingresos',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::CONSOLIDACION => [
+            'name'              => 'Consolidación',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::RESIDENTES_EN_EL_EXTRANJERO => [
+            'name'              => 'Residentes en el Extranjero sin Establecimiento Permanente en México',
+            'natural_person'    => true,
+            'legal_entity'      => true,
+        ],
+        self::INGRESOS_POR_DIVIDENDOS => [
+            'name'              => 'Ingresos por Dividendos (socios y accionistas)',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::PERSONAS_FISICAS_CON_ACTIVIDAD_EMPRESARIAL => [
+            'name'              => 'Personas Físicas con Actividades Empresariales y Profesionales',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::INGRESOS_POR_INTERESES => [
+            'name'              => 'Ingresos por intereses',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::SIN_OBLIGACIONES_FISCALES => [
+            'name'              => 'Sin obligaciones fiscales',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::SOCIEDADES_COOPERATIVAS_DE_PRODUCCION_INGRESOS_DIFERIDOS => [
+            'name'              => 'Sociedades Cooperativas de Producción que optan por diferir sus ingresos',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::INCORPORACION_FISCAL => [
+            'name'              => 'Incorporación Fiscal',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::ACTIVIDADES_AGRICOLAS_GANADERAS_SILVICOLAS_PESQUERAS => [
+            'name'              => 'Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras',
+            'natural_person'    => true,
+            'legal_entity'      => true,
+        ],
+        self::OPCIONAL_PARA_GRUPO_DE_SOCIEDADES => [
+            'name'              => 'Opcional para Grupos de Sociedades',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::COORDINADOS => [
+            'name'              => 'Coordinados',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::HIDROCARBUROS => [
+            'name'              => 'Hidrocarburos',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::ENAJENACION_O_ADQUISICION_DE_BIENES => [
+            'name'              => 'Régimen de Enajenación o Adquisición de Bienes',
+            'natural_person'    => false,
+            'legal_entity'      => true,
+        ],
+        self::PREFERENTES_Y_EMPRESAS_MULTINACIONALES => [
+            'name'              => 'De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::ENAJENACION_DE_ACCIONES_EN_BOLSA_DE_VALORES => [
+            'name'              => 'Enajenación de acciones en bolsa de valores',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
+        self::INGRESOS_POR_OBTENCION_DE_PREMIOS => [
+            'name'              => 'Régimen de los ingresos por obtención de premios',
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
     ];
 
     public static function listForFormBuilder($lang='es'): array
