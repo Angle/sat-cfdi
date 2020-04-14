@@ -277,9 +277,6 @@ class SignatureValidator
         $chainProcessor = new OriginalChainGenerator();
         $chain = $chainProcessor->generateForCFDI($cfdi);
 
-        // FIXME: remove this debug line
-        //echo "CFDI CHAIN: " . PHP_EOL . $chain . PHP_EOL . PHP_EOL;
-
         if ($chain === false) {
             $this->errors = array_merge($this->errors, $chainProcessor->getErrors());
             $this->validations = array_merge($this->validations, $chainProcessor->getValidations());

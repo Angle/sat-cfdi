@@ -34,6 +34,29 @@ abstract class OpenSSLUtility
     }
 
     /**
+     * Coerce a base64-encoded Private Key into a valid format to be read by OpenSSL
+     * @param $privateKeyBinary
+     * @return string
+     */
+    public static function coerceBinaryPrivateKey($privateKeyBinary) {
+        $pem = chunk_split(base64_encode($privateKeyBinary), 64, "\n");
+        $pem = "-----BEGIN PRIVATE KEY-----\n".$pem."-----END PRIVATE KEY-----\n";
+        return $pem;
+    }
+
+    /**
+     * Get OpenSSL errors as an array
+     * @return array
+     */
+    public static function getOpenSSLErrors(): array
+    {
+        $errors = [];
+        while ($msg = openssl_error_string()) {
+            $errors[] = $msg;
+        }
+    }
+
+    /**
      * Implode any OpenSSL errors into a single string
      * @return string
      */
