@@ -40,7 +40,18 @@ abstract class OpenSSLUtility
      */
     public static function coerceBinaryPrivateKey($privateKeyBinary) {
         $pem = chunk_split(base64_encode($privateKeyBinary), 64, "\n");
-        $pem = "-----BEGIN PRIVATE KEY-----\n".$pem."-----END PRIVATE KEY-----\n";
+        $pem = "-----BEGIN RSA PRIVATE KEY-----\n".$pem."-----END RSA PRIVATE KEY-----\n";
+        return $pem;
+    }
+
+    /**
+     * Coerce a base64-encoded Private Key into a valid format to be read by OpenSSL
+     * @param $privateKeyBinary
+     * @return string
+     */
+    public static function coerceBinaryEncryptedPrivateKey($privateKeyBinary) {
+        $pem = chunk_split(base64_encode($privateKeyBinary), 64, "\n");
+        $pem = "-----BEGIN ENCRYPTED PRIVATE KEY-----\n".$pem."-----END ENCRYPTED PRIVATE KEY-----\n";
         return $pem;
     }
 
@@ -54,6 +65,8 @@ abstract class OpenSSLUtility
         while ($msg = openssl_error_string()) {
             $errors[] = $msg;
         }
+
+        return $errors;
     }
 
     /**

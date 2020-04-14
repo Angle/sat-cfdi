@@ -32,10 +32,15 @@ class SignatureGenerator
         // Free resources and clear streams
         unset($chainProcessor);
 
-        $privateKeyPem = OpenSSLUtility::coerceBinaryPrivateKey($privateKey);
+        $privateKeyPem = OpenSSLUtility::coerceBinaryEncryptedPrivateKey($privateKey);
 
         // Decrypt the PrivateKey using the passphrase
         $private = openssl_pkey_get_private($privateKeyPem, $passphrase);
+
+        if ($private === false) {
+            $this->errors = array_merge($this->errors, OpenSSLUtility::getOpenSSLErrors());
+            return false;
+        }
 
         $r = openssl_sign($chain, $signature, $private, OPENSSL_ALGO_SHA256);
 
