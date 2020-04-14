@@ -49,9 +49,7 @@ class TaxesRetained extends CFDINode
         ],
     ];
 
-    protected static $children = [
-        // PropertyName => ClassName (full namespace)
-    ];
+    protected static $children = [];
 
 
     #########################

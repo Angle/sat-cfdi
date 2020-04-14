@@ -47,7 +47,16 @@ class Taxes extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'transferredList' => [
+            'keywords'  => ['Traslados', 'transferredList'],
+            'class'     => Taxes::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'retainedList' => [
+            'keywords'  => ['Retenciones', 'retainedList'],
+            'class'     => Taxes::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
     ];
 
 
