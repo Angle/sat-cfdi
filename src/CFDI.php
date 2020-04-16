@@ -907,6 +907,7 @@ class CFDI extends CFDINode
             } else {
                 foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
                     $t->setAmount(Math::round($t->getAmount(), 2));
+                    $t->setRate(Math::round($t->getRate(), 6));
                 }
             }
 
@@ -917,6 +918,7 @@ class CFDI extends CFDINode
             } else {
                 foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
                     $t->setAmount(Math::round($t->getAmount(), 2));
+                    $t->setRate(Math::round($t->getRate(), 6));
                 }
             }
         }
@@ -932,6 +934,7 @@ class CFDI extends CFDINode
         } else {
             foreach ($this->getTaxes()->getTransferredList()->getTransfers() as $t) {
                 $t->setAmount(Math::round($t->getAmount(), 2));
+                $t->setRate(Math::round($t->getRate(), 6));
             }
         }
 
@@ -940,6 +943,7 @@ class CFDI extends CFDINode
         } else {
             foreach ($this->getTaxes()->getRetainedList()->getRetentions() as $t) {
                 $t->setAmount(Math::round($t->getAmount(), 2));
+                $t->setRate(Math::round($t->getRate(), 6));
             }
         }
     }
