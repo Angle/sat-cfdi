@@ -347,7 +347,7 @@ class CFDI extends CFDINode
     {
         parent::__construct($data);
         $this->calculateTaxesAndTotals();
-        $this->cleanUpEmptyProperties();
+        $this->cleanUpValuesAndEmptyProperties();
     }
 
     /**
@@ -875,30 +875,72 @@ class CFDI extends CFDINode
         $this->taxes->setRetainedList($retentionList);
     }
 
-    public function cleanUpEmptyProperties()
+    public function cleanUpValuesAndEmptyProperties()
     {
-        // Check the Taxes in each Item
+        $this->total = Math::round($this->total, 2);
+        $this->subTotal = Math::round($this->subTotal, 2);
+
+        if (Math::equal($this->discount, '0')) {
+            $this->discount = null;
+        } else {
+            $this->discount = Math::round($this->discount, 2);
+        }
+
+        // Check each item
         foreach ($this->itemList->getItems() as $it) {
+
+            $it->setQuantity( Math::round($it->getQuantity(), 6));
+
+            $it->setAmount( Math::round($it->getAmount(), 2));
+            $it->setUnitPrice( Math::round($it->getUnitPrice(), 2));
+
+            if (Math::equal($it->getDiscount(), '0')) {
+                $it->setDiscount(null);
+            } else {
+                $it->setDiscount( Math::round($this->discount, 2) );
+            }
+
             // Clean up the object in case there are no Transfers
             if ($it->getTaxes() && $it->getTaxes()->getTransferredList()
                 && empty($it->getTaxes()->getTransferredList()->getTransfers())) {
                 $it->getTaxes()->setTransferredList(null);
+            } else {
+                foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
+                    $t->setAmount(Math::round($t->getAmount(), 2));
+                }
             }
 
             // Clean up the object in case there are no Retentions
             if ($it->getTaxes() && $it->getTaxes()->getRetainedList()
                 && empty($it->getTaxes()->getRetainedList()->getRetentions())) {
                 $it->getTaxes()->setRetainedList(null);
+            } else {
+                foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
+                    $t->setAmount(Math::round($t->getAmount(), 2));
+                }
             }
         }
+
+
+        // GLOBAL TAXES
+        $this->taxes->setTotalTransferredAmount(Math::round($this->taxes->getTotalTransferredAmount(),2));
+        $this->taxes->setTotalRetainedAmount(Math::round($this->taxes->getTotalRetainedAmount(),2));
 
         // Check the global (total) taxes
         if (empty($this->getTaxes()->getTransferredList()->getTransfers())) {
             $this->getTaxes()->setTransferredList(null);
+        } else {
+            foreach ($this->getTaxes()->getTransferredList()->getTransfers() as $t) {
+                $t->setAmount(Math::round($t->getAmount(), 2));
+            }
         }
 
         if (empty($this->getTaxes()->getRetainedList()->getRetentions())) {
             $this->getTaxes()->setRetainedList(null);
+        } else {
+            foreach ($this->getTaxes()->getRetainedList()->getRetentions() as $t) {
+                $t->setAmount(Math::round($t->getAmount(), 2));
+            }
         }
     }
 
