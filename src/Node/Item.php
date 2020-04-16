@@ -75,7 +75,31 @@ class Item extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'taxes' => [
+            'keywords'  => ['Impuestos', 'taxes'],
+            'class'     => ItemTaxes::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'customsInformation' => [
+            'keywords'  => ['InformacionAduanera', 'customsInformation'],
+            'class'     => ItemCustomsInformation::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
+        'propertyTaxAccount' => [
+            'keywords'  => ['CuentaPredial', 'propertyTaxAccount'],
+            'class'     => ItemPropertyTaxAccount::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'complements' => [
+            'keywords'  => ['ComplementoConcepto', 'complements'],
+            'class'     => ItemComplement::class,
+            'type'      => CFDI::CHILD_UNIQUE, // TODO: this might actually be an array..
+        ],
+        'parts' => [
+            'keywords'  => ['Parte', 'parts'],
+            'class'     => ItemPart::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 

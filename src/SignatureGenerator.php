@@ -45,7 +45,7 @@ class SignatureGenerator
         $r = openssl_sign($chain, $signature, $private, OPENSSL_ALGO_SHA256);
 
         // free the key from memory
-        openssl_free_key($private);
+        openssl_pkey_free($private);
 
         if (!$r) {
             $this->errors = array_merge($this->errors, OpenSSLUtility::getOpenSSLErrors());

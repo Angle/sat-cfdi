@@ -37,7 +37,11 @@ class ItemTaxesTransferredList extends CFDINode
     protected static $attributes = [];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'transfers' => [
+            'keywords'  => ['Traslado', 'transfers'],
+            'class'     => ItemTaxesTransferred::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 
@@ -138,6 +142,16 @@ class ItemTaxesTransferredList extends CFDINode
     }
 
     /**
+     * @param ItemTaxesTransferred[] $transfers
+     * @return ItemTaxesTransferredList
+     */
+    public function setTransfers(array $transfers): self
+    {
+        $this->transfers = $transfers;
+        return $this;
+    }
+
+    /**
      * @param ItemTaxesTransferred $transfer
      * @return ItemTaxesTransferredList
      */
@@ -148,12 +162,12 @@ class ItemTaxesTransferredList extends CFDINode
     }
 
     /**
-     * @param ItemTaxesTransferred[] $transfers
+     * alias of addTransfer()
+     * @param ItemTaxesTransferred $transfer
      * @return ItemTaxesTransferredList
      */
-    public function setTransfers(array $transfers): self
+    public function addItemTaxesTransferred(ItemTaxesTransferred $transfer): self
     {
-        $this->transfers = $transfers;
-        return $this;
+        return $this->addTransfer($transfer);
     }
 }

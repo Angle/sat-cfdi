@@ -142,6 +142,16 @@ class TaxesTransferredList extends CFDINode
     }
 
     /**
+     * @param TaxesTransferred[] $transfers
+     * @return TaxesTransferredList
+     */
+    public function setTransfers(array $transfers): self
+    {
+        $this->transfers = $transfers;
+        return $this;
+    }
+
+    /**
      * @param TaxesTransferred $transfer
      * @return TaxesTransferredList
      */
@@ -152,13 +162,13 @@ class TaxesTransferredList extends CFDINode
     }
 
     /**
-     * @param TaxesTransferred[] $transfers
-     * @return TaxesTransferredList
+     * alias of addTransfer()
+     * @param TaxesTransferred $transfer
+     * @return $this
      */
-    public function setTransfers(array $transfers): self
+    public function addTaxesTransferred(TaxesTransferred $transfer): self
     {
-        $this->transfers = $transfers;
-        return $this;
+        return $this->addTransfer($transfer);
     }
 
 }

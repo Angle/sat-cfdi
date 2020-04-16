@@ -37,7 +37,16 @@ class ItemTaxes extends CFDINode
     protected static $attributes = [];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'transferredList' => [
+            'keywords'  => ['Traslados', 'transferredList'],
+            'class'     => ItemTaxesTransferredList::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
+        'retainedList' => [
+            'keywords'  => ['Retenciones', 'retainedList'],
+            'class'     => ItemTaxesRetainedList::class,
+            'type'      => CFDI::CHILD_UNIQUE,
+        ],
     ];
 
 

@@ -37,7 +37,11 @@ class ItemTaxesRetainedList extends CFDINode
     protected static $attributes = [];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'retentions' => [
+            'keywords'  => ['Retencion', 'retentions'],
+            'class'     => ItemTaxesRetained::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 
@@ -138,6 +142,16 @@ class ItemTaxesRetainedList extends CFDINode
     }
 
     /**
+     * @param ItemTaxesRetained[] $retentions
+     * @return ItemTaxesRetainedList
+     */
+    public function setRetentions(array $retentions): self
+    {
+        $this->retentions = $retentions;
+        return $this;
+    }
+
+    /**
      * @param ItemTaxesRetained $retention
      * @return ItemTaxesRetainedList
      */
@@ -148,12 +162,12 @@ class ItemTaxesRetainedList extends CFDINode
     }
 
     /**
-     * @param ItemTaxesRetained[] $retentions
+     * alias of addRetention
+     * @param ItemTaxesRetained $retention
      * @return ItemTaxesRetainedList
      */
-    public function setRetentions(array $retentions): self
+    public function addItemTaxesRetained(ItemTaxesRetained $retention): self
     {
-        $this->retentions = $retentions;
-        return $this;
+        return $this->addRetention($retention);
     }
 }

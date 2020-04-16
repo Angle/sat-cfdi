@@ -142,6 +142,16 @@ class TaxesRetainedList extends CFDINode
     }
 
     /**
+     * @param TaxesRetained[] $retentions
+     * @return TaxesRetainedList
+     */
+    public function setRetentions(array $retentions): self
+    {
+        $this->retentions = $retentions;
+        return $this;
+    }
+
+    /**
      * @param TaxesRetained $retention
      * @return TaxesRetainedList
      */
@@ -152,13 +162,12 @@ class TaxesRetainedList extends CFDINode
     }
 
     /**
-     * @param TaxesRetained[] $retentions
+     * alias of addRetention
+     * @param TaxesRetained $retention
      * @return TaxesRetainedList
      */
-    public function setRetentions(array $retentions): self
+    public function addTaxesRetained(TaxesRetained $retention): self
     {
-        $this->retentions = $retentions;
-        return $this;
+        return $this->addRetention($retention);
     }
-
 }

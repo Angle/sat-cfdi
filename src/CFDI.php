@@ -4,6 +4,11 @@ namespace Angle\CFDI;
 
 use Angle\CFDI\Catalog\PaymentType;
 use Angle\CFDI\CFDIException;
+use Angle\CFDI\Node\TaxesRetained;
+use Angle\CFDI\Node\TaxesRetainedList;
+use Angle\CFDI\Node\TaxesTransferred;
+use Angle\CFDI\Node\TaxesTransferredList;
+use Angle\CFDI\Utility\Math;
 use Angle\CFDI\Utility\PathUtility;
 
 use Angle\CFDI\Node\Issuer;
@@ -338,6 +343,11 @@ class CFDI extends CFDINode
     #########################
 
     // constructor implemented in the CFDINode abstract class
+    public function __construct(array $data)
+    {
+        parent::__construct($data);
+        $this->calculateTaxesAndTotals();
+    }
 
     /**
      * @param DOMNode[]
@@ -655,7 +665,7 @@ class CFDI extends CFDINode
             }
 
             // 9. Impuestos: TotalTrasladados
-            if ($this->taxes->getTotalTranslatedAmount()) $items[] = $this->taxes->getTotalTranslatedAmount();
+            if ($this->taxes->getTotalTransferredAmount()) $items[] = $this->taxes->getTotalTransferredAmount();
         }
 
         // 12. Complement
@@ -753,6 +763,114 @@ class CFDI extends CFDINode
 
         // nothing found
         return null;
+    }
+
+    /**
+     * Calculate and update the CFDI's subtotal and totals for items and taxes
+     * This method has to be called _after_ buildTaxes
+     */
+    public function calculateTaxesAndTotals(): void
+    {
+        $subtotal = '0';
+        $discount = '0';
+
+        // Initialize variables to hold the Taxes
+        $transfers = [];
+        $retentions = [];
+
+        $totalTransferredAmount = '0';
+        $totalRetainedAmount = '0';
+
+        foreach ($this->itemList->getItems() as $it) {
+
+            $subtotal = Math::add($subtotal, $it->getAmount());
+
+            $itemDiscount = $it->getDiscount() ?? '0';
+            $discount = Math::add($discount, $itemDiscount);
+
+            // Process any Transferred taxes
+            if ($it->getTaxes() && $it->getTaxes()->getTransferredList()) {
+                foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $tax) {
+                    $key = $tax->getTax() . '-' . $tax->getFactorType() . '-' . $tax->getRate();
+
+                    if (!array_key_exists($key, $transfers)) {
+                        $transfers[$key] = [
+                            'tax' => $tax->getTax(),
+                            'factorType' => $tax->getFactorType(),
+                            'rate' => $tax->getRate(),
+                            'amount' => '0',
+                        ];
+                    }
+
+                    $taxAmount = $tax->getAmount() ?? '0';
+                    $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], $taxAmount);
+                    $totalTransferredAmount = Math::add($totalTransferredAmount, $taxAmount);
+                }
+            }
+
+            // Process any Transferred taxes
+            if ($it->getTaxes() && $it->getTaxes()->getRetainedList()) {
+                foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $tax) {
+                    $key = $tax->getTax();
+
+                    if (!array_key_exists($key, $retentions)) {
+                        $retentions[$key] = [
+                            'tax' => $key,
+                            'amount' => '0',
+                        ];
+                    }
+
+                    $taxAmount = $tax->getAmount() ?? '0';
+                    $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
+                    $totalRetainedAmount = Math::add($totalRetainedAmount, $taxAmount);
+                }
+            }
+
+            // TODO: Local Taxes..
+        }
+
+        // Purge the taxes that amount to 0
+        foreach ($transfers as $k => $t) {
+            if (Math::equal($t['amount'], '0')) {
+                unset($transfers[$k]);
+            }
+        }
+        foreach ($retentions as $k => $t) {
+            if (Math::equal($t['amount'], '0')) {
+                unset($retentions[$k]);
+            }
+        }
+
+        // Calculate the Total Amount
+        $total = $subtotal;
+        $total = Math::sub($total, $discount);
+        $total = Math::add($total, $totalTransferredAmount);
+        $total = Math::sub($total, $totalRetainedAmount);
+
+        // Update the CFDI object
+        $this->setSubTotal($subtotal);
+        $this->setDiscount($discount);
+        $this->setTotal($total);
+
+
+        // Build the Taxes node
+        $this->taxes = new Taxes([]);
+        $this->taxes->setTotalTransferredAmount(Math::round($totalTransferredAmount,2));
+        $this->taxes->setTotalRetainedAmount(Math::round($totalRetainedAmount,2));
+
+        $transferredList = new TaxesTransferredList([]);
+        foreach ($transfers as $k => $t) {
+            $tax = new TaxesTransferred($t);
+            $transferredList->addTransfer($tax);
+        }
+        $this->taxes->setTransferredList($transferredList);
+
+        $retentionList = new TaxesRetainedList([]);
+        foreach ($retentions as $k => $t) {
+            $tax = new TaxesRetained($t);
+            $retentionList->addRetention($tax);
+        }
+        $this->taxes->setRetainedList($retentionList);
     }
 
 

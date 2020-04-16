@@ -67,7 +67,11 @@ class ItemPart extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'customsInformation' => [
+            'keywords'  => ['InformacionAduanera', 'customsInformation'],
+            'class'     => ItemCustomsInformation::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 

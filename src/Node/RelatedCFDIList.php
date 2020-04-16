@@ -45,7 +45,11 @@ class RelatedCFDIList extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'related' => [
+            'keywords'  => ['CfdiRelacionado', 'related'],
+            'class'     => RelatedCFDI::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 

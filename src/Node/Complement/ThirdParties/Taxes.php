@@ -40,8 +40,8 @@ class Taxes extends CFDINode
             'keywords' => ['TotalImpuestosRetenidos', 'totalRetainedAmount'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
-        'totalTranslatedAmount'          => [
-            'keywords' => ['TotalImpuestosTrasladados', 'totalTranslatedAmount'],
+        'totalTransferredAmount'          => [
+            'keywords' => ['TotalImpuestosTrasladados', 'totalTransferredAmount'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
     ];
@@ -63,7 +63,7 @@ class Taxes extends CFDINode
     /**
      * @var string|null
      */
-    protected $totalTranslatedAmount;
+    protected $totalTransferredAmount;
 
 
     // CHILDREN NODES
@@ -180,18 +180,18 @@ class Taxes extends CFDINode
     /**
      * @return string|null
      */
-    public function getTotalTranslatedAmount(): ?string
+    public function getTotalTransferredAmount(): ?string
     {
-        return $this->totalTranslatedAmount;
+        return $this->totalTransferredAmount;
     }
 
     /**
-     * @param string|null $totalTranslatedAmount
+     * @param string|null $totalTransferredAmount
      * @return Taxes
      */
-    public function setTotalTranslatedAmount(?string $totalTranslatedAmount): self
+    public function setTotalTransferredAmount(?string $totalTransferredAmount): self
     {
-        $this->totalTranslatedAmount = $totalTranslatedAmount;
+        $this->totalTransferredAmount = $totalTransferredAmount;
         return $this;
     }
 

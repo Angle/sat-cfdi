@@ -6,6 +6,8 @@ use Angle\CFDI\Catalog\RegimeType;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\Catalog\CFDIType;
 use Angle\CFDI\Catalog\CFDIUse;
+use Angle\CFDI\Catalog\TaxType;
+use Angle\CFDI\Catalog\TaxFactorType;
 use Angle\CFDI\Catalog\PaymentType;
 use Angle\CFDI\Catalog\PaymentMethod;
 
@@ -61,12 +63,33 @@ final class InvoiceTest extends TestCase
                     'description'   => 'Test item / product',
                     'unitPrice'     => 100.0,
                     'amount'        => 100.0,
+                    'taxes' => [
+                        'transferredList' => [
+                            'transfers' => [
+                                [
+                                    'base' => '100.0',
+                                    'tax' => TaxType::IVA,
+                                    'factorType' => TaxFactorType::RATE,
+                                    'rate' => '0.16',
+                                    'amount' => '16',
+                                ],
+                            ]
+                        ],
+                        'retainedList' => [
+                            'retentions' => []
+                        ]
+                    ]
                 ],
             ]
         ];
 
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
         try {
             $cfdi = new CFDI($data);
+
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
             return;
@@ -82,10 +105,4 @@ final class InvoiceTest extends TestCase
         echo $cfdi->toXML();
         echo PHP_EOL . PHP_EOL;
     }
-
-    public function testInvoiceCreationSpanish(): void
-    {
-
-    }
-
 }
