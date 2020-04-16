@@ -347,6 +347,7 @@ class CFDI extends CFDINode
     {
         parent::__construct($data);
         $this->calculateTaxesAndTotals();
+        $this->cleanUpEmptyProperties();
     }
 
     /**
@@ -808,7 +809,7 @@ class CFDI extends CFDINode
                 }
             }
 
-            // Process any Transferred taxes
+            // Process any Retained taxes
             if ($it->getTaxes() && $it->getTaxes()->getRetainedList()) {
                 foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $tax) {
                     $key = $tax->getTax();
@@ -865,12 +866,40 @@ class CFDI extends CFDINode
         }
         $this->taxes->setTransferredList($transferredList);
 
+
         $retentionList = new TaxesRetainedList([]);
         foreach ($retentions as $k => $t) {
             $tax = new TaxesRetained($t);
             $retentionList->addRetention($tax);
         }
         $this->taxes->setRetainedList($retentionList);
+    }
+
+    public function cleanUpEmptyProperties()
+    {
+        // Check the Taxes in each Item
+        foreach ($this->itemList->getItems() as $it) {
+            // Clean up the object in case there are no Transfers
+            if ($it->getTaxes() && $it->getTaxes()->getTransferredList()
+                && empty($it->getTaxes()->getTransferredList()->getTransfers())) {
+                $it->getTaxes()->setTransferredList(null);
+            }
+
+            // Clean up the object in case there are no Retentions
+            if ($it->getTaxes() && $it->getTaxes()->getRetainedList()
+                && empty($it->getTaxes()->getRetainedList()->getRetentions())) {
+                $it->getTaxes()->setRetainedList(null);
+            }
+        }
+
+        // Check the global (total) taxes
+        if (empty($this->getTaxes()->getTransferredList()->getTransfers())) {
+            $this->getTaxes()->setTransferredList(null);
+        }
+
+        if (empty($this->getTaxes()->getRetainedList()->getRetentions())) {
+            $this->getTaxes()->setRetainedList(null);
+        }
     }
 
 
