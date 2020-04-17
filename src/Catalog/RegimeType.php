@@ -145,6 +145,32 @@ abstract class RegimeType
         return $a;
     }
 
+    public static function listForFormBuilderNaturalPerson($lang='es'): array
+    {
+        $a = [];
+
+        foreach (self::$map as $key => $props) {
+            if ($props['natural_person']) {
+                $a[$props['name']] = $key;
+            }
+        }
+
+        return $a;
+    }
+
+    public static function listForFormBuilderLegalEntity($lang='es'): array
+    {
+        $a = [];
+
+        foreach (self::$map as $key => $props) {
+            if ($props['legal_entity']) {
+                $a[$props['name']] = $key;
+            }
+        }
+
+        return $a;
+    }
+
     public static function getName($id, $lang='es'): ?string
     {
         if (!self::exists($id)) {
