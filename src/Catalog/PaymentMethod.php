@@ -32,40 +32,141 @@ abstract class PaymentMethod
 
     // TODO: Finish this catalog
 
-    /*
     private static $map = [
-        self::INCOME => [
+        self::CASH => [
             'name' => [
-                'en' => 'Income',
-                'es' => 'Ingreso',
+                'en' => 'Cash',
+                'es' => 'Efectivo',
             ],
         ],
-        self::EXPENDITURE => [
+        self::CHECK => [
             'name' => [
-                'en' => 'Expenditure',
-                'es' => 'Egreso',
+                'en' => 'Check',
+                'es' => 'Cheque nominativo',
             ],
         ],
         self::TRANSFER => [
             'name' => [
-                'en' => 'Transfer',
-                'es' => 'Traslado',
+                'en' => 'Wire Transfer',
+                'es' => 'Transferencia electrónica de fondos',
             ],
         ],
-        self::PAYSLIP => [
+        self::CREDIT_CARD => [
             'name' => [
-                'en' => 'Payslip',
-                'es' => 'Nómina',
+                'en' => 'Credit Card',
+                'es' => 'Tarjeta de crédito',
             ],
         ],
-        self::PAYMENT => [
+        self::ELECTRONIC_WALLET => [
             'name' => [
-                'en' => 'Payment',
-                'es' => 'Pago',
+                'en' => 'Electronic Wallet',
+                'es' => 'Monedero electrónico',
+            ],
+        ],
+        self::ELECTRONIC_MONEY => [
+            'name' => [
+                'en' => 'Electronic Money',
+                'es' => 'Dinero electrónico',
+            ],
+        ],
+        self::GROCERY_VOUCHERS => [
+            'name' => [
+                'en' => 'Grocery Vouchers',
+                'es' => 'Vales de despensa',
+            ],
+        ],
+        self::DATION_IN_PAYMENT => [
+            'name' => [
+                'en' => 'Dation in Payment',
+                'es' => 'Dación en pago',
+            ],
+        ],
+        self::SUBROGATION_PAYMENT => [
+            'name' => [
+                'en' => 'Subrogation Payment',
+                'es' => 'Pago por subrogación',
+            ],
+        ],
+        self::CONSIGNMENT_PAYMENT => [
+            'name' => [
+                'en' => 'Consignment Payment',
+                'es' => 'Pago por consignación',
+            ],
+        ],
+        self::CONDONE => [
+            'name' => [
+                'en' => 'Condone',
+                'es' => 'Condonación',
+            ],
+        ],
+        self::COMPENSATION => [
+            'name' => [
+                'en' => 'Compensation',
+                'es' => 'Compensación',
+            ],
+        ],
+        self::NOVATION => [
+            'name' => [
+                'en' => 'Novation',
+                'es' => 'Novación',
+            ],
+        ],
+        self::CONFUSION => [
+            'name' => [
+                'en' => 'Confusion',
+                'es' => 'Confusión',
+            ],
+        ],
+        self::DEBT_REMISSION => [
+            'name' => [
+                'en' => 'Debt Remission',
+                'es' => 'Remisión de deuda',
+            ],
+        ],
+        self::PRESCRIPTION_OR_EXPIRATION => [
+            'name' => [
+                'en' => 'Prescription or Expiration',
+                'es' => 'Prescripción o caducidad',
+            ],
+        ],
+        self::CREDITORS_SATISFACTION => [
+            'name' => [
+                'en' => 'Creditors Satisfaction',
+                'es' => 'A satisfacción del acreedor',
+            ],
+        ],
+        self::DEBIT_CARD => [
+            'name' => [
+                'en' => 'Debit Card',
+                'es' => 'Tarjeta de débito',
+            ],
+        ],
+        self::SERVICE_CARD => [
+            'name' => [
+                'en' => 'Service Card',
+                'es' => 'Tarjeta de servicios',
+            ],
+        ],
+        self::ADVANCE_APPLICATION => [
+            'name' => [
+                'en' => 'Advance Application',
+                'es' => 'Aplicación de anticipos',
+            ],
+        ],
+        self::PAYMENT_INTERMEDIARY => [
+            'name' => [
+                'en' => 'Payment Intermediary',
+                'es' => 'Intermediario pagos',
+            ],
+        ],
+        self::TO_BE_DEFINED => [
+            'name' => [
+                'en' => 'To be defined',
+                'es' => 'Por definir',
             ],
         ],
     ];
-    */
+
 
     public static function listForFormBuilder($lang='es'): array
     {
