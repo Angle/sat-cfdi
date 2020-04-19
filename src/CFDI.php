@@ -965,7 +965,7 @@ class CFDI extends CFDINode
         }
 
         $url .= '&tt=' . $total;
-        $url .= '&fe=' . rawurlencode(substr($this->signature, -8));
+        //$url .= '&fe=' . rawurlencode(substr($this->signature, -8));
 
         return $url;
     }
