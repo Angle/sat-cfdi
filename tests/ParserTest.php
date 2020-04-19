@@ -33,7 +33,11 @@ final class ParserTest extends TestCase
             echo file_get_contents($filename);
             echo PHP_EOL . PHP_EOL;
 
-            $cfdi = $loader->fileToCFDI($filename);
+            try {
+                $cfdi = $loader->fileToCFDI($filename);
+            } catch (\Exception $e) {
+                $cfdi = null;
+            }
 
             if (!$cfdi) {
                 // Loading failed!

@@ -50,7 +50,6 @@ class ItemList extends CFDINode
     ##      PROPERTIES     ##
     #########################
 
-
     // CHILDREN NODES
     /**
      * @var Item[]

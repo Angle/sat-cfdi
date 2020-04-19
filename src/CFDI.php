@@ -342,10 +342,8 @@ class CFDI extends CFDINode
     ##     CONSTRUCTOR     ##
     #########################
 
-    // constructor implemented in the CFDINode abstract class
-    public function __construct(array $data)
+    public function autoCalculate()
     {
-        parent::__construct($data);
         $this->calculateTaxesAndTotals();
         $this->cleanUpValuesAndEmptyProperties();
     }
