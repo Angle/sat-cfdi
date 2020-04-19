@@ -948,6 +948,28 @@ class CFDI extends CFDINode
         }
     }
 
+    /**
+     * Build the URL that must be included as a QR Code in the printed representations of CFDIs for Online Verification
+     * @return string
+     */
+    public function buildSatVerificationUrl(): string
+    {
+        $url = 'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx?';
+        $url .= '&id=' . $this->getUuid();
+        $url .= '&re=' . $this->issuer->getRfc();
+        $url .= '&rr=' . $this->recipient->getRfc();
+
+        $total = $this->getTotal();
+        if (strpos($total, '.') !== false) {
+            $total = rtrim(rtrim($total, "0"),".");
+        }
+
+        $url .= '&tt=' . $total;
+        $url .= '&fe=' . rawurlencode(substr($this->signature, -8));
+
+        return $url;
+    }
+
 
     #########################
     ## GETTERS AND SETTERS ##
