@@ -782,8 +782,7 @@ class CFDI extends CFDINode
 
         foreach ($this->itemList->getItems() as $it) {
 
-            $itemSubtotal = Math::mul($it->getUnitPrice(), $it->getQuantity());
-            $subtotal = Math::add($subtotal, $itemSubtotal);
+            $subtotal = Math::add($subtotal, $it->getAmount());
 
             $itemDiscount = $it->getDiscount() ?? '0';
             $discount = Math::add($discount, $itemDiscount);
