@@ -7,6 +7,7 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
 
+use Angle\CFDI\OriginalChainGenerator;
 use DateTime;
 use DateTimeZone;
 
@@ -194,11 +195,15 @@ class FiscalStamp extends CFDINode
     }
 
     /**
-     * DEPRECATED: Use the OriginalChainGenerator service instead, it employs a robust XSL Transpiler
-     * @deprecated
-     *
      * Builds the Original Chain Sequence for the Fiscal Stamp
      * Returns false on failure
+     *
+     * This method is meant for simple representations of the Chain Sequence and should not be used for
+     * certificate signatures or validations.
+     *
+     * For the most correct results, use the OriginalChainGenerator service instead
+     * @see OriginalChainGenerator
+     *
      * @return string|false
      */
     public function getChainSequence(): string
