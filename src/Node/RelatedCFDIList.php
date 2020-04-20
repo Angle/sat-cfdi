@@ -7,7 +7,10 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
 
+use Angle\CFDI\Catalog\RelatedCFDIType;
+
 use Angle\CFDI\Node\RelatedCFDI;
+
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -58,6 +61,7 @@ class RelatedCFDIList extends CFDINode
     #########################
 
     /**
+     * @see RelatedCFDIType
      * @var string
      */
     protected $type;

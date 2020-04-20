@@ -83,12 +83,36 @@ final class InvoiceTest extends TestCase
             ]
         ];
 
+        $data['complements'] = [
+            [
+                'localTaxes' => [
+                    [
+                        'transfers' => [
+                            [
+                                'tax' => 'DSA',
+                                'rate' => '0.05',
+                                'amount' => '5.00',
+                            ],
+                        ],
+                        'retentions' => [
+                            [
+                                'tax' => 'ISH',
+                                'rate' => '0.15',
+                                'amount' => '15.00',
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
         echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
         print_r($data);
         echo PHP_EOL . PHP_EOL;
 
         try {
             $cfdi = new CFDI($data);
+            $cfdi->autoCalculate();
 
         } catch (\Exception $e) {
             $this->fail($e->getMessage());

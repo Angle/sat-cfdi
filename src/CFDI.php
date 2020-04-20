@@ -824,8 +824,6 @@ class CFDI extends CFDINode
                     $totalRetainedAmount = Math::add($totalRetainedAmount, $taxAmount);
                 }
             }
-
-            // TODO: Local Taxes..
         }
 
         // Purge the taxes that amount to 0
@@ -840,11 +838,32 @@ class CFDI extends CFDINode
             }
         }
 
+
+        // Process Local Taxes
+        $totalLocalTransferredAmount = '0';
+        $totalLocalRetainedAmount = '0';
+
+        if ($this->getLocalTaxes()) {
+            foreach ($this->getLocalTaxes()->getTaxesTransferred() as $tax) {
+                $totalLocalTransferredAmount = Math::add($totalLocalTransferredAmount, $tax->getAmount());
+            }
+
+            foreach ($this->getLocalTaxes()->getTaxesRetained() as $tax) {
+                $totalLocalRetainedAmount = Math::add($totalLocalRetainedAmount, $tax->getAmount());
+            }
+
+            $this->getLocalTaxes()->setTotalTransferred($totalLocalTransferredAmount);
+            $this->getLocalTaxes()->setTotalRetained($totalLocalRetainedAmount);
+        }
+
+
         // Calculate the Total Amount
         $total = $subtotal;
         $total = Math::sub($total, $discount);
         $total = Math::add($total, $totalTransferredAmount);
         $total = Math::sub($total, $totalRetainedAmount);
+        $total = Math::add($total, $totalLocalTransferredAmount);
+        $total = Math::sub($total, $totalLocalRetainedAmount);
 
         // Update the CFDI object
         $this->setSubTotal($subtotal);

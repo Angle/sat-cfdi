@@ -59,7 +59,16 @@ class LocalTaxes extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'taxesRetained' => [
+            'keywords'  => ['RetencionesLocales', 'taxesRetained', 'retentions'],
+            'class'     => LocalTaxesRetained::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
+        'taxesTransferred' => [
+            'keywords'  => ['RetencionesLocales', 'taxesTransferred', 'transfers'],
+            'class'     => LocalTaxesTransferred::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 
@@ -117,11 +126,11 @@ class LocalTaxes extends CFDINode
             switch ($node->localName) {
                 case LocalTaxesRetained::NODE_NAME:
                     $retained = LocalTaxesRetained::createFromDomNode($node);
-                    $this->addTaxesRetained($retained);
+                    $this->addLocalTaxesRetained($retained);
                     break;
                 case LocalTaxesTransferred::NODE_NAME:
                     $retained = LocalTaxesTransferred::createFromDomNode($node);
-                    $this->addTaxesTransferred($retained);
+                    $this->addLocalTaxesTransferred($retained);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
@@ -242,10 +251,20 @@ class LocalTaxes extends CFDINode
      * @param LocalTaxesRetained $taxes
      * @return LocalTaxes
      */
-    public function addTaxesRetained(LocalTaxesRetained $taxes): self
+    public function addLocalTaxesRetained(LocalTaxesRetained $taxes): self
     {
         $this->taxesRetained[] = $taxes;
         return $this;
+    }
+
+    /**
+     * Alias
+     * @param LocalTaxesRetained $taxes
+     * @return LocalTaxes
+     */
+    public function addTaxesRetained(LocalTaxesRetained $taxes): self
+    {
+        return $this->addLocalTaxesRetained($taxes);
     }
 
     /**
@@ -270,10 +289,20 @@ class LocalTaxes extends CFDINode
      * @param LocalTaxesTransferred $taxes
      * @return LocalTaxes
      */
-    public function addTaxesTransferred(LocalTaxesTransferred $taxes): self
+    public function addLocalTaxesTransferred(LocalTaxesTransferred $taxes): self
     {
         $this->taxesTransferred[] = $taxes;
         return $this;
+    }
+
+    /**
+     * Alias
+     * @param LocalTaxesTransferred $taxes
+     * @return LocalTaxes
+     */
+    public function addTaxesTransferred(LocalTaxesTransferred $taxes): self
+    {
+        return $this->addLocalTaxesTransferred($taxes);
     }
 
     /**

@@ -47,7 +47,11 @@ class Complement extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'complements' => [
+            'keywords'  => ['ImpuestosLocales', 'localTaxes'],
+            'class'     => LocalTaxes::class,
+            'type'      => CFDI::CHILD_ARRAY,
+        ],
     ];
 
 
@@ -206,6 +210,22 @@ class Complement extends CFDINode
         }
 
         return null;
+    }
+
+    /**
+     * @param LocalTaxes $localTaxes
+     * @throws CFDIException
+     * @return Complement
+     */
+    public function addLocalTaxes(LocalTaxes $localTaxes): self
+    {
+        // Check if there is another fiscal stamp
+        if ($this->getLocalTaxes() !== null) {
+            throw new CFDIException('Cannot add more than one LocalTaxes to the CFDI\'s Complements');
+        }
+
+        $this->complements[] = $localTaxes;
+        return $this;
     }
 
 

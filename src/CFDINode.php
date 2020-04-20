@@ -34,6 +34,9 @@ abstract class CFDINode implements CFDINodeInterface
      */
     public function __construct(array $data)
     {
+        // debug:
+        echo "Building for: " . $this->getShortName() . ' with data: ' . print_r($data, true) . PHP_EOL;
+
         // Lookup each element in the given array, attempt to find the corresponding property even if the input is in english or spanish
         foreach ($data as $key => $value) {
             $propertyType = $this->findPropertyType($key);
