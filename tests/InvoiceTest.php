@@ -54,6 +54,15 @@ final class InvoiceTest extends TestCase
             'cfdiUse'           => CFDIUse::GENERAL_EXPENSE,
         ];
 
+        $data['relatedCFDIList'] = [
+            'type' => '04',
+            'related' => [
+                [
+                    'uuid' => '1234',
+                ],
+            ],
+        ];
+
         $data['itemList'] = [
             'items' => [
                 [

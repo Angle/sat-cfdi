@@ -94,7 +94,7 @@ class RelatedCFDIList extends CFDINode
             switch ($node->localName) {
                 case RelatedCFDI::NODE_NAME:
                     $related = RelatedCFDI::createFromDomNode($node);
-                    $this->addRelated($related);
+                    $this->addRelatedCFDI($related);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
@@ -168,7 +168,7 @@ class RelatedCFDIList extends CFDINode
     /**
      * @return RelatedCFDI[]
      */
-    public function getRelated(): ?array
+    public function getRelatedCFDI(): ?array
     {
         return $this->related;
     }
@@ -177,7 +177,7 @@ class RelatedCFDIList extends CFDINode
      * @param RelatedCFDI $related
      * @return RelatedCFDIList
      */
-    public function addRelated(RelatedCFDI $related): self
+    public function addRelatedCFDI(RelatedCFDI $related): self
     {
         $this->related[] = $related;
         return $this;
@@ -187,7 +187,7 @@ class RelatedCFDIList extends CFDINode
      * @param RelatedCFDI[] $related
      * @return RelatedCFDIList
      */
-    public function setRelated(array $related): self
+    public function setRelatedCFDI(array $related): self
     {
         $this->related = $related;
         return $this;

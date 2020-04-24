@@ -543,7 +543,7 @@ class CFDI extends CFDINode
         if ($this->relatedCFDIList) {
             $items[] = $this->relatedCFDIList->getType();
 
-            foreach ($this->relatedCFDIList->getRelated() as $related) {
+            foreach ($this->relatedCFDIList->getRelatedCFDI() as $related) {
                 $items[] = $related->getUuid();
             }
         }
