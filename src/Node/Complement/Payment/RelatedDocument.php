@@ -259,7 +259,7 @@ class RelatedDocument extends CFDINode
      */
     public function setCurrency(?string $currency): self
     {
-        $this->currency = $currency;
+        $this->currency = strtoupper($currency);
         return $this;
     }
 
