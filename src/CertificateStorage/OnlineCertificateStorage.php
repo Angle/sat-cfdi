@@ -79,8 +79,8 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
         $response = curl_exec($ch);
 
@@ -90,7 +90,7 @@ class OnlineCertificateStorage implements CertificateStorageInterface
 
         if ($chErrno == CURLE_OPERATION_TIMEDOUT) {
             // request failed for network reasons, attempt to load from a local file
-            error_log('SAT CFDI OnlineCertificateStorage query timedout for: ' . $url);
+            error_log('SAT CFDI OnlineCertificateStorage query timed-out for: ' . $url);
 
             if ($this->fallbackDirectory === null) {
                 // we don't have a fallback directory set, there's nothing else we can do
@@ -136,7 +136,10 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         }
 
         // now we'll write it into a temporary file
-        if (!mkdir(PathUtility::join(self::TMP_DIRECTORY, $certificatePath), 0777, true)) {
+        // attempt to create the directory, disregard if successful or not
+        @mkdir(PathUtility::join(self::TMP_DIRECTORY, $certificatePath), 0777, true);
+
+        if (!is_dir(PathUtility::join(self::TMP_DIRECTORY, $certificatePath))) {
             // could not create the directory
             // we'll simply return the string as is, we'll figure out the writing part later on..
             return $pem;

@@ -10,6 +10,7 @@ use Angle\CFDI\Utility\OpenSSLUtility;
 use Angle\CFDI\CFDI;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Utility\RFC;
+use Angle\CFDI\Utility\X509VerificationUtility;
 
 class SignatureValidator
 {
@@ -215,12 +216,12 @@ class SignatureValidator
         }
 
 
-
         // Check the certificate's CA
-        $auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [CFDI::SATRootCertificatePEM()]);
-        if ($auth === false) {
-            //return ['Certificate not authentic: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        // the previous method used the openssl_x509_checkpurpose function, but it was very inflexible when handling past dates
+        //$auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [CFDI::SATRootCertificatePEM()]);
 
+        $auth = X509VerificationUtility::verifySignature($certificatePem);
+        if ($auth === 0) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -228,7 +229,6 @@ class SignatureValidator
             ];
             return false;
         } elseif ($auth === -1) {
-            //return ['Certificate authenticity check failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -243,6 +243,39 @@ class SignatureValidator
             'message' => 'Issuer X.509 Certificate was issued by SAT',
         ];
 
+
+        // Check the certificate at date
+        if (!$cfdi->getDate()) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'CFDI does not have a valid date',
+            ];
+            return false;
+        }
+
+        $valid = X509VerificationUtility::verifyCertificateAtDate($certificatePem, $cfdi->getDate());
+        if ($valid === 0) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer X.509 Certificate was invalid or expired at CFDI signing',
+            ];
+            return false;
+        } elseif ($valid === -1) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer X.509 Certificate validity check failed',
+            ];
+            return false;
+        }
+
+        $this->validations[] = [
+            'type' => 'signature:cfdi',
+            'success' => true,
+            'message' => 'Issuer X.509 Certificate was valid at CFDI signing',
+        ];
 
 
         ////////////////
@@ -440,10 +473,11 @@ class SignatureValidator
 
 
         // Check the certificate's CA
-        $auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [CFDI::SATRootCertificatePEM()]);
-        if ($auth === false) {
-            //return ['Certificate not authentic: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+        // the previous method used the openssl_x509_checkpurpose function, but it was very inflexible when handling past dates
+        //$auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [CFDI::SATRootCertificatePEM()]);
 
+        $auth = X509VerificationUtility::verifySignature($certificatePem);
+        if ($auth === 0) {
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
@@ -451,8 +485,6 @@ class SignatureValidator
             ];
             return false;
         } elseif ($auth === -1) {
-            //return ['Certificate authenticity check failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
-
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
@@ -464,7 +496,41 @@ class SignatureValidator
         $this->validations[] = [
             'type' => 'signature:tfd',
             'success' => true,
-            'message' => 'SAT X.509 Certificate is valid',
+            'message' => 'SAT X.509 Certificate was issued by SAT',
+        ];
+
+
+        // Check the certificate at date
+        if (!$fiscalStamp->getStampDate()) {
+            $this->validations[] = [
+                'type' => 'signature:tfd',
+                'success' => false,
+                'message' => 'FiscalStamp does not have a valid date',
+            ];
+            return false;
+        }
+
+        $valid = X509VerificationUtility::verifyCertificateAtDate($certificatePem, $fiscalStamp->getStampDate());
+        if ($valid === 0) {
+            $this->validations[] = [
+                'type' => 'signature:tfd',
+                'success' => false,
+                'message' => 'SAT X.509 Certificate was invalid or expired at FiscalStamp signing',
+            ];
+            return false;
+        } elseif ($valid === -1) {
+            $this->validations[] = [
+                'type' => 'signature:tfd',
+                'success' => false,
+                'message' => 'SAT X.509 Certificate validity check failed',
+            ];
+            return false;
+        }
+
+        $this->validations[] = [
+            'type' => 'signature:tfd',
+            'success' => true,
+            'message' => 'SAT X.509 Certificate was valid at FiscalStamp signing',
         ];
 
 
