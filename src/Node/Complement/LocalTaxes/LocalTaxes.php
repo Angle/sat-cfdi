@@ -13,6 +13,7 @@ use DateTimeZone;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 
 /**
  * @method static LocalTaxes createFromDOMNode(DOMNode $node)

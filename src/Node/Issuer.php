@@ -12,6 +12,7 @@ use DateTime;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 
 /**
  * @method static Issuer createFromDOMNode(DOMNode $node)

@@ -10,6 +10,7 @@ use Angle\CFDI\CFDINode;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use DOMText;
 
 /**
  * @method static ItemPropertyTaxAccount createFromDOMNode(DOMNode $node)
