@@ -146,7 +146,7 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         */
 
         } elseif (!$response) {
-            error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
+            error_log('SAT CFDI OnlineCertificateStorage query failed [http ' . $chHttpCode . '] for: ' . $url);
 
             // the file was not found in SAT's LCO repository
             $this->lastErrorType = self::NOT_FOUND;
