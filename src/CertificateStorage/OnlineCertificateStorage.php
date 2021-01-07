@@ -79,18 +79,21 @@ class OnlineCertificateStorage implements CertificateStorageInterface
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_HEADER, false);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // follow redirects
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
         curl_setopt($ch, CURLOPT_TIMEOUT, 20);
 
         $response = curl_exec($ch);
 
         $chErrno = curl_errno($ch);
+        $chHttpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
 
-        if ($chErrno == CURLE_OPERATION_TIMEDOUT) {
+        if ($chErrno != 0) { // previously: $chErrno == CURLE_OPERATION_TIMEDOUT
             // request failed for network reasons, attempt to load from a local file
-            error_log('SAT CFDI OnlineCertificateStorage query timed-out for: ' . $url);
+            //error_log('SAT CFDI OnlineCertificateStorage query timed-out for: ' . $url);
+            error_log('SAT CFDI OnlineCertificateStorage query error [curl ' . $chErrno . '] for: ' . $url);
 
             if ($this->fallbackDirectory === null) {
                 // we don't have a fallback directory set, there's nothing else we can do
@@ -113,6 +116,34 @@ class OnlineCertificateStorage implements CertificateStorageInterface
                 $this->lastErrorType = self::NETWORK_ERROR;
                 return null;
             }
+
+        /*
+        } elseif ($chHttpCode != 200) {
+            // request failed for network reasons, attempt to load from a local file
+            error_log('SAT CFDI OnlineCertificateStorage query error [http ' . $chHttpCode . '] for: ' . $url);
+
+            if ($this->fallbackDirectory === null) {
+                // we don't have a fallback directory set, there's nothing else we can do
+                $this->lastErrorType = self::NETWORK_ERROR;
+                return null;
+            }
+
+            $filename = realpath(PathUtility::join($this->fallbackDirectory,  $certificateNumber . '.cer'));
+
+            if (!file_exists($filename)) {
+                // file was not found on our local storage, we'll set the error as a Network error
+                $this->lastErrorType = self::NETWORK_ERROR;
+                return null;
+            }
+
+            $response = file_get_contents($filename);
+
+            if ($response === false) {
+                // TODO: Cannot read from our local filepath
+                $this->lastErrorType = self::NETWORK_ERROR;
+                return null;
+            }
+        */
 
         } elseif (!$response) {
             error_log('SAT CFDI OnlineCertificateStorage query failed for: ' . $url);
