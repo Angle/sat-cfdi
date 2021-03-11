@@ -88,15 +88,15 @@ class Payment extends CFDINode
             'type' => CFDI::ATTR_OPTIONAL
         ],
         'paymentCertificate' => [
-            'keywords' => ['CertPago', 'date'],
+            'keywords' => ['CertPago', 'paymentCertificate'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
         'paymentChain' => [
-            'keywords' => ['CadPago', 'date'],
+            'keywords' => ['CadPago', 'paymentChain'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
         'paymentSignature' => [
-            'keywords' => ['SelloPago', 'date'],
+            'keywords' => ['SelloPago', 'paymentSignature'],
             'type' => CFDI::ATTR_OPTIONAL
         ],
     ];
