@@ -68,7 +68,7 @@ class Issuer extends CFDINode
     protected $rfc;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -149,18 +149,18 @@ class Issuer extends CFDINode
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getName(): ?string
     {
         return $this->name;
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return Issuer
      */
-    public function setName(string $name): self
+    public function setName(?string $name): self
     {
         $this->name = $name;
         return $this;

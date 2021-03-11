@@ -74,7 +74,7 @@ class Recipient extends CFDINode
     protected $rfc;
 
     /**
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -165,7 +165,7 @@ class Recipient extends CFDINode
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getName(): ?string
     {
@@ -173,7 +173,7 @@ class Recipient extends CFDINode
     }
 
     /**
-     * @param string $name
+     * @param string|null $name
      * @return Recipient
      */
     public function setName(?string $name): self
