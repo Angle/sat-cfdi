@@ -141,7 +141,14 @@ class OriginalChainGenerator
 
         // Everything's loaded, now try to generate the chain
         try {
-            $chain = $processor->transformToXML($cfdi->toDOMDocument());
+            if ($cfdi->getOriginalXml() !== null) {
+                // if the CFDI has a copy of its original XML string, use that instead of the self-reproduced one
+                $xml = new DOMDocument();
+                $xml->loadXML($cfdi->getOriginalXml());
+                $chain = $processor->transformToXML($xml);
+            } else {
+                $chain = $processor->transformToXML($cfdi->toDOMDocument());
+            }
         } catch (\Exception $e) {
             $this->errors = array_merge($this->errors, $this->libxmlErrors());
 

@@ -160,6 +160,9 @@ class XmlLoader
         // TODO: also register warnings for addendums
 
 
+        // Keep a copy of the Original XML string
+        $cfdi->setOriginalXml($this->dom->saveXML());
+
         return $cfdi;
     }
 

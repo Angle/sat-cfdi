@@ -338,6 +338,12 @@ class CFDI extends CFDINode
     // TODO: Addendum
 
 
+    /**
+     * @var string|null
+     */
+    protected $originalXml = null;
+
+
     #########################
     ##     CONSTRUCTOR     ##
     #########################
@@ -682,6 +688,24 @@ class CFDI extends CFDINode
     #########################
     ##   SPECIAL METHODS   ##
     #########################
+
+    /**
+     * @return string|null
+     */
+    public function getOriginalXml(): ?string
+    {
+        return $this->originalXml;
+    }
+
+    /**
+     * @param string|null $originalXml
+     * @return self
+     */
+    public function setOriginalXml(?string $originalXml): self
+    {
+        $this->originalXml = $originalXml;
+        return $this;
+    }
 
     /**
      * This will return the first UUID found in the Complements
