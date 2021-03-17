@@ -144,6 +144,22 @@ class XmlLoader
             return null;
         }
 
+        // Register "warnings" in the validation history
+        if ($cfdi->getComplements()) {
+            foreach ($cfdi->getComplements() as $c) {
+                foreach ($c->getUnknownNodes() as $u) {
+                    $this->validations[] = [
+                        'type' => 'cfdi',
+                        'success' => true,
+                        'message' => 'Warning: Unknown Complement node found "' . $u . '"',
+                    ];
+                }
+            }
+        }
+
+        // TODO: also register warnings for addendums
+
+
         return $cfdi;
     }
 

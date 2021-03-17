@@ -56,7 +56,6 @@ class Complement extends CFDINode
     ];
 
 
-
     #########################
     ##      PROPERTIES     ##
     #########################
@@ -65,6 +64,13 @@ class Complement extends CFDINode
      * @var CFDINode[]|array
      */
     protected $complements = [];
+
+    /**
+     * This is a special non-spec property used to keep track of the Complement nodes that were not parsed
+     * this will be used to write warnings in other places
+     * @var array
+     */
+    protected $unknownNodes = [];
 
 
     #########################
@@ -118,10 +124,16 @@ class Complement extends CFDINode
                     $this->addComplement($complement);
                     break;
                 */
-                default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
 
                 // TODO: implement other types of nodes
+                /*
+                default:
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
+                */
+
+                default:
+                    // this is an unknown node, we'll register it
+                    $this->unknownNodes[] = $node->nodeName;
             }
         }
     }
@@ -160,12 +172,19 @@ class Complement extends CFDINode
         return true;
     }
 
-
     #########################
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return array
+     */
+    public function getUnknownNodes(): array
+    {
+        return $this->unknownNodes;
+    }
+
+
 
 
     #########################
