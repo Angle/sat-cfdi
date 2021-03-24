@@ -309,6 +309,19 @@ class XmlLoader
                 'message' => 'XML did not validate against schema',
             ];
 
+            foreach ($this->errors as $e) {
+                if (strpos($e, 'Error 3083') === 0) {
+                    // Error 3083 refers to the import of XMLSchema files, that is not relevant for the user
+                    continue;
+                }
+
+                $this->validations[] = [
+                    'type' => 'xml:xslt',
+                    'success' => false,
+                    'message' => $e,
+                ];
+            }
+
             return false;
         }
 
