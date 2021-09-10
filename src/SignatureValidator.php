@@ -157,7 +157,7 @@ class SignatureValidator
 
                 $this->validations[] = [
                     'type' => 'signature:cfdi',
-                    'success' => true,
+                    'success' => true, // success true.. because we don't have a proper "skip"
                     'message' => 'SAT LCO connection error, skipping fingerprint and authenticity validations',
                 ];
             } else {
@@ -174,46 +174,47 @@ class SignatureValidator
             // SAT LCO Certificate validations
             $lcoCertificate = openssl_x509_read($lcoCertificatePem);
 
-            if ($lcoCertificate === false) {
+            if ($lcoCertificate === false) { // hotfix 2021-09-10: SAT LCO server was frequently returning garbled data that could not be parsed
                 //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
 
                 $this->validations[] = [
                     'type' => 'signature:cfdi',
-                    'success' => false,
-                    'message' => 'Issuer Certificate data from SAT LCO cannot be read as a X.509 Certificate',
+                    'success' => true, // success true.. because we don't have a proper "skip"
+                    'message' => 'Issuer Certificate data from SAT LCO cannot be read as a X.509 Cert, skipping fingerprint and authenticity validations',
                 ];
-                return false;
-            }
 
-            $cerFingerprint = (string)openssl_x509_fingerprint($certificate, 'sha256');
-            $lcoFingerprint = (String)openssl_x509_fingerprint($lcoCertificate, 'sha256');
+            } else {
+                // LCO Certificate was successfully parsed
+                $cerFingerprint = (string)openssl_x509_fingerprint($certificate, 'sha256');
+                $lcoFingerprint = (String)openssl_x509_fingerprint($lcoCertificate, 'sha256');
 
-            if ($cerFingerprint === false || $lcoFingerprint === false) {
-                //return ['Certificate X.509 fingerprint failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+                if ($cerFingerprint === false || $lcoFingerprint === false) {
+                    //return ['Certificate X.509 fingerprint failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+
+                    $this->validations[] = [
+                        'type' => 'signature:cfdi',
+                        'success' => false,
+                        'message' => 'X.509 Certificate fingerprint generation failed',
+                    ];
+                    return false;
+                }
+
+                if ($cerFingerprint !== $lcoFingerprint) {
+                    $this->validations[] = [
+                        'type' => 'signature:cfdi',
+                        'success' => false,
+                        'message' => 'Issuer CFDI X.509 Certificate does not match SAT LCO',
+                    ];
+                    return false;
+                }
 
                 $this->validations[] = [
                     'type' => 'signature:cfdi',
-                    'success' => false,
-                    'message' => 'X.509 Certificate fingerprint generation failed',
+                    'success' => true,
+                    'message' => 'Issuer X.509 Certificate found on SAT LCO',
                 ];
-                return false;
-            }
-
-            if ($cerFingerprint !== $lcoFingerprint) {
-                $this->validations[] = [
-                    'type' => 'signature:cfdi',
-                    'success' => false,
-                    'message' => 'Issuer CFDI X.509 Certificate does not match SAT LCO',
-                ];
-                return false;
-            }
-
-            $this->validations[] = [
-                'type' => 'signature:cfdi',
-                'success' => true,
-                'message' => 'Issuer X.509 Certificate found on SAT LCO',
-            ];
-        }
+            } //endif: failure to read the downloaded certificate from SAT LCO (corrupt data)
+        } //endif: failure to download from SAT LCO
 
 
         // Check the certificate's CA
