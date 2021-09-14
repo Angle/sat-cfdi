@@ -61,7 +61,7 @@ abstract class SATCertificateUtility
                 $pem = OpenSSLUtility::coerceBinaryCertificate($certData);
             }
 
-            $certificate = openssl_x509_read($pem);
+            $certificate = @openssl_x509_read($pem);
 
             if ($certificate === false) {
                 throw new \Exception('Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString());

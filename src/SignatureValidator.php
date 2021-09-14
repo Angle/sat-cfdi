@@ -77,7 +77,7 @@ class SignatureValidator
 
         $certificatePem = OpenSSLUtility::coerceBase64Certificate($cfdi->getCertificate());
 
-        $certificate = openssl_x509_read($certificatePem);
+        $certificate = @openssl_x509_read($certificatePem);
 
         if ($certificate === false) {
             //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
@@ -172,7 +172,7 @@ class SignatureValidator
         } else {
 
             // SAT LCO Certificate validations
-            $lcoCertificate = openssl_x509_read($lcoCertificatePem);
+            $lcoCertificate = @openssl_x509_read($lcoCertificatePem);
 
             if ($lcoCertificate === false) { // hotfix 2021-09-10: SAT LCO server was frequently returning garbled data that could not be parsed
                 //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
@@ -454,7 +454,7 @@ class SignatureValidator
             return false;
         }
 
-        $certificate = openssl_x509_read($certificatePem);
+        $certificate = @openssl_x509_read($certificatePem);
 
         if ($certificate === false) {
             //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];

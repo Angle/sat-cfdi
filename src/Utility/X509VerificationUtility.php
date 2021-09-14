@@ -42,7 +42,7 @@ abstract class X509VerificationUtility
             return -1;
         }
 
-        $certificate = openssl_x509_read($certificatePem);
+        $certificate = @openssl_x509_read($certificatePem);
 
         if ($certificate === false) {
             // X509 Read failure
@@ -151,7 +151,7 @@ abstract class X509VerificationUtility
      */
     public static function verifyCertificateAtDate(string $certificatePem, DateTime $date)
     {
-        $certificate = openssl_x509_read($certificatePem);
+        $certificate = @openssl_x509_read($certificatePem);
 
         if ($certificate === false) {
             // X509 Read failure
@@ -211,7 +211,7 @@ abstract class X509VerificationUtility
             // The certificate is DER, we have to convert it to PEM
             $rootCertificateDer = file_get_contents(realpath($filename));
             $rootCertificatePem = OpenSSLUtility::coerceBinaryCertificate($rootCertificateDer);
-            $rootCertificate = openssl_x509_read($rootCertificatePem);
+            $rootCertificate = @openssl_x509_read($rootCertificatePem);
 
             $rootCertificateParsed = openssl_x509_parse($rootCertificate);
 
@@ -236,7 +236,7 @@ abstract class X509VerificationUtility
             // The certificate is PEM, we can use it as-is, but we'll still need the DER file later on
             $rootCertificatePem = file_get_contents(realpath($filename));
             $rootCertificateDer = self::certificatePemToDer($rootCertificatePem);
-            $rootCertificate = openssl_x509_read($rootCertificatePem);
+            $rootCertificate = @openssl_x509_read($rootCertificatePem);
 
             $rootCertificateParsed = openssl_x509_parse($rootCertificate);
 
