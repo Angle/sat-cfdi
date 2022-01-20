@@ -8,8 +8,8 @@
            attributeFormDefault="unqualified">
 
   <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/tdCFDI.xsd"/>
-
   <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catCFDI.xsd"/>
+
   <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catCombustible.xsd"/>
   <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catComExt.xsd"/>
   <xs:import schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catNomina.xsd"/>
