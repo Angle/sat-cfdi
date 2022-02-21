@@ -11,6 +11,7 @@ use DOMNode;
 use Angle\CFDI\CFDINode;
 use Angle\CFDI\CFDIInterface;
 use Angle\CFDI\Node\CFDI33\CFDI33;
+use Angle\CFDI\Node\CFDI40\CFDI40;
 
 class XmlLoader
 {
@@ -208,6 +209,9 @@ class XmlLoader
 
         if ($version == CFDI33::VERSION_3_3) {
             return CFDI33::class;
+
+        } elseif ($version == CFDI40::VERSION_4_0) {
+            return CFDI40::class;
         }
 
 
@@ -225,6 +229,9 @@ class XmlLoader
 
         if ($version == CFDI33::VERSION_3_3) {
             return self::CFDI_3_3_SCHEMA;
+
+        } elseif ($version == CFDI40::VERSION_4_0) {
+            return self::CFDI_4_0_SCHEMA;
         }
 
         throw new CFDIException('Unknown Schema for CFDI Version: ' . $version);
@@ -404,7 +411,7 @@ class XmlLoader
         $this->validations[] = [
             'type' => 'xml',
             'success' => true,
-            'message' => 'XML is valid against the official CFDv33.xsd schema',
+            'message' => 'XML is valid against the official ' . $cfdiSchema . ' schema',
         ];
 
         return true;

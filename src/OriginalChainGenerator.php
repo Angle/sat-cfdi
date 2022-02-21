@@ -21,6 +21,7 @@ use XSLTProcessor as PhpXsltProcessor;
 
 use Angle\CFDI\CFDIInterface;
 use Angle\CFDI\Node\CFDI33\CFDI33;
+use Angle\CFDI\Node\CFDI40\CFDI40;
 
 use Angle\CFDI\Node\Complement\FiscalStamp;
 
@@ -98,8 +99,16 @@ class OriginalChainGenerator
             ];
 
 
-        //} if ($cfdi->getVersion() == CFDI40::VERSION_4_0) {
-        //
+        } elseif ($cfdi->getVersion() == CFDI40::VERSION_4_0) {
+            $versionStylesheet = self::CFDI_4_0_STYLESHEET;
+            $versionString = 'CFDIv4.0';
+
+            $this->validations[] = [
+                'type' => 'chain:cfdi',
+                'success' => true,
+                'message' => 'CFDI OriginalChainGenerator for ' . $versionString,
+            ];
+
         } else {
             $this->validations[] = [
                 'type' => 'chain:cfdi',

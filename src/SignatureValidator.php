@@ -9,6 +9,7 @@ use Angle\CFDI\Utility\OpenSSLUtility;
 
 use Angle\CFDI\CFDIInterface;
 use Angle\CFDI\Node\CFDI33\CFDI33;
+use Angle\CFDI\Node\CFDI40\CFDI40;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Utility\X509VerificationUtility;
 
@@ -51,6 +52,14 @@ class SignatureValidator
 
         if ($cfdi->getVersion() == CFDI33::VERSION_3_3) {
             $versionString = 'CFDIv3.3';
+
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => true,
+                'message' => 'CFDI SignatureValidator check for ' . $versionString,
+            ];
+        } elseif ($cfdi->getVersion() == CFDI40::VERSION_4_0) {
+            $versionString = 'CFDIv4.0';
 
             $this->validations[] = [
                 'type' => 'signature:cfdi',
