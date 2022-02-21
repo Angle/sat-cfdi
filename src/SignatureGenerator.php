@@ -4,6 +4,8 @@ namespace Angle\CFDI;
 
 use Angle\CFDI\Utility\OpenSSLUtility;
 
+use Angle\CFDI\CFDIInterface;
+
 class SignatureGenerator
 {
     /**
@@ -13,12 +15,12 @@ class SignatureGenerator
     private $errors = [];
 
     /**
-     * @param CFDI $cfdi
+     * @param CFDIInterface $cfdi
      * @param string $privateKey raw binary private key
      * @param string $passphrase plaintext string
      * @return string|false returns a base64 encoded string with the signature, false on failure
      */
-    public function generateCfdiSignature(CFDI $cfdi, $privateKey, $passphrase)
+    public function generateCfdiSignature(CFDIInterface $cfdi, $privateKey, $passphrase)
     {
         // Build the Original Chain
         $chainProcessor = new OriginalChainGenerator();

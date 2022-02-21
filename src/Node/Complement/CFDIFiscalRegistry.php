@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -47,11 +47,11 @@ class CFDIFiscalRegistry extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'version'           => [
             'keywords' => ['Version', 'version'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'folio'          => [
             'keywords' => ['Folio', 'folio'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

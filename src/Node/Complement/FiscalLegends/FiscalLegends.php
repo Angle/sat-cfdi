@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\FiscalLegends;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -47,7 +47,7 @@ class FiscalLegends extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'version'           => [
             'keywords' => ['version', 'version'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

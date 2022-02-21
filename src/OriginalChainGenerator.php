@@ -19,7 +19,9 @@ use Genkgo\Xsl\Exception\TransformationException;
 
 use XSLTProcessor as PhpXsltProcessor;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
+use Angle\CFDI\Node\CFDI33\CFDI33;
+
 use Angle\CFDI\Node\Complement\FiscalStamp;
 
 class OriginalChainGenerator
@@ -27,9 +29,10 @@ class OriginalChainGenerator
     // Relative to the project directory
     const XSLT_RESOURCES_DIR = '/resources/xslt-processor/';
 
-    // This stylesheet file should be inside the resources directory
-    const CFDI_STYLESHEET = 'CFDI_3_3.xslt';
-    const TFD_STYLESHEET = 'TFD_1_1.xslt';
+    // This stylesheet file should exist inside the resources directory
+    const CFDI_3_3_STYLESHEET   = 'CFDI_3_3.xslt';
+    const CFDI_4_0_STYLESHEET   = 'CFDI_4_0.xslt';
+    const TFD_1_1_STYLESHEET    = 'TFD_1_1.xslt';
 
     /**
      * Library directory
@@ -78,17 +81,30 @@ class OriginalChainGenerator
     /**
      * Generate the OriginalChain string for a given CFDI object
      * Returns false on failure
-     * @param CFDI $cfdi
+     * @param CFDIInterface $cfdi
      * @return string|false
      */
-    public function generateForCFDI(CFDI $cfdi)
+    public function generateForCFDI(CFDIInterface $cfdi)
     {
         // Check that the version is correct
-        if ($cfdi->getVersion() != CFDI::VERSION_3_3) {
+        if ($cfdi->getVersion() == CFDI33::VERSION_3_3) {
+            $versionStylesheet = self::CFDI_3_3_STYLESHEET;
+            $versionString = 'CFDIv3.3';
+
+            $this->validations[] = [
+                'type' => 'chain:cfdi',
+                'success' => true,
+                'message' => 'CFDI OriginalChainGenerator for ' . $versionString,
+            ];
+
+
+        //} if ($cfdi->getVersion() == CFDI40::VERSION_4_0) {
+        //
+        } else {
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
-                'message' => 'CFDI OriginalChainGenerator only supports CFDv3.3',
+                'message' => 'CFDI OriginalChainGenerator unsupported CFDI version: ' . $cfdi->getVersion(),
             ];
 
             return false;
@@ -108,7 +124,7 @@ class OriginalChainGenerator
         $processor = new PhpXsltProcessor();
 
         // Load the XSLT transformation rules as a DOMDocument
-        $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::CFDI_STYLESHEET;
+        $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . $versionStylesheet;
 
         $xslt = new DOMDocument();
         $r = $xslt->load($stylesheet);
@@ -119,7 +135,7 @@ class OriginalChainGenerator
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
-                'message' => 'Failed to load CFDv3.3 XLST file',
+                'message' => sprintf('Failed to load %s XLST file: %s', $versionString),
             ];
 
             return false;
@@ -133,7 +149,8 @@ class OriginalChainGenerator
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
-                'message' => 'Failed to load CFDv3.3 XLST into Processor',
+                'message' => sprintf('Failed to load %s XLST into Processor', $versionString),
+
             ];
 
             return false;
@@ -155,7 +172,7 @@ class OriginalChainGenerator
             $this->validations[] = [
                 'type' => 'chain:cfdi',
                 'success' => false,
-                'message' => 'CFDv3.3 XLST ' . $e->getMessage(),
+                'message' => sprintf('%s XLST %s', $versionString, $e->getMessage()),
             ];
 
             return false;
@@ -199,7 +216,7 @@ class OriginalChainGenerator
         $processor = new PhpXsltProcessor();
 
         // Load the XSLT transformation rules as a DOMDocument
-        $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::TFD_STYLESHEET;
+        $stylesheet = XsltStreamWrapper::PROTOCOL . '://' . self::TFD_1_1_STYLESHEET;
 
         $xslt = new DOMDocument();
         $r = $xslt->load($stylesheet);

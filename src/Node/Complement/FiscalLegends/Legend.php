@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\FiscalLegends;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,15 +41,15 @@ class Legend extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'fiscalDisposition'           => [
             'keywords' => ['disposicionFiscal', 'fiscalDisposition'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'norm'           => [
             'keywords' => ['norma', 'norm'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'text'           => [
             'keywords' => ['textoLeyenda', 'text'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

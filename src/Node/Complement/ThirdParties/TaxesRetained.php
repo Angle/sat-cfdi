@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\ThirdParties;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,11 +41,11 @@ class TaxesRetained extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'tax'          => [
             'keywords' => ['impuesto', 'tax'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'amount'        => [
             'keywords' => ['importe', 'amount'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

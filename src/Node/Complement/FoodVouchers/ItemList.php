@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\FoodVouchers;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,7 +41,7 @@ class ItemList extends CFDINode
         'items' => [
             'keywords'  => ['Concepto', 'items'],
             'class'     => Item::class,
-            'type'      => CFDI::CHILD_ARRAY,
+            'type'      => CFDINode::CHILD_ARRAY,
         ],
     ];
 

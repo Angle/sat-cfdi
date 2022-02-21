@@ -11,7 +11,7 @@ use Angle\CFDI\Utility\PathUtility;
 use PHPUnit\Framework\TestCase;
 
 use Angle\CFDI\XmlLoader;
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
 
 final class ValidatorTest extends TestCase
 {
@@ -66,7 +66,7 @@ final class ValidatorTest extends TestCase
                 $this->fail('CFDI could not be parsed from the XML file. Please run ParserTest to debug.');
             }
 
-            $this->assertInstanceOf(CFDI::class, $cfdi);
+            $this->assertInstanceOf(CFDIInterface::class, $cfdi);
 
             //print_r($cfdi);
             //echo PHP_EOL;

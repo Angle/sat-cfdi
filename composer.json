@@ -39,6 +39,7 @@
     "ext-curl": "*",
     "ext-xsl": "*",
     "ext-intl": "*",
+    "anglemx/mexico-rfc": "^1.0",
     "genkgo/xsl": "^1.0",
     "fgrosse/phpasn1": "^2.1"
   },

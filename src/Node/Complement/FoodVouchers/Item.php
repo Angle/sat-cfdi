@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\FoodVouchers;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -42,31 +42,31 @@ class Item extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'identifier'           => [
             'keywords' => ['identificador', 'identifier'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'date'          => [
             'keywords' => ['fecha', 'date'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'rfc'        => [
             'keywords' => ['rfc', 'rfc'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'curp'        => [
             'keywords' => ['curp', 'curp'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'name'        => [
             'keywords' => ['nombre', 'name'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'socialSecurityNumber'        => [
             'keywords' => ['numSeguridadSocial', 'socialSecurityNumber'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'amount'        => [
             'keywords' => ['importe', 'amount'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 
@@ -206,8 +206,8 @@ class Item extends CFDINode
         // sample format: 2019-09-06T10:09:46
         // TODO: We are assuming that dates ARE in Mexico City's timezone
         try {
-            $tz = new DateTimeZone(CFDI::DATETIME_TIMEZONE);
-            $date = DateTime::createFromFormat(CFDI::DATETIME_FORMAT, $rawDate, $tz);
+            $tz = new DateTimeZone(CFDINode::DATETIME_TIMEZONE);
+            $date = DateTime::createFromFormat(CFDINode::DATETIME_FORMAT, $rawDate, $tz);
         } catch (\Exception $e) {
             throw new CFDIException('Raw date string is in invalid format, cannot parse stamp date');
         }

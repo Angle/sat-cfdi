@@ -3,7 +3,7 @@
 namespace Angle\CFDI\Tests;
 
 use Angle\CFDI\Catalog\RegimeType;
-use Angle\CFDI\CFDI;
+use Angle\CFDI\Node\CFDI33\CFDI33;
 use Angle\CFDI\Catalog\CFDIType;
 use Angle\CFDI\Catalog\CFDIUse;
 use Angle\CFDI\Catalog\TaxType;
@@ -18,7 +18,7 @@ final class InvoiceTest extends TestCase
     public function testInvoiceCreationEnglish(): void
     {
         $data = [
-            'version'           => CFDI::VERSION_3_3,
+            'version'           => CFDI33::VERSION_3_3,
             'series'            => 'TEST',
             'folio'             => '12345',
             'date'              => new \DateTime('now'),
@@ -120,7 +120,7 @@ final class InvoiceTest extends TestCase
         echo PHP_EOL . PHP_EOL;
 
         try {
-            $cfdi = new CFDI($data);
+            $cfdi = new CFDI33($data);
             $cfdi->autoCalculate();
 
         } catch (\Exception $e) {
@@ -128,7 +128,7 @@ final class InvoiceTest extends TestCase
             return;
         }
 
-        $this->assertInstanceOf(CFDI::class, $cfdi);
+        $this->assertInstanceOf(CFDI33::class, $cfdi);
 
         echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
         print_r($cfdi);

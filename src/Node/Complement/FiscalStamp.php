@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -48,35 +48,35 @@ class FiscalStamp extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'version'           => [
             'keywords' => ['Version', 'version'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'uuid'          => [
             'keywords' => ['UUID', 'uuid'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'stampDate'        => [
             'keywords' => ['FechaTimbrado', 'stampDate'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'certificateProviderRfc'        => [
             'keywords' => ['RfcProvCertif', 'certificateProviderRfc'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'legend'        => [
             'keywords' => ['Leyenda', 'legend'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'cfdiSignature'        => [
             'keywords' => ['SelloCFD', 'cfdiSignature'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'satCertificateNumber'        => [
             'keywords' => ['NoCertificadoSAT', 'satCertificateNumber'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'satSignature'        => [
             'keywords' => ['SelloSAT', 'satSignature'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 
@@ -219,7 +219,7 @@ class FiscalStamp extends CFDINode
             return false;
         }
 
-        $items[] = $this->stampDate->format(CFDI::DATETIME_FORMAT);
+        $items[] = $this->stampDate->format(CFDINode::DATETIME_FORMAT);
         $items[] = $this->certificateProviderRfc;
 
         if ($this->legend) {
@@ -229,7 +229,7 @@ class FiscalStamp extends CFDINode
         $items[] = $this->cfdiSignature;
         $items[] = $this->satCertificateNumber;
 
-        $items = array_map('Angle\CFDI\CFDI::cleanWhitespace', $items);
+        $items = array_map('Angle\CFDI\CFDI33::cleanWhitespace', $items);
 
         return '||' . implode('|', $items) . '||';
     }
@@ -298,8 +298,8 @@ class FiscalStamp extends CFDINode
         // sample format: 2019-09-06T10:09:46
         // TODO: We are assuming that dates ARE in Mexico City's timezone
         try {
-            $tz = new DateTimeZone(CFDI::DATETIME_TIMEZONE);
-            $date = DateTime::createFromFormat(CFDI::DATETIME_FORMAT, $rawDate, $tz);
+            $tz = new DateTimeZone(CFDINode::DATETIME_TIMEZONE);
+            $date = DateTime::createFromFormat(CFDINode::DATETIME_FORMAT, $rawDate, $tz);
         } catch (\Exception $e) {
             throw new CFDIException('Raw date string is in invalid format, cannot parse stamp date');
         }

@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\Payment;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -38,11 +38,11 @@ class Taxes extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'totalRetainedAmount'           => [
             'keywords' => ['TotalImpuestosRetenidos', 'totalRetainedAmount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredAmount'          => [
             'keywords' => ['TotalImpuestosTrasladados', 'totalTransferredAmount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
 

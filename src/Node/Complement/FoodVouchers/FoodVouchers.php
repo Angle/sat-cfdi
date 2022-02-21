@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\FoodVouchers;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -48,23 +48,23 @@ class FoodVouchers extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'version'           => [
             'keywords' => ['version', 'version'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'operationType'           => [
             'keywords' => ['tipoOperacion', 'operationType'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'employerRegistration'           => [
             'keywords' => ['registroPatronal', 'employerRegistration'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'accountNumber'           => [
             'keywords' => ['numeroDeCuenta', 'accountNumber'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'total'           => [
             'keywords' => ['total', 'total'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

@@ -4,7 +4,7 @@ namespace Angle\CFDI\Tests;
 
 use PHPUnit\Framework\TestCase;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
 use Angle\CFDI\XmlLoader;
 
 
@@ -54,7 +54,7 @@ final class ParserTest extends TestCase
                 $this->fail('CFDI could not be parsed from the XML file');
             }
 
-            $this->assertInstanceOf(CFDI::class, $cfdi);
+            $this->assertInstanceOf(CFDIInterface::class, $cfdi);
 
             // Loading success!
             echo "-> Parse SUCCESS!!" . PHP_EOL;

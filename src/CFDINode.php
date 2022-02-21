@@ -2,7 +2,6 @@
 
 namespace Angle\CFDI;
 
-use Angle\CFDI\CFDI;
 use Angle\CFDI\CFDIException;
 
 use DateTime;
@@ -17,10 +16,20 @@ abstract class CFDINode implements CFDINodeInterface
     private static $attributes = [];
     private static $children = [];
 
+    const ATTR_REQUIRED = 'R';
+    const ATTR_OPTIONAL = 'O';
+
+    const CHILD_UNIQUE  = 'U';
+    const CHILD_ARRAY   = 'A';
+
     const PROPERTY_NOT_FOUND        = 0;
     const PROPERTY_BASE_ATTRIBUTE   = 1;
     const PROPERTY_ATTRIBUTE        = 2;
     const PROPERTY_CHILDREN         = 3;
+
+    const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
+    const DATETIME_TIMEZONE = 'America/Mexico_City';
+
 
 
     #########################
@@ -106,7 +115,7 @@ abstract class CFDINode implements CFDINodeInterface
         $childType = $properties['type'];
 
         // The "Type" property dictates how we should append the Child to the working object
-        if ($childType == CFDI::CHILD_UNIQUE) {
+        if ($childType == CFDINode::CHILD_UNIQUE) {
             // this is the only child of it's type, we can attach it with it's setter
             $setter = 'set' . ucfirst($propertyName);
             if (!method_exists(static::class, $setter)) {
@@ -121,7 +130,7 @@ abstract class CFDINode implements CFDINodeInterface
             // Set the child!
             $this->$setter($child);
 
-        } elseif ($childType == CFDI::CHILD_ARRAY) {
+        } elseif ($childType == CFDINode::CHILD_ARRAY) {
             // there are many of this child, we have to attach it with an "append" method
             $append = 'add' . ucfirst($this->getClassName($childClass));
             if (!method_exists(static::class, $append)) {
@@ -210,10 +219,10 @@ abstract class CFDINode implements CFDINodeInterface
             $value = $this->$get();
 
             if ($value instanceof DateTime) {
-                $value = $value->format(CFDI::DATETIME_FORMAT);
+                $value = $value->format(CFDINode::DATETIME_FORMAT);
             }
 
-            if ($prop['type'] == CFDI::ATTR_REQUIRED && ($value === null || $value === "")) {
+            if ($prop['type'] == CFDINode::ATTR_REQUIRED && ($value === null || $value === "")) {
                 // Required property is not set
                 throw new CFDIException(sprintf("Property '%s' is required in %s", ucfirst($key), $this->getShortName()));
             }

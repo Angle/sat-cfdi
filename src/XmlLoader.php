@@ -6,8 +6,11 @@ use Angle\CFDI\Utility\PathUtility;
 
 use LibXMLError;
 use DOMDocument;
+use DOMNode;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDINode;
+use Angle\CFDI\CFDIInterface;
+use Angle\CFDI\Node\CFDI33\CFDI33;
 
 class XmlLoader
 {
@@ -15,7 +18,8 @@ class XmlLoader
     const XSD_RESOURCES_DIR = '/resources/xml-schema/';
 
     // This schema file should be inside the resources directory
-    const CFDI_SCHEMA = 'cfdv33.xsd';
+    const CFDI_3_3_SCHEMA = 'cfdv33.xsd';
+    const CFDI_4_0_SCHEMA = 'cfdv40.xsd';
 
     /**
      * Validations array, in the format: [{type: string, success: true/false, message: string}]
@@ -64,9 +68,9 @@ class XmlLoader
      * Returns null if the parsing failed
      *
      * @param string $xmlString
-     * @return CFDI|null
+     * @return CFDIInterface|null
      */
-    public function stringToCFDI(string $xmlString): ?CFDI
+    public function stringToCFDI(string $xmlString): ?CFDIInterface
     {
         // Clear any previous validations & errors
         $this->validations = [];
@@ -90,9 +94,9 @@ class XmlLoader
      * Returns null if the parsing failed
      *
      * @param string $xmlFilePath
-     * @return CFDI|null
+     * @return CFDIInterface|null
      */
-    public function fileToCFDI(string $xmlFilePath): ?CFDI
+    public function fileToCFDI(string $xmlFilePath): ?CFDIInterface
     {
         // Clear any previous validations & errors
         $this->validations = [];
@@ -126,12 +130,15 @@ class XmlLoader
         return $this->domToCFDI();
     }
 
-    private function domToCFDI(): ?CFDI
+    private function domToCFDI(): ?CFDIInterface
     {
         $cfdiNode = $this->dom->firstChild;
 
         try {
-            $cfdi = CFDI::createFromDOMNode($cfdiNode);
+            /** @var CFDIInterface $cfdiClass */
+            $cfdiClass = self::getCfdiClassFromVersion($cfdiNode);
+            $cfdi = $cfdiClass::createFromDOMNode($cfdiNode);
+
         } catch (CFDIException $e) {
             $this->errors[] = "CFDIException: " . $e->getMessage();
 
@@ -167,12 +174,69 @@ class XmlLoader
     }
 
     /**
+     * @param DOMNode $cfdi
+     * @return string CFDI Version string
+     * @throws CFDIException
+     */
+    private static function inferCfdiVersion(DOMNode $cfdi): string
+    {
+        $version = null;
+
+        if ($cfdi->hasAttributes()) {
+            foreach ($cfdi->attributes as $attr) {
+                if (strtolower($attr->nodeName) == 'version') {
+                    $version = $attr->nodeValue;
+                }
+            }
+        }
+
+        if (!$version) {
+            throw new CFDIException('CFDI Version attribute is missing in first child node');
+        }
+
+        return $version;
+    }
+
+    /**
+     * @param DOMNode $cfdi
+     * @return string CFDI Class name for the specific version
+     * @throws CFDIException
+     */
+    private static function getCfdiClassFromVersion(DOMNode $cfdi): string
+    {
+        $version = self::inferCfdiVersion($cfdi);
+
+        if ($version == CFDI33::VERSION_3_3) {
+            return CFDI33::class;
+        }
+
+
+        throw new CFDIException('Unknown Class for CFDI Version: ' . $version);
+    }
+
+    /**
+     * @param DOMNode $cfdi
+     * @return string CFDI Schema filepath
+     * @throws CFDIException
+     */
+    private static function getCfdiSchemaFromVersion(DOMNode $cfdi): string
+    {
+        $version = self::inferCfdiVersion($cfdi);
+
+        if ($version == CFDI33::VERSION_3_3) {
+            return self::CFDI_3_3_SCHEMA;
+        }
+
+        throw new CFDIException('Unknown Schema for CFDI Version: ' . $version);
+    }
+
+    /**
      * Validate a XML file
      *
      * @param string $xmlFilePath
      * @return bool
      */
-    private function validateXmlFile(string $xmlFilePath)
+    private function validateXmlFile(string $xmlFilePath): bool
     {
         if (!class_exists('DOMDocument')) {
             //throw new \Exception("'DOMDocument' class not found!");
@@ -283,7 +347,19 @@ class XmlLoader
             return false;
         }
 
-        $schemaUri = XsdStreamWrapper::PROTOCOL . '://' . self::CFDI_SCHEMA;
+        try {
+            $cfdiSchema = self::getCfdiSchemaFromVersion($this->dom->firstChild);
+        } catch (\Exception $e) {
+            $this->validations[] = [
+                'type' => 'xml',
+                'success' => false,
+                'message' => 'XML Validation error: ' . $e->getMessage(),
+            ];
+
+            return false;
+        }
+
+        $schemaUri = XsdStreamWrapper::PROTOCOL . '://' . $cfdiSchema;
 
         try {
             $r = $this->dom->schemaValidate($schemaUri);

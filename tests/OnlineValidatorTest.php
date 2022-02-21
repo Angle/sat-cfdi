@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Tests;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
 
 use Angle\CFDI\OnlineValidator;
 use Angle\CFDI\XmlLoader;
@@ -37,7 +37,7 @@ final class OnlineValidatorTest extends TestCase
             }
 
             // Loading success!
-            $this->assertInstanceOf(CFDI::class, $cfdi);
+            $this->assertInstanceOf(CFDIInterface::class, $cfdi);
 
 
             echo "CFDI successfully parsed!" . PHP_EOL;

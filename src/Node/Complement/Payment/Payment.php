@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\Payment;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,63 +41,63 @@ class Payment extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'date'           => [
             'keywords' => ['FechaPago', 'date'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'paymentMethod'           => [
             'keywords' => ['FormaDePagoP', 'paymentMethod'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'currency'           => [
             'keywords' => ['MonedaP', 'currency'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'exchangeRate'           => [
             'keywords' => ['TipoCambioP', 'exchangeRate'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'amount'           => [
             'keywords' => ['Monto', 'amount'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'transactionNumber'           => [
             'keywords' => ['NumOperacion', 'transactionNumber'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'payerBankRfc'           => [
             'keywords' => ['RfcEmisorCtaOrd', 'payerBankRfc'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'payerBankName'           => [
             'keywords' => ['NomBancoOrdExt', 'payerBankName'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'payerAccount' => [
             'keywords' => ['CtaOrdenante', 'payerAccount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'beneficiaryBankRfc' => [
             'keywords' => ['RfcEmisorCtaBen', 'beneficiaryBankRfc'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'beneficiaryAccount' => [
             'keywords' => ['CtaBeneficiario', 'beneficiaryAccount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentChainType' => [
             'keywords' => ['TipoCadPago', 'paymentChainType'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentCertificate' => [
             'keywords' => ['CertPago', 'paymentCertificate'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentChain' => [
             'keywords' => ['CadPago', 'paymentChain'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentSignature' => [
             'keywords' => ['SelloPago', 'paymentSignature'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
 
@@ -299,8 +299,8 @@ class Payment extends CFDINode
         // sample format: 2019-09-06T10:09:46
         // TODO: We are assuming that dates ARE in Mexico City's timezone
         try {
-            $tz = new DateTimeZone(CFDI::DATETIME_TIMEZONE);
-            $date = DateTime::createFromFormat(CFDI::DATETIME_FORMAT, $rawDate, $tz);
+            $tz = new DateTimeZone(CFDINode::DATETIME_TIMEZONE);
+            $date = DateTime::createFromFormat(CFDINode::DATETIME_FORMAT, $rawDate, $tz);
         } catch (\Exception $e) {
             throw new CFDIException('Raw date string is in invalid format, cannot parse stamp date');
         }

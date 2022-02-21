@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\Payment;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,43 +41,43 @@ class RelatedDocument extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'id' => [
             'keywords' => ['IdDocumento', 'id'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'series' => [
             'keywords' => ['Serie', 'series'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'folio' => [
             'keywords' => ['Folio', 'folio'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'currency' => [
             'keywords' => ['MonedaDR', 'currency'], // currency used in the referenced related document
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'exchangeRate' => [
             'keywords' => ['TipoCambioDR', 'exchangeRate'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentType' => [
             'keywords' => ['MetodoDePagoDR', 'paymentType'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'instalmentNumber' => [
             'keywords' => ['NumParcialidad', 'instalmentNumber'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'previousBalanceAmount' => [
             'keywords' => ['ImpSaldoAnt', 'previousBalanceAmount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paidAmount' => [
             'keywords' => ['ImpPagado', 'paidAmount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'pendingBalanceAmount' => [
             'keywords' => ['ImpSaldoInsoluto', 'pendingBalanceAmount'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
 

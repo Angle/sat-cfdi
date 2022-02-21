@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\LocalTaxes;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -47,15 +47,15 @@ class LocalTaxes extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'version'           => [
             'keywords' => ['version', 'version'],
-            'type'  => CFDI::ATTR_REQUIRED
+            'type'  => CFDINode::ATTR_REQUIRED
         ],
         'totalRetained'          => [
             'keywords' => ['TotaldeRetenciones', 'totalRetained'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'totalTransferred'        => [
             'keywords' => ['TotaldeTraslados', 'totalTransferred'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 
@@ -63,12 +63,12 @@ class LocalTaxes extends CFDINode
         'taxesRetained' => [
             'keywords'  => ['RetencionesLocales', 'taxesRetained', 'retentions'],
             'class'     => LocalTaxesRetained::class,
-            'type'      => CFDI::CHILD_ARRAY,
+            'type'      => CFDINode::CHILD_ARRAY,
         ],
         'taxesTransferred' => [
             'keywords'  => ['RetencionesLocales', 'taxesTransferred', 'transfers'],
             'class'     => LocalTaxesTransferred::class,
-            'type'      => CFDI::CHILD_ARRAY,
+            'type'      => CFDINode::CHILD_ARRAY,
         ],
     ];
 

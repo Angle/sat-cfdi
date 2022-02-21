@@ -19,10 +19,11 @@ composer require anglemx/sat-cfdi
 ```
 
 ## Usage
+
 ```php
 <?
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\XmlLoader;
 
 // ...

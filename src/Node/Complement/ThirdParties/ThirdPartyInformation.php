@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\ThirdParties;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,43 +41,43 @@ class ThirdPartyInformation extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'street'           => [
             'keywords' => ['calle', 'street'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'extNumber'           => [
             'keywords' => ['noExterior', 'extNumber'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'intNumber'           => [
             'keywords' => ['noInterior', 'intNumber'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'neighborhood'           => [
             'keywords' => ['colonia', 'neighborhood'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'city'           => [
             'keywords' => ['localidad', 'city'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'reference'           => [
             'keywords' => ['referencia', 'reference'],
-            'type' => CFDI::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'county'           => [
             'keywords' => ['municipio', 'county'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'state'           => [
             'keywords' => ['estado', 'state'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'country'           => [
             'keywords' => ['pais', 'country'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'postalCode'           => [
             'keywords' => ['codigoPostal', 'postalCode'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

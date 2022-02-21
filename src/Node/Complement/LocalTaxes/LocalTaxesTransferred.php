@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\LocalTaxes;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,15 +41,15 @@ class LocalTaxesTransferred extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'tax'           => [
             'keywords' => ['ImpLocTrasladado', 'tax'],
-            'type'  => CFDI::ATTR_REQUIRED
+            'type'  => CFDINode::ATTR_REQUIRED
         ],
         'rate'          => [
             'keywords' => ['TasadeTraslado', 'rate'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'amount'        => [
             'keywords' => ['Importe', 'amount'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

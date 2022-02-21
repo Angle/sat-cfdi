@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
 
 use SimpleXMLElement;
 
@@ -42,10 +42,10 @@ ENDSOAP;
     /**
      * Query the central SAT webservice to check the validity of a CFDI
      * Returns 1 on success, 0 on failure, -1 on error
-     * @param CFDI $cfdi
+     * @param CFDIInterface $cfdi
      * @return int
      */
-    public static function validate(CFDI $cfdi): int
+    public static function validate(CFDIInterface $cfdi): int
     {
         // This WebService is forked from the QR validation method that is found on printed representations of the CFDI
         // so the implementation is a bit funky.

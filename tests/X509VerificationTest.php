@@ -8,7 +8,7 @@ use FG\ASN1\Universal\BitString;
 use FG\ASN1\Universal\Sequence;
 use PHPUnit\Framework\TestCase;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
 use Angle\CFDI\XmlLoader;
 
 use FG\ASN1\Identifier;

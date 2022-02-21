@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Node\Complement\Payment;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
@@ -41,19 +41,19 @@ class TaxesTransferred extends CFDINode
         // PropertyName => [spanish (official SAT), english]
         'tax'          => [
             'keywords' => ['Impuesto', 'tax'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'factorType'        => [
             'keywords' => ['TipoFactor', 'factorType'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'rate'        => [
             'keywords' => ['TasaOCuota', 'rate'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'amount'        => [
             'keywords' => ['Importe', 'amount'],
-            'type' => CFDI::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

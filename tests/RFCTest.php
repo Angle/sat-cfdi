@@ -2,7 +2,7 @@
 
 namespace Angle\CFDI\Tests;
 
-use Angle\CFDI\Utility\RFC;
+use Angle\Mexico\RFC\RFC;
 use PHPUnit\Framework\TestCase;
 
 final class RFCTest extends TestCase
@@ -11,7 +11,7 @@ final class RFCTest extends TestCase
     {
         // 1. Generic National
         $raw = "XAXX010101000";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
 
         $this->assertInstanceOf(RFC::class, $rfc);
         $this->assertEquals(true, $rfc->isGenericNational());
@@ -22,7 +22,7 @@ final class RFCTest extends TestCase
 
         // 2. Generic Foreign
         $raw = "XEXX010101000";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
 
         $this->assertInstanceOf(RFC::class, $rfc);
         $this->assertEquals(false, $rfc->isGenericNational());
@@ -33,7 +33,7 @@ final class RFCTest extends TestCase
 
         // 3. Natural Person
         $raw = "VECJ880326180";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
 
         $this->assertInstanceOf(RFC::class, $rfc);
         $this->assertEquals(false, $rfc->isGenericNational());
@@ -42,7 +42,7 @@ final class RFCTest extends TestCase
         $this->assertEquals(false, $rfc->isLegalEntity());
 
         $raw = "vecj-880326-qt0";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
 
         $this->assertInstanceOf(RFC::class, $rfc);
         $this->assertEquals(false, $rfc->isGenericNational());
@@ -53,7 +53,7 @@ final class RFCTest extends TestCase
 
         // 4. Legal Entity
         $raw = "ABC680524P76";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
 
         $this->assertInstanceOf(RFC::class, $rfc);
         $this->assertEquals(false, $rfc->isGenericNational());
@@ -62,7 +62,7 @@ final class RFCTest extends TestCase
         $this->assertEquals(true, $rfc->isLegalEntity());
 
         $raw = "abc680524p76";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
 
         $this->assertInstanceOf(RFC::class, $rfc);
         $this->assertEquals(false, $rfc->isGenericNational());
@@ -72,16 +72,16 @@ final class RFCTest extends TestCase
 
         // 5. Invalid RFCs
         $raw = "a1c680524p76";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
         $this->assertEquals(null, $rfc);
 
         $raw = "";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
         $this->assertEquals(null, $rfc);
 
 
         $raw = "a1c6805241231p76";
-        $rfc = RFC::createFromString($raw);
+        $rfc = RFC::createFromRfcString($raw);
         $this->assertEquals(null, $rfc);
     }
 }

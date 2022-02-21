@@ -7,10 +7,12 @@ use Angle\CFDI\CertificateStorage\CertificateStorageInterface;
 
 use Angle\CFDI\Utility\OpenSSLUtility;
 
-use Angle\CFDI\CFDI;
+use Angle\CFDI\CFDIInterface;
+use Angle\CFDI\Node\CFDI33\CFDI33;
 use Angle\CFDI\Node\Complement\FiscalStamp;
-use Angle\CFDI\Utility\RFC;
 use Angle\CFDI\Utility\X509VerificationUtility;
+
+use Angle\Mexico\RFC\RFC;
 
 class SignatureValidator
 {
@@ -42,25 +44,30 @@ class SignatureValidator
     /**
      * @return bool
      */
-    public function checkCfdiSignature(CFDI $cfdi)
+    public function checkCfdiSignature(CFDIInterface $cfdi)
     {
         // Reset any previous validations
         $this->validations = [];
 
-        if ($cfdi->getVersion() != CFDI::VERSION_3_3) {
+        if ($cfdi->getVersion() == CFDI33::VERSION_3_3) {
+            $versionString = 'CFDIv3.3';
+
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => true,
+                'message' => 'CFDI SignatureValidator check for ' . $versionString,
+            ];
+        } else {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'CFDI Signature check is only implemented for CFDI v3.3',
+                'message' => 'CFDI SignatureValidator unsupported CFDI version: ' . $cfdi->getVersion(),
             ];
+
             return false;
         }
 
-        $this->validations[] = [
-            'type' => 'signature:cfdi',
-            'success' => true,
-            'message' => 'CFDI version is 3.3',
-        ];
+
 
 
         /////////
@@ -108,11 +115,11 @@ class SignatureValidator
         $issuerCertificateRfc = explode('/', $parsedCertificate['subject']['x500UniqueIdentifier']);
         $issuerCertificateRfc = trim($issuerCertificateRfc[0]);
 
-        if (!$cfdi->getIssuer()) {
+        if (!$cfdi->getIssuerRfc()) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'CFDI does not have an Issuer',
+                'message' => 'CFDI does not have an Issuer RFC',
             ];
             return false;
         }
@@ -121,7 +128,7 @@ class SignatureValidator
         // However, there is _one_ special case in which the CFDI could be signed by SAT itself instead of the actual Issuer.
         // This case only applies for Issuer's that are Natural Persons. In this case, the certificate may not match the Issuer's RFC,
         // but it should match SAT's.
-        $issuerRfc = RFC::createFromString( $cfdi->getIssuer()->getRfc() );
+        $issuerRfc = RFC::createFromRfcString( $cfdi->getIssuerRfc() );
         if ($issuerRfc === null) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
@@ -138,7 +145,7 @@ class SignatureValidator
                 'message' => 'Issuer is P.F. and used SAT\'s official X.509 Certificate (' . self::SAT_RFC . ') to sign the CFDI',
             ];
             // continue processing, this is allowed..
-        } elseif ($cfdi->getIssuer()->getRfc() != $issuerCertificateRfc) {
+        } elseif ($cfdi->getIssuerRfc() != $issuerCertificateRfc) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -380,10 +387,10 @@ class SignatureValidator
      *
      * On success, returns 0
      * On failure, returns an array with any validation errors encountered.
-     * @param CFDI $cfdi
+     * @param CFDIInterface $cfdi
      * @return array|int
      */
-    public function checkFiscalStampSignature(CFDI $cfdi)
+    public function checkFiscalStampSignature(CFDIInterface $cfdi)
     {
         // Reset any previous validations
         $this->validations = [];
