@@ -11,6 +11,9 @@ abstract class OnlineValidator
     // Enable to debug the HTTP connection
     const DEBUG_CURL = false;
 
+    const CONNECT_TIMEOUT = 20; // seconds
+    const TIMEOUT = 30; // seconds
+
     const RESULT_VALID      = 1;
     const RESULT_NOT_VALID  = 0;
     const RESULT_ERROR      = -1;
@@ -82,8 +85,8 @@ ENDSOAP;
         curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $customHeaders);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, self::CONNECT_TIMEOUT);
+        curl_setopt($ch, CURLOPT_TIMEOUT, self::TIMEOUT);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         if (self::DEBUG_CURL) {
