@@ -71,6 +71,7 @@ abstract class SerializationUtility
             return null;
         }
 
+        return $obj;
     }
 
 }
