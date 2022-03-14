@@ -175,12 +175,16 @@ class XmlLoader
     }
 
     /**
-     * @param DOMNode $cfdi
+     * @param DOMNode|null $cfdi
      * @return string CFDI Version string
      * @throws CFDIException
      */
-    private static function inferCfdiVersion(DOMNode $cfdi): string
+    private static function inferCfdiVersion(?DOMNode $cfdi): string
     {
+        if ($cfdi === null) {
+            throw new CFDIException('Invalid (null) DOMNode provided');
+        }
+
         $version = null;
 
         if ($cfdi->hasAttributes()) {
@@ -199,12 +203,16 @@ class XmlLoader
     }
 
     /**
-     * @param DOMNode $cfdi
+     * @param DOMNode|null $cfdi
      * @return string CFDI Class name for the specific version
      * @throws CFDIException
      */
-    private static function getCfdiClassFromVersion(DOMNode $cfdi): string
+    private static function getCfdiClassFromVersion(?DOMNode $cfdi): string
     {
+        if ($cfdi === null) {
+            throw new CFDIException('Invalid (null) DOMNode provided');
+        }
+
         $version = self::inferCfdiVersion($cfdi);
 
         if ($version == CFDI33::VERSION_3_3) {
@@ -219,12 +227,16 @@ class XmlLoader
     }
 
     /**
-     * @param DOMNode $cfdi
+     * @param DOMNode|null $cfdi
      * @return string CFDI Schema filepath
      * @throws CFDIException
      */
-    private static function getCfdiSchemaFromVersion(DOMNode $cfdi): string
+    private static function getCfdiSchemaFromVersion(?DOMNode $cfdi): string
     {
+        if ($cfdi === null) {
+            throw new CFDIException('Invalid (null) DOMNode provided');
+        }
+
         $version = self::inferCfdiVersion($cfdi);
 
         if ($version == CFDI33::VERSION_3_3) {
