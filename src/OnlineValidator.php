@@ -28,7 +28,7 @@ abstract class OnlineValidator
       <tem:Consulta>
          <tem:expresionImpresa>
          	##CDATA##
-         	</tem:expresionImpresa>
+         </tem:expresionImpresa>
       </tem:Consulta>
    </soapenv:Body>
 </soapenv:Envelope>
@@ -68,6 +68,12 @@ ENDSOAP;
 
         // Insert the Query parameters in the special CDATA field blob
         $cdata = '<![CDATA[' . '?' . http_build_query($query) . ']]>';
+
+        // Hotfix 2022-04-29: When the RFC (re or rr) contain and ampersand (&) the webservice breaks, even if we pass it
+        //                    as "%26" as that would be the correct HTTP Query encoding. However, for some reason it
+        //                    responds OK if we pass the ampersand as "&amp;". They are doing some weeeird encoding on their side.
+        $cdata = str_replace('%26', '&amp;', $cdata);
+
 
         // Replace the CDATA value in the preset payload XML
         // TODO: Implement a valid SOAPClient instance with WSDLs
