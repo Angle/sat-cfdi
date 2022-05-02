@@ -22,7 +22,7 @@ class Item extends CFDINode
     const NODE_NAME = "Concepto";
 
     const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -69,6 +69,10 @@ class Item extends CFDINode
         'discount'        => [
             'keywords' => ['Descuento', 'discount'],
             'type' => CFDINode::ATTR_OPTIONAL
+        ],
+        'operationTaxable'        => [
+            'keywords' => ['ObjetoImp', 'operationTaxable'],
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 
@@ -149,6 +153,11 @@ class Item extends CFDINode
      * @var string
      */
     protected $discount;
+
+    /**
+     * @var string
+     */
+    protected $operationTaxable;
 
 
     // CHILDREN NODES
@@ -445,6 +454,24 @@ class Item extends CFDINode
     public function setDiscount(?string $discount): self
     {
         $this->discount = $discount;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOperationTaxable(): ?string
+    {
+        return $this->operationTaxable;
+    }
+
+    /**
+     * @param string $operationTaxable
+     * @return self
+     */
+    public function setOperationTaxable(?string $operationTaxable): self
+    {
+        $this->operationTaxable = $operationTaxable;
         return $this;
     }
 

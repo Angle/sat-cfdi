@@ -24,7 +24,7 @@ class Issuer extends CFDINode
     const NODE_NAME = "Emisor";
 
     const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -47,6 +47,10 @@ class Issuer extends CFDINode
         'regime'        => [
             'keywords' => ['RegimenFiscal', 'regime'],
             'type' => CFDINode::ATTR_REQUIRED
+        ],
+        'operationNumber'        => [
+            'keywords' => ['FacAtrAdquirente', 'operationNumber'],
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
 
@@ -74,6 +78,11 @@ class Issuer extends CFDINode
      * @var string
      */
     protected $regime; // RegimenFiscal
+
+    /**
+     * @var string
+     */
+    protected $operationNumber;
 
 
 
@@ -179,6 +188,24 @@ class Issuer extends CFDINode
     public function setRegime(string $regime): self
     {
         $this->regime = $regime;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOperationNumber(): ?string
+    {
+        return $this->operationNumber;
+    }
+
+    /**
+     * @param string $operationNumber
+     * @return self
+     */
+    public function setOperationNumber(?string $operationNumber): self
+    {
+        $this->operationNumber = $operationNumber;
         return $this;
     }
 

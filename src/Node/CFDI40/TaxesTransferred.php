@@ -25,7 +25,7 @@ class TaxesTransferred extends CFDINode
     const NODE_NAME = "Traslado";
 
     const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -37,6 +37,10 @@ class TaxesTransferred extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
+        'base'          => [
+            'keywords' => ['Base', 'base'],
+            'type' => CFDINode::ATTR_REQUIRED
+        ],
         'tax'          => [
             'keywords' => ['Impuesto', 'tax'],
             'type' => CFDINode::ATTR_REQUIRED
@@ -61,6 +65,11 @@ class TaxesTransferred extends CFDINode
     #########################
     ##      PROPERTIES     ##
     #########################
+
+    /**
+     * @var string
+     */
+    protected $base;
 
     /**
      * @see TaxType
@@ -154,6 +163,24 @@ class TaxesTransferred extends CFDINode
     #########################
     ## GETTERS AND SETTERS ##
     #########################
+
+    /**
+     * @return string
+     */
+    public function getBase(): ?string
+    {
+        return $this->base;
+    }
+
+    /**
+     * @param string $base
+     * @return self
+     */
+    public function setBase(?string $base): self
+    {
+        $this->base = $base;
+        return $this;
+    }
 
     /**
      * @return string

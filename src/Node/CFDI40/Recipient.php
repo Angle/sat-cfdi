@@ -26,7 +26,7 @@ class Recipient extends CFDINode
     const NODE_NAME = "Receptor";
 
     const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3";
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -46,6 +46,10 @@ class Recipient extends CFDINode
             'keywords' => ['Nombre', 'name'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
+        'postalCode'    => [
+            'keywords' => ['DomicilioFiscalReceptor', 'postalCode'],
+            'type' => CFDINode::ATTR_OPTIONAL
+        ],
         'foreignCountry'          => [
             'keywords' => ['ResidenciaFiscal', 'foreignCountry'],
             'type' => CFDINode::ATTR_OPTIONAL
@@ -53,6 +57,10 @@ class Recipient extends CFDINode
         'foreignTaxCode'          => [
             'keywords' => ['NumRegIdTrib', 'foreignTaxCode'],
             'type' => CFDINode::ATTR_OPTIONAL
+        ],
+        'regime'        => [
+            'keywords' => ['RegimenFiscalReceptor', 'regime'],
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'cfdiUse'    => [
             'keywords' => ['UsoCFDI', 'cfdiUse'],
@@ -76,6 +84,16 @@ class Recipient extends CFDINode
      * @var string|null
      */
     protected $name;
+
+    /**
+     * @var string
+     */
+    protected $postalCode;
+
+    /**
+     * @var string
+     */
+    protected $regime; // Régimen fiscal
 
     /**
      * @var string
@@ -178,6 +196,42 @@ class Recipient extends CFDINode
     public function setName(?string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPostalCode(): ?string
+    {
+        return $this->postalCode;
+    }
+
+    /**
+     * @param string $postalCode
+     * @return self
+     */
+    public function setPostalCode(?string $postalCode): self
+    {
+        $this->postalCode = $postalCode;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getRegime(): ?string
+    {
+        return $this->regime;
+    }
+
+    /**
+     * @param string $regime
+     * @return self
+     */
+    public function setRegime(?string $regime): self
+    {
+        $this->regime = $regime;
         return $this;
     }
 

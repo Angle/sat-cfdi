@@ -43,16 +43,16 @@ class CFDI40 extends CFDINode implements CFDIInterface
     const NODE_NAME = 'Comprobante';
 
     const NODE_NS = "cfdi";
-    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/3"; // TODO: fix this ?
+    const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4"; // TODO: fix this ?
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     const SERIES_WRONG_LENGTH_ERROR = 1;
 
 
     protected static $baseAttributes = [
-        'xmlns:cfdi'            => 'http://www.sat.gob.mx/cfd/3',// TODO: fix this ?
+        'xmlns:cfdi'            => 'http://www.sat.gob.mx/cfd/4',// TODO: fix this ?
         'xmlns:xsi'             => 'http://www.w3.org/2001/XMLSchema-instance',
-        'xsi:schemaLocation'    => 'http://www.sat.gob.mx/cfd/3 http://www.sat.gob.mx/sitio_internet/cfd/3/cfdv33.xsd',// TODO: fix this ?
+        'xsi:schemaLocation'    => 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv33.xsd',// TODO: fix this ?
     ];
 
 
@@ -108,6 +108,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
         ],
         'cfdiType'       => [
             'keywords' => ['TipoDeComprobante', 'cfdiType'],
+            'type' => CFDINode::ATTR_REQUIRED
+        ],
+        'export'       => [
+            'keywords' => ['Exportacion', 'export'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'paymentType'       => [
@@ -246,6 +250,11 @@ class CFDI40 extends CFDINode implements CFDIInterface
      * @var string
      */
     protected $cfdiType; // Tipo de Comprobante
+
+    /**
+     * @var string
+     */
+    protected $export; // Exportación
 
     /**
      * @var string
@@ -663,7 +672,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
 
         // Prepare the items to be written as a string
-        $items = array_map('Angle\CFDI\CFDI33::cleanWhitespace', $items);
+        $items = array_map('Angle\CFDI\CFDI40::cleanWhitespace', $items);
 
         return '||' . implode('|', $items) . '||';
     }
@@ -1018,7 +1027,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $version
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setVersion(?string $version): self
     {
@@ -1037,7 +1046,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $series
-     * @return CFDI33
+     * @return CFDI40
      * @throws CFDIException
      */
     public function setSeries(?string $series): self
@@ -1068,7 +1077,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string|null $folio
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setFolio(?string $folio): self
     {
@@ -1087,7 +1096,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param DateTime|string $rawDate
-     * @return CFDI33
+     * @return CFDI40
      *@throws CFDIException
      */
     public function setDate($rawDate): self
@@ -1121,7 +1130,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $paymentMethod
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setPaymentMethod(?string $paymentMethod): self
     {
@@ -1139,7 +1148,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $subTotal
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setSubTotal(?string $subTotal): self
     {
@@ -1157,7 +1166,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $discount
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setDiscount(?string $discount): self
     {
@@ -1175,7 +1184,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $currency
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setCurrency(?string $currency): self
     {
@@ -1193,7 +1202,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $exchangeRate
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setExchangeRate(?string $exchangeRate): self
     {
@@ -1211,7 +1220,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $total
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setTotal(?string $total): self
     {
@@ -1229,11 +1238,29 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $cfdiType
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setCfdiType(?string $cfdiType): self
     {
         $this->cfdiType = $cfdiType;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getExport(): ?string
+    {
+        return $this->export;
+    }
+
+    /**
+     * @param string $export
+     * @return CFDI40
+     */
+    public function setExport(?string $export): self
+    {
+        $this->export = $export;
         return $this;
     }
 
@@ -1247,7 +1274,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $paymentType
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setPaymentType(?string $paymentType): self
     {
@@ -1265,7 +1292,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $paymentConditions
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setPaymentConditions(?string $paymentConditions): self
     {
@@ -1283,7 +1310,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $postalCode
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setPostalCode(?string $postalCode): self
     {
@@ -1301,7 +1328,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $signature
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setSignature(?string $signature): self
     {
@@ -1319,7 +1346,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $certificateNumber
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setCertificateNumber(?string $certificateNumber): self
     {
@@ -1337,7 +1364,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $certificate
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setCertificate(?string $certificate): self
     {
@@ -1355,7 +1382,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param string $confirmation
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setConfirmation(?string $confirmation): self
     {
@@ -1378,7 +1405,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param Issuer $issuer
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setIssuer(Issuer $issuer): self
     {
@@ -1396,7 +1423,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param Recipient $recipient
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setRecipient(Recipient $recipient): self
     {
@@ -1414,7 +1441,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param ItemList $itemList
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setItemList(ItemList $itemList): self
     {
@@ -1432,7 +1459,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param RelatedCFDIList|null $relatedCFDIList
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setRelatedCFDIList(?RelatedCFDIList $relatedCFDIList): self
     {
@@ -1450,7 +1477,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param Complement $complement
-     * @return CFDI33
+     * @return CFDI40
      */
     public function addComplement(Complement $complement): self
     {
@@ -1460,7 +1487,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param Complement[] $complements
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setComplements(array $complements): self
     {
@@ -1478,7 +1505,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
     /**
      * @param Taxes|null $taxes
-     * @return CFDI33
+     * @return CFDI40
      */
     public function setTaxes(?Taxes $taxes): self
     {
