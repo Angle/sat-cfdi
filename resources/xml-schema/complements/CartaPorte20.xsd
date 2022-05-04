@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- edited with XMLSpy v2010 rel. 3 (x64) (http://www.altova.com) by SAT (SAT) -->
 <xs:schema xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:catCFDI="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" xmlns:tdCFDI="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" xmlns:catComExt="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/ComExt" xmlns:catCartaPorte="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/CartaPorte" targetNamespace="http://www.sat.gob.mx/CartaPorte20" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos" schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catCFDI.xsd"/>
 	<xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/tipoDatos/tdCFDI" schemaLocation="anglemx.sat.cfdi.xsd://catalogs/tdCFDI.xsd"/>
@@ -115,7 +114,7 @@
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
 												<xs:whiteSpace value="collapse"/>
-												<xs:pattern value="([OR|DE]{2}[0-9]{6})"/>
+												<xs:pattern value="(OR|DE)[0-9]{6}"/>
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:attribute>
@@ -819,10 +818,10 @@
 										</xs:annotation>
 										<xs:simpleType>
 											<xs:restriction base="xs:string">
-												<xs:minLength value="6"/>
-												<xs:maxLength value="7"/>
+												<xs:minLength value="7"/>
+												<xs:maxLength value="30"/>
 												<xs:whiteSpace value="collapse"/>
-												<xs:pattern value="[^|]{6,7}"/>
+												<xs:pattern value="[^|]{7,30}"/>
 											</xs:restriction>
 										</xs:simpleType>
 									</xs:attribute>
@@ -1335,84 +1334,82 @@
 												<xs:documentation>Nodo condicional para indicar los datos de las partes del transporte de las cuales el emisor del comprobante es distinto al dueño de las mismas, por ejemplo: vehículos, máquinas, contenedores, plataformas, etc; mismos que son utilizados para el traslado de los bienes y/o mercancías.</xs:documentation>
 											</xs:annotation>
 											<xs:complexType>
-												<xs:sequence>
-													<xs:element name="Domicilio" minOccurs="0">
-														<xs:annotation>
-															<xs:documentation>Nodo opcional para registrar información del domicilio del(los) tipo(s) de figura transporte que intervenga(n) en el traslado de los bienes y/o mercancías.</xs:documentation>
-														</xs:annotation>
-														<xs:complexType>
-															<xs:attribute name="Calle" type="tdCFDI:t_Descrip100" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional que sirve para registrar la calle en la que está ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="NumeroExterior" type="tdCFDI:t_NumeroDomicilio" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional que sirve para registrar el número exterior en donde se ubica el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="NumeroInterior" type="tdCFDI:t_NumeroDomicilio" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional que sirve para registrar el número interior, en caso de existir, en donde se ubica el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="Colonia" type="tdCFDI:t_Descrip120" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional que sirve para expresar la clave de la colonia o dato análogo en donde se ubica el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="Localidad" type="tdCFDI:t_Descrip120" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional para registrar la clave de la ciudad, población, distrito o dato análogo de donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="Referencia" type="tdCFDI:t_Referencia" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional para registrar una referencia geográfica adicional que permita una fácil o precisa ubicación del domicilio del(los) tipo(s) de figura transporte; por ejemplo, las coordenadas del GPS.</xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="Municipio" type="tdCFDI:t_Descrip120" use="optional">
-																<xs:annotation>
-																	<xs:documentation>Atributo opcional para registrar la clave del municipio, delegación o alcaldía, condado o dato análogo en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="Estado" use="required">
-																<xs:annotation>
-																	<xs:documentation>Atributo requerido para registrar el estado, entidad, región, comunidad, o dato análogo en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
-																</xs:annotation>
-																<xs:simpleType>
-																	<xs:restriction base="xs:string">
-																		<xs:minLength value="1"/>
-																		<xs:maxLength value="30"/>
-																		<xs:whiteSpace value="collapse"/>
-																		<xs:pattern value="[^|]{1,30}"/>
-																	</xs:restriction>
-																</xs:simpleType>
-															</xs:attribute>
-															<xs:attribute name="Pais" type="catCFDI:c_Pais" use="required">
-																<xs:annotation>
-																	<xs:documentation>Atributo requerido que sirve para registrar la clave del país en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte, conforme al catálogo c_Pais del CFDI publicado en el portal del SAT en Internet de acuerdo a la especificación ISO 3166-1.</xs:documentation>
-																</xs:annotation>
-															</xs:attribute>
-															<xs:attribute name="CodigoPostal" use="required">
-																<xs:annotation>
-																	<xs:documentation>Atributo requerido para registrar el código postal en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
-																</xs:annotation>
-																<xs:simpleType>
-																	<xs:restriction base="xs:string">
-																		<xs:minLength value="1"/>
-																		<xs:maxLength value="12"/>
-																		<xs:whiteSpace value="collapse"/>
-																	</xs:restriction>
-																</xs:simpleType>
-															</xs:attribute>
-														</xs:complexType>
-													</xs:element>
-												</xs:sequence>
 												<xs:attribute name="ParteTransporte" type="catCartaPorte:c_ParteTransporte" use="required">
 													<xs:annotation>
 														<xs:documentation>Atributo requerido para registrar información de la parte del transporte de la cual el emisor del comprobante es distinto al dueño de la misma, por ejemplo: vehículos, máquinas, contenedores, plataformas, etc; que se utilicen para el traslado de los bienes y/o mercancías.</xs:documentation>
 													</xs:annotation>
+												</xs:attribute>
+											</xs:complexType>
+										</xs:element>
+										<xs:element name="Domicilio" minOccurs="0">
+											<xs:annotation>
+												<xs:documentation>Nodo opcional para registrar información del domicilio del(los) tipo(s) de figura transporte que intervenga(n) en el traslado de los bienes y/o mercancías.</xs:documentation>
+											</xs:annotation>
+											<xs:complexType>
+												<xs:attribute name="Calle" type="tdCFDI:t_Descrip100" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional que sirve para registrar la calle en la que está ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="NumeroExterior" type="tdCFDI:t_NumeroDomicilio" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional que sirve para registrar el número exterior en donde se ubica el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="NumeroInterior" type="tdCFDI:t_NumeroDomicilio" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional que sirve para registrar el número interior, en caso de existir, en donde se ubica el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Colonia" type="tdCFDI:t_Descrip120" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional que sirve para expresar la clave de la colonia o dato análogo en donde se ubica el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Localidad" type="tdCFDI:t_Descrip120" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional para registrar la clave de la ciudad, población, distrito o dato análogo de donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Referencia" type="tdCFDI:t_Referencia" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional para registrar una referencia geográfica adicional que permita una fácil o precisa ubicación del domicilio del(los) tipo(s) de figura transporte; por ejemplo, las coordenadas del GPS.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Municipio" type="tdCFDI:t_Descrip120" use="optional">
+													<xs:annotation>
+														<xs:documentation>Atributo opcional para registrar la clave del municipio, delegación o alcaldía, condado o dato análogo en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="Estado" use="required">
+													<xs:annotation>
+														<xs:documentation>Atributo requerido para registrar el estado, entidad, región, comunidad, o dato análogo en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte. </xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:minLength value="1"/>
+															<xs:maxLength value="30"/>
+															<xs:whiteSpace value="collapse"/>
+															<xs:pattern value="[^|]{1,30}"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:attribute>
+												<xs:attribute name="Pais" type="catCFDI:c_Pais" use="required">
+													<xs:annotation>
+														<xs:documentation>Atributo requerido que sirve para registrar la clave del país en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte, conforme al catálogo c_Pais del CFDI publicado en el portal del SAT en Internet de acuerdo a la especificación ISO 3166-1.</xs:documentation>
+													</xs:annotation>
+												</xs:attribute>
+												<xs:attribute name="CodigoPostal" use="required">
+													<xs:annotation>
+														<xs:documentation>Atributo requerido para registrar el código postal en donde se encuentra ubicado el domicilio del(los) tipo(s) de figura transporte.</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:minLength value="1"/>
+															<xs:maxLength value="12"/>
+															<xs:whiteSpace value="collapse"/>
+														</xs:restriction>
+													</xs:simpleType>
 												</xs:attribute>
 											</xs:complexType>
 										</xs:element>
