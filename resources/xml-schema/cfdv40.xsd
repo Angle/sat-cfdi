@@ -734,9 +734,9 @@
 					<xs:annotation>
 						<xs:documentation>Nodo opcional para recibir las extensiones al presente formato que sean de utilidad al contribuyente. Para las reglas de uso del mismo, referirse al formato origen.</xs:documentation>
 					</xs:annotation>
-					<xs:complexType>
+					<xs:complexType mixed="true"> <!-- added "mixed=true" by Angle -->
 						<xs:sequence>
-							<xs:any maxOccurs="unbounded"/>
+							<xs:any maxOccurs="unbounded" processContents="skip"/> <!-- added "skip" by Angle -->
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
