@@ -43,6 +43,7 @@
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/obrasarteantiguedades.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/pagoenespecie.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/Pagos10.xsd"/>
+	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/Pagos20.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/pfic.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/renovacionysustitucionvehiculos.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/servicioparcialconstruccion.xsd"/>
