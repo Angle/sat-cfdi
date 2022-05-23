@@ -372,7 +372,7 @@ class XmlLoader
             $this->validations[] = [
                 'type' => 'xml',
                 'success' => false,
-                'message' => 'XML Validation error: ' . $e->getMessage(),
+                'message' => 'XML validation error: ' . $e->getMessage(),
             ];
 
             return false;
@@ -388,7 +388,7 @@ class XmlLoader
             $this->validations[] = [
                 'type' => 'xml',
                 'success' => false,
-                'message' => 'Error validating XML against schema',
+                'message' => 'Error validating XML against schema: ' . $cfdiSchema,
             ];
 
             return false;
@@ -401,7 +401,7 @@ class XmlLoader
             $this->validations[] = [
                 'type' => 'xml',
                 'success' => false,
-                'message' => 'XML did not validate against schema',
+                'message' => 'XML did not validate against schema: ' . $cfdiSchema,
             ];
 
             foreach ($this->errors as $e) {
