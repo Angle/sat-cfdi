@@ -6,7 +6,7 @@ use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
 
-use Angle\CFDI\Node\Complement\PaymentInterface;
+use Angle\CFDI\Node\Complement\PaymentsInterface;
 use DateTime;
 use DateTimeZone;
 
@@ -18,7 +18,7 @@ use DOMText;
 /**
  * @method static Payments createFromDOMNode(DOMNode $node)
  */
-class Payments extends CFDINode implements PaymentInterface
+class Payments extends CFDINode implements PaymentsInterface
 {
     #########################
     ##        PRESETS      ##

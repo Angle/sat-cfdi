@@ -9,9 +9,9 @@ use Angle\CFDI\CFDIInterface;
 use Angle\CFDI\Catalog\PaymentType;
 
 use Angle\CFDI\Node\Complement\FiscalStamp;
-use Angle\CFDI\Node\Complement\Payment\Payments;
 use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
 
+use Angle\CFDI\Node\Complement\PaymentsInterface;
 use Angle\CFDI\Utility\Math;
 use Angle\CFDI\Utility\PathUtility;
 
@@ -750,10 +750,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
     /**
      * This will return the first PaymentComplement found in the Complements
      */
-    public function getPaymentComplement(): ?Payments
+    public function getPaymentComplement(): ?PaymentsInterface
     {
         foreach ($this->complements as $complement) {
-            if ($complement->getPayment() instanceof Payments) {
+            if ($complement->getPayment() instanceof PaymentsInterface) {
                 return $complement->getPayment();
             }
         }
