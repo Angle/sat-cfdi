@@ -69,6 +69,7 @@
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/obrasarteantiguedades.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/pagoenespecie.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/Pagos10.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/Pagos20.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/pfic.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/psgecfd.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/renovacionysustitucionvehiculos.xslt"/>
