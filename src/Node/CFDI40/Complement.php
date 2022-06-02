@@ -13,7 +13,7 @@ use Angle\CFDI\Node\Complement\FoodVouchers\FoodVouchers;
 use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
 use Angle\CFDI\Node\Complement\Payment\Payments as Payments10;
 use Angle\CFDI\Node\Complement\Payment20\Payments as Payments20;
-use Angle\CFDI\Node\Complement\PaymentInterface;
+use Angle\CFDI\Node\Complement\PaymentsInterface;
 use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
 
 use DateTime;
@@ -216,9 +216,9 @@ class Complement extends CFDINode implements CFDIComplementInterface
 
     /**
      * This method will return the first encountered Payments inside the Complements items
-     * @return PaymentInterface
+     * @return PaymentsInterface
      */
-    public function getPayment(): ?PaymentInterface
+    public function getPayment(): ?PaymentsInterface
     {
         foreach ($this->complements as $c) {
             if ($c instanceof Payments10) {
