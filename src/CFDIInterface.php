@@ -7,6 +7,7 @@ use DOMDocument;
 use DOMNode;
 
 use Angle\CFDI\Node\Complement\FiscalStamp;
+use Angle\CFDI\Node\Complement\PaymentsInterface;
 
 interface CFDIInterface
 {
@@ -30,6 +31,9 @@ interface CFDIInterface
 
     // Fiscal Stamp
     public function getFiscalStamp(): ?FiscalStamp; // TODO: this should point to a CFDIFiscalStampInterface
+
+    // Payment Complement
+    public function getPaymentComplement(): ?PaymentsInterface;
 
     // Complements
     /** @return CFDIComplementInterface[]|null */
