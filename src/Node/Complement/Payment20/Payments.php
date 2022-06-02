@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\CFDI\Node\Complement\Payment;
+namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
 
@@ -24,18 +24,18 @@ class Payments extends CFDINode implements PaymentInterface
     ##        PRESETS      ##
     #########################
 
-    const VERSION_1_0 = "1.0";
+    const VERSION_2_0 = "2.0";
 
     const NODE_NAME = "Pagos";
 
-    const NODE_NS = "pago10";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos";
+    const NODE_NS = "pago20";
+    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [
-        'xmlns:pago10' => "http://www.sat.gob.mx/Pagos",
+        'xmlns:pago20' => "http://www.sat.gob.mx/Pagos20",
         'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
-        'xsi:schemaLocation' => "http://www.sat.gob.mx/Pagos http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos10.xsd",
+        'xsi:schemaLocation' => "http://www.sat.gob.mx/Pagos20 http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos20.xsd",
     ];
 
 
@@ -67,10 +67,15 @@ class Payments extends CFDINode implements PaymentInterface
     /**
      * @var string
      */
-    protected $version = self::VERSION_1_0;
+    protected $version = self::VERSION_2_0;
 
 
     // CHILDREN NODES
+    /**
+     * @var Totals|null
+     */
+    protected $totals;
+
     /**
      * @var Payment[]
      */
@@ -96,6 +101,10 @@ class Payments extends CFDINode implements PaymentInterface
             }
 
             switch ($node->localName) {
+                case Totals::NODE_NAME:
+                    $totals = Totals::createFromDomNode($node);
+                    $this->setTotals($totals);
+                    break;
                 case Payment::NODE_NAME:
                     $payment = Payment::createFromDomNode($node);
                     $this->addPayment($payment);
@@ -117,6 +126,13 @@ class Payments extends CFDINode implements PaymentInterface
 
         foreach ($this->getAttributes() as $attr => $value) {
             $node->setAttribute($attr, $value);
+        }
+
+        // TransferredList Node
+        if ($this->totals) {
+            // This can be null, no problem if not found
+            $totalsNode = $this->totals->toDOMElement($dom);
+            $node->appendChild($totalsNode);
         }
 
         // Payments Node
@@ -171,6 +187,22 @@ class Payments extends CFDINode implements PaymentInterface
     #########################
 
     /**
+     * @return Totals|null
+     */
+    public function getTotals(): ?Totals
+    {
+        return $this->totals;
+    }
+
+    /**
+     * @param Totals|null $totals
+     */
+    public function setTotals(?Totals $totals): void
+    {
+        $this->totals = $totals;
+    }
+
+    /**
      * @return Payment[]
      */
     public function getPayments(): ?array
@@ -197,7 +229,5 @@ class Payments extends CFDINode implements PaymentInterface
         $this->payments = $payments;
         return $this;
     }
-
-
 
 }

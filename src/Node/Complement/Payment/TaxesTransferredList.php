@@ -2,7 +2,6 @@
 
 namespace Angle\CFDI\Node\Complement\Payment;
 
-use Angle\CFDI\CFDI33;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;

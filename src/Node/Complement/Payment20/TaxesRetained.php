@@ -1,10 +1,13 @@
 <?php
 
-namespace Angle\CFDI\Node\Complement\Payment;
+namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
+
+use Angle\CFDI\Catalog\TaxFactorType;
+use Angle\CFDI\Catalog\TaxType;
 
 use DOMDocument;
 use DOMElement;
@@ -12,18 +15,18 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static TaxesRetainedList createFromDOMNode(DOMNode $node)
+ * @method static TaxesRetained createFromDOMNode(DOMNode $node)
  */
-class TaxesRetainedList extends CFDINode
+class TaxesRetained extends CFDINode
 {
     #########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Retenciones";
+    const NODE_NAME = "RetencionP";
 
-    const NODE_NS = "pago10";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos";
+    const NODE_NS = "pago20";
+    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -33,7 +36,17 @@ class TaxesRetainedList extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [];
+    protected static $attributes = [
+        // PropertyName => [spanish (official SAT), english]
+        'tax'          => [
+            'keywords' => ['ImpuestoP', 'tax'],
+            'type' => CFDINode::ATTR_REQUIRED
+        ],
+        'amount'        => [
+            'keywords' => ['ImporteP', 'amount'],
+            'type' => CFDINode::ATTR_REQUIRED
+        ],
+    ];
 
     protected static $children = [
         // PropertyName => ClassName (full namespace)
@@ -44,12 +57,20 @@ class TaxesRetainedList extends CFDINode
     ##      PROPERTIES     ##
     #########################
 
+    /**
+     * @see TaxType
+     * @var string
+     */
+    protected $tax;
+
+    /**
+     * @var string
+     */
+    protected $amount;
+
 
     // CHILDREN NODES
-    /**
-     * @var TaxesRetained[]
-     */
-    protected $retentions = [];
+    // none
 
 
 
@@ -65,21 +86,7 @@ class TaxesRetainedList extends CFDINode
      */
     public function setChildrenFromDOMNodes(array $children): void
     {
-        foreach ($children as $node) {
-            if ($node instanceof DOMText) {
-                // TODO: we are skipping the actual text inside the Node.. is this useful?
-                continue;
-            }
-
-            switch ($node->localName) {
-                case TaxesRetained::NODE_NAME:
-                    $retention = TaxesRetained::createFromDomNode($node);
-                    $this->addRetention($retention);
-                    break;
-                default:
-                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
-            }
-        }
+        // void
     }
 
 
@@ -95,11 +102,7 @@ class TaxesRetainedList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Retentions node (array)
-        foreach ($this->retentions as $retention) {
-            $retentionNode = $retention->toDOMElement($dom);
-            $node->appendChild($retentionNode);
-        }
+        // no children
 
         return $node;
     }
@@ -118,42 +121,60 @@ class TaxesRetainedList extends CFDINode
 
 
     #########################
+    ##   SPECIAL METHODS   ##
+    #########################
+
+    public function getTaxName($lang='es')
+    {
+        return TaxType::getName($this->tax, $lang);
+    }
+
+
+    #########################
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    /**
+     * @return string
+     */
+    public function getTax(): ?string
+    {
+        return $this->tax;
+    }
+
+    /**
+     * @param string $tax
+     * @return TaxesRetained
+     */
+    public function setTax(?string $tax): self
+    {
+        // TODO: Use TaxType
+        $this->tax = $tax;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getAmount(): ?string
+    {
+        return $this->amount;
+    }
+
+    /**
+     * @param string $amount
+     * @return TaxesRetained
+     */
+    public function setAmount(?string $amount): self
+    {
+        $this->amount = $amount;
+        return $this;
+    }
 
 
     #########################
     ## CHILDREN
     #########################
 
-    /**
-     * @return TaxesRetained[]
-     */
-    public function getRetentions(): ?array
-    {
-        return $this->retentions;
-    }
-
-    /**
-     * @param TaxesRetained $retention
-     * @return TaxesRetainedList
-     */
-    public function addRetention(TaxesRetained $retention): self
-    {
-        $this->retentions[] = $retention;
-        return $this;
-    }
-
-    /**
-     * @param TaxesRetained[] $retentions
-     * @return TaxesRetainedList
-     */
-    public function setRetentions(array $retentions): self
-    {
-        $this->retentions = $retentions;
-        return $this;
-    }
-
+    // no children
 }

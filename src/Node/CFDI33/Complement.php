@@ -11,7 +11,9 @@ use Angle\CFDI\Node\Complement\FiscalLegends\FiscalLegends;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\FoodVouchers\FoodVouchers;
 use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
-use Angle\CFDI\Node\Complement\Payment\Payments;
+use Angle\CFDI\Node\Complement\Payment\Payments as Payments10;
+use Angle\CFDI\Node\Complement\Payment20\Payments as Payments20;
+use Angle\CFDI\Node\Complement\PaymentInterface;
 use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
 
 use DateTime;
@@ -98,8 +100,12 @@ class Complement extends CFDINode implements CFDIComplementInterface
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
                     break;
-                case Payments::NODE_NS_NAME:
-                    $payments = Payments::createFromDOMNode($node);
+                case Payments10::NODE_NS_NAME:
+                    $payments = Payments10::createFromDOMNode($node);
+                    $this->addComplement($payments);
+                    break;
+                case Payments20::NODE_NS_NAME:
+                    $payments = Payments20::createFromDOMNode($node);
                     $this->addComplement($payments);
                     break;
                 case CFDIFiscalRegistry::NODE_NS_NAME:
@@ -208,12 +214,15 @@ class Complement extends CFDINode implements CFDIComplementInterface
 
     /**
      * This method will return the first encountered Payments inside the Complements items
-     * @return Payments
+     * @return PaymentInterface
      */
-    public function getPayment(): ?Payments
+    public function getPayment(): ?PaymentInterface
     {
         foreach ($this->complements as $c) {
-            if ($c instanceof Payments) {
+            if ($c instanceof Payments10) {
+                return $c;
+            }
+            if ($c instanceof Payments20) {
                 return $c;
             }
         }

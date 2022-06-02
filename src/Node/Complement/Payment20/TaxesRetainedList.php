@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\CFDI\Node\Complement\Payment;
+namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
 
@@ -20,10 +20,10 @@ class TaxesRetainedList extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Retenciones";
+    const NODE_NAME = "RetencionesP";
 
-    const NODE_NS = "pago10";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos";
+    const NODE_NS = "pago20";
+    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];

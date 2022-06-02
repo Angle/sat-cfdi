@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\CFDI\Node\Complement\Payment;
+namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
 
@@ -12,18 +12,18 @@ use DOMNode;
 use DOMText;
 
 /**
- * @method static TaxesRetainedList createFromDOMNode(DOMNode $node)
+ * @method static Taxes createFromDOMNode(DOMNode $node)
  */
-class TaxesRetainedList extends CFDINode
+class Taxes extends CFDINode
 {
-    #########################
+#########################
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Retenciones";
+    const NODE_NAME = "ImpuestosP";
 
-    const NODE_NS = "pago10";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos";
+    const NODE_NS = "pago20";
+    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -33,7 +33,9 @@ class TaxesRetainedList extends CFDINode
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
-    protected static $attributes = [];
+    protected static $attributes = [
+        // PropertyName => [spanish (official SAT), english]
+    ];
 
     protected static $children = [
         // PropertyName => ClassName (full namespace)
@@ -44,13 +46,20 @@ class TaxesRetainedList extends CFDINode
     ##      PROPERTIES     ##
     #########################
 
+    // no attributes
+
 
     // CHILDREN NODES
-    /**
-     * @var TaxesRetained[]
-     */
-    protected $retentions = [];
 
+    /**
+     * @var TaxesTransferredList|null
+     */
+    protected $transferredList;
+
+    /**
+     * @var TaxesRetainedList|null
+     */
+    protected $retainedList;
 
 
     #########################
@@ -72,9 +81,13 @@ class TaxesRetainedList extends CFDINode
             }
 
             switch ($node->localName) {
-                case TaxesRetained::NODE_NAME:
-                    $retention = TaxesRetained::createFromDomNode($node);
-                    $this->addRetention($retention);
+                case TaxesTransferredList::NODE_NAME:
+                    $transferred = TaxesTransferredList::createFromDomNode($node);
+                    $this->setTransferredList($transferred);
+                    break;
+                case TaxesRetainedList::NODE_NAME:
+                    $retained = TaxesRetainedList::createFromDomNode($node);
+                    $this->setRetainedList($retained);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
@@ -95,10 +108,18 @@ class TaxesRetainedList extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // Retentions node (array)
-        foreach ($this->retentions as $retention) {
-            $retentionNode = $retention->toDOMElement($dom);
-            $node->appendChild($retentionNode);
+        // TransferredList Node
+        if ($this->transferredList) {
+            // This can be null, no problem if not found
+            $transferredListNode = $this->transferredList->toDOMElement($dom);
+            $node->appendChild($transferredListNode);
+        }
+
+        // RetainedList Node
+        if ($this->retainedList) {
+            // This can be null, no problem if not found
+            $retainedListNode = $this->retainedList->toDOMElement($dom);
+            $node->appendChild($retainedListNode);
         }
 
         return $node;
@@ -121,7 +142,7 @@ class TaxesRetainedList extends CFDINode
     ## GETTERS AND SETTERS ##
     #########################
 
-    // none
+    // no attributes
 
 
     #########################
@@ -129,31 +150,38 @@ class TaxesRetainedList extends CFDINode
     #########################
 
     /**
-     * @return TaxesRetained[]
+     * @return TaxesTransferredList|null
      */
-    public function getRetentions(): ?array
+    public function getTransferredList(): ?TaxesTransferredList
     {
-        return $this->retentions;
+        return $this->transferredList;
     }
 
     /**
-     * @param TaxesRetained $retention
-     * @return TaxesRetainedList
+     * @param TaxesTransferredList|null $transferredList
+     * @return Taxes
      */
-    public function addRetention(TaxesRetained $retention): self
+    public function setTransferredList(?TaxesTransferredList $transferredList): self
     {
-        $this->retentions[] = $retention;
+        $this->transferredList = $transferredList;
         return $this;
     }
 
     /**
-     * @param TaxesRetained[] $retentions
-     * @return TaxesRetainedList
+     * @return TaxesRetainedList|null
      */
-    public function setRetentions(array $retentions): self
+    public function getRetainedList(): ?TaxesRetainedList
     {
-        $this->retentions = $retentions;
-        return $this;
+        return $this->retainedList;
     }
 
+    /**
+     * @param TaxesRetainedList|null $retainedList
+     * @return Taxes
+     */
+    public function setRetainedList(?TaxesRetainedList $retainedList): self
+    {
+        $this->retainedList = $retainedList;
+        return $this;
+    }
 }

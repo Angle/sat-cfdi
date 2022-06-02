@@ -1,6 +1,6 @@
 <?php
 
-namespace Angle\CFDI\Node\Complement\Payment;
+namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
 
@@ -25,8 +25,8 @@ class RelatedDocument extends CFDINode
 
     const NODE_NAME = "DoctoRelacionado";
 
-    const NODE_NS = "pago10";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos";
+    const NODE_NS = "pago20";
+    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
@@ -55,12 +55,8 @@ class RelatedDocument extends CFDINode
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'exchangeRate' => [
-            'keywords' => ['TipoCambioDR', 'exchangeRate'],
+            'keywords' => ['EquivalenciaDR', 'exchangeRate'],
             'type' => CFDINode::ATTR_OPTIONAL
-        ],
-        'paymentType' => [
-            'keywords' => ['MetodoDePagoDR', 'paymentType'],
-            'type' => CFDINode::ATTR_REQUIRED
         ],
         'instalmentNumber' => [
             'keywords' => ['NumParcialidad', 'instalmentNumber'],
@@ -76,6 +72,10 @@ class RelatedDocument extends CFDINode
         ],
         'pendingBalanceAmount' => [
             'keywords' => ['ImpSaldoInsoluto', 'pendingBalanceAmount'],
+            'type' => CFDINode::ATTR_OPTIONAL
+        ],
+        'operationTaxable' => [
+            'keywords' => ['ObjetoImpDR', 'operationTaxable'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
@@ -118,11 +118,6 @@ class RelatedDocument extends CFDINode
     /**
      * @var string|null
      */
-    protected $paymentType;
-
-    /**
-     * @var string|null
-     */
     protected $instalmentNumber;
 
     /**
@@ -139,6 +134,11 @@ class RelatedDocument extends CFDINode
      * @var string|null
      */
     protected $pendingBalanceAmount;
+
+    /**
+     * @var string|null
+     */
+    protected $operationTaxable;
 
 
     #########################
@@ -284,24 +284,6 @@ class RelatedDocument extends CFDINode
     /**
      * @return string|null
      */
-    public function getPaymentType(): ?string
-    {
-        return $this->paymentType;
-    }
-
-    /**
-     * @param string|null $paymentType
-     * @return RelatedDocument
-     */
-    public function setPaymentType(?string $paymentType): self
-    {
-        $this->paymentType = $paymentType;
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getInstalmentNumber(): ?string
     {
         return $this->instalmentNumber;
@@ -371,4 +353,19 @@ class RelatedDocument extends CFDINode
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
+    public function getOperationTaxable(): ?string
+    {
+        return $this->operationTaxable;
+    }
+
+    /**
+     * @param string|null $operationTaxable
+     */
+    public function setOperationTaxable(?string $operationTaxable): void
+    {
+        $this->operationTaxable = $operationTaxable;
+    }
 }
