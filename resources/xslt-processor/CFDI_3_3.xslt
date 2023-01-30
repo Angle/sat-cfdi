@@ -32,7 +32,8 @@
                 xmlns:ecc12="http://www.sat.gob.mx/EstadoDeCuentaCombustible12"
                 xmlns:consumodecombustibles11="http://www.sat.gob.mx/ConsumoDeCombustibles11"
                 xmlns:gceh="http://www.sat.gob.mx/GastosHidrocarburos10"
-                xmlns:ieeh="http://www.sat.gob.mx/IngresosHidrocarburos10">
+                xmlns:ieeh="http://www.sat.gob.mx/IngresosHidrocarburos10"
+                xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20">
 
   <!-- Con el siguiente método se establece que la salida deberá ser en texto -->
   <xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
@@ -47,6 +48,7 @@
 
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/AcreditamientoIEPS10.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/aerolineas.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/CartaPorte20.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/certificadodedestruccion.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/cfdiregistrofiscal.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior10.xslt"/>
