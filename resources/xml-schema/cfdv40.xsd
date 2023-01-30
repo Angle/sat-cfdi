@@ -736,7 +736,7 @@
 					</xs:annotation>
 					<xs:complexType mixed="true"> <!-- added "mixed=true" by Angle -->
 						<xs:sequence>
-							<xs:any maxOccurs="unbounded" processContents="skip"/> <!-- added "skip" by Angle -->
+							<xs:any maxOccurs="unbounded" minOccurs="0" processContents="skip"/> <!-- added "minOccurs=0" and "processContents=skip" by Angle -->
 						</xs:sequence>
 					</xs:complexType>
 				</xs:element>
