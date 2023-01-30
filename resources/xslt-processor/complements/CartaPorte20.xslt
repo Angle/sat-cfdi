@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="utf-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:fn="http://www.w3.org/2005/xpath-functions" xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20">
 	<xsl:template match="cartaporte20:CartaPorte">
@@ -70,7 +71,7 @@
 		</xsl:call-template>
 		<xsl:call-template name="Requerido">
 			<xsl:with-param name="valor" select="./@FechaHoraSalidaLlegada"/>
-		</xsl:call-template>		
+		</xsl:call-template>
 		<xsl:call-template name="Opcional">
 			<xsl:with-param name="valor" select="./@TipoEstacion"/>
 		</xsl:call-template>
@@ -110,7 +111,7 @@
 			</xsl:call-template>
 			<xsl:call-template name="Requerido">
 				<xsl:with-param name="valor" select="./@CodigoPostal"/>
-			</xsl:call-template>		
+			</xsl:call-template>
 		</xsl:for-each>
 	</xsl:template>
 	<!--  Iniciamos el manejo de los elementos hijo en la secuencia Origen-->
@@ -239,7 +240,7 @@
 		<xsl:call-template name="Requerido">
 			<xsl:with-param name="valor" select="./@PesoGuiaIdentificacion"/>
 		</xsl:call-template>
-	</xsl:template>	
+	</xsl:template>
 	<!--  Iniciamos el manejo de los elementos hijo en la secuencia CantidadTransporta-->
 	<xsl:template match="cartaporte20:CantidadTransporta">
 		<!--  Iniciamos el manejo de los nodos dependientes -->
@@ -611,5 +612,5 @@
 		<xsl:call-template name="Requerido">
 			<xsl:with-param name="valor" select="./@ParteTransporte"/>
 		</xsl:call-template>
-		</xsl:template>
+	</xsl:template>
 </xsl:stylesheet>

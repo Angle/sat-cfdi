@@ -44,6 +44,7 @@
 	-->
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/AcreditamientoIEPS10.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/aerolineas.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/CartaPorte20.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/certificadodedestruccion.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/cfdiregistrofiscal.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior10.xslt"/>
