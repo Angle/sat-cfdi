@@ -82,6 +82,11 @@ class Item extends CFDINode
             'class'     => ItemTaxes::class,
             'type'      => CFDINode::CHILD_UNIQUE,
         ],
+        'thirdParties' => [
+            'keywords'  => ['ACuentaTerceros', 'thirdParties'],
+            'class'     => ItemThirdParties::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
         'customsInformation' => [
             'keywords'  => ['InformacionAduanera', 'customsInformation'],
             'class'     => ItemCustomsInformation::class,
@@ -167,6 +172,11 @@ class Item extends CFDINode
     protected $taxes;
 
     /**
+     * @var ItemThirdParties|null
+     */
+    protected $thirdParties;
+
+    /**
      * @var ItemCustomsInformation[]
      */
     protected $customsInformation = [];
@@ -210,6 +220,10 @@ class Item extends CFDINode
                     $taxes = ItemTaxes::createFromDOMNode($node);
                     $this->setTaxes($taxes);
                     break;
+                case ItemThirdParties::NODE_NAME:
+                    $thirdParties = ItemThirdParties::createFromDOMNode($node);
+                    $this->setThirdParties($thirdParties);
+                    break;
                 case ItemPropertyTaxAccount::NODE_NAME:
                     $propertyTaxAccount = ItemPropertyTaxAccount::createFromDOMNode($node);
                     $this->setPropertyTaxAccount($propertyTaxAccount);
@@ -249,6 +263,12 @@ class Item extends CFDINode
             // taxes is optional, can be null
             $taxesNode = $this->taxes->toDOMElement($dom);
             $node->appendChild($taxesNode);
+        }
+
+        if ($this->thirdParties) {
+            // thirdParties is optional, can be null
+            $thirdPartiesNode = $this->thirdParties->toDOMElement($dom);
+            $node->appendChild($thirdPartiesNode);
         }
 
         // Custom Information node (array)
@@ -495,6 +515,24 @@ class Item extends CFDINode
     public function setTaxes(?ItemTaxes $taxes): self
     {
         $this->taxes = $taxes;
+        return $this;
+    }
+
+    /**
+     * @return ItemThirdParties|null
+     */
+    public function getThirdParties(): ?ItemThirdParties
+    {
+        return $this->thirdParties;
+    }
+
+    /**
+     * @param ItemThirdParties|null $thirdParties
+     * @return Item
+     */
+    public function setThirdParties(?ItemThirdParties $thirdParties): self
+    {
+        $this->thirdParties = $thirdParties;
         return $this;
     }
 
