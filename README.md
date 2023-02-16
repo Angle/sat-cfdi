@@ -150,3 +150,32 @@ php vendor/bin/phpunit tests
 
 ## TO FIX
 - Duplicated Namespace declarations on `CFDI::toXML()` when we have any child (even if not on the root node) with a different namespace than the default for the Document. We should clean this up when pretty printing our XMLs.
+- Replace all instances of `Node::NODE_NS_NAME` with `Node::NODE_NS_URI_NAME` inside `setChildrenFromDOMNodes()`. See `CFDI40\Complements` for reference. 
+
+### Other notes
+
+```php
+echo 'Node class: ' . get_class($node) . PHP_EOL;
+echo 'Node Name: ' . $node->nodeName . PHP_EOL;
+echo 'Node Prefix ' . $node->prefix . PHP_EOL;
+echo 'Node Local Name: ' . $node->localName . PHP_EOL;
+echo 'Node Base URI: ' . $node->baseURI . PHP_EOL;
+echo 'Node Namespace URI: ' . $node->namespaceURI . PHP_EOL;
+echo PHP_EOL;
+```
+
+```
+Node class: DOMElement
+Node Name: tfd:TimbreFiscalDigital
+Node Prefix tfd
+Node Local Name: TimbreFiscalDigital
+Node Base URI: /Users/mundofr/GitHub/Angle/sat-cfdi/test-data/4D75D60D-48CF-434C-96A6-26DABB3AC5AF.xml
+Node Namespace URI: http://www.sat.gob.mx/TimbreFiscalDigital
+
+Node class: DOMElement
+Node Name: Pagos20:Pagos
+Node Prefix Pagos20
+Node Local Name: Pagos
+Node Base URI: /Users/mundofr/GitHub/Angle/sat-cfdi/test-data/4D75D60D-48CF-434C-96A6-26DABB3AC5AF.xml
+Node Namespace URI: http://www.sat.gob.mx/Pagos20
+```
