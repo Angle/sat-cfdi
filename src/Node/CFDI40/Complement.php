@@ -37,6 +37,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
     const NODE_NS = "cfdi";
     const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
 
@@ -97,37 +98,38 @@ class Complement extends CFDINode implements CFDIComplementInterface
             }
 
             // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
-            switch ($node->nodeName) {
-                case FiscalStamp::NODE_NS_NAME:
+            $nodeNsUriName = $node->namespaceURI . ':' . $node->localName;
+            switch ($nodeNsUriName) {
+                case FiscalStamp::NODE_NS_URI_NAME:
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
                     break;
-                case Payments10::NODE_NS_NAME:
+                case Payments10::NODE_NS_URI_NAME:
                     $payments = Payments10::createFromDOMNode($node);
                     $this->addComplement($payments);
                     break;
-                case Payments20::NODE_NS_NAME:
+                case Payments20::NODE_NS_URI_NAME:
                     $payments = Payments20::createFromDOMNode($node);
                     $this->addComplement($payments);
                     break;
-                case CFDIFiscalRegistry::NODE_NS_NAME:
+                case CFDIFiscalRegistry::NODE_NS_URI_NAME:
                     $complement = CFDIFiscalRegistry::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                case FiscalLegends::NODE_NS_NAME:
+                case FiscalLegends::NODE_NS_URI_NAME:
                     $complement = FiscalLegends::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                case LocalTaxes::NODE_NS_NAME:
+                case LocalTaxes::NODE_NS_URI_NAME:
                     $complement = LocalTaxes::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                case FoodVouchers::NODE_NS_NAME:
+                case FoodVouchers::NODE_NS_URI_NAME:
                     $complement = FoodVouchers::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 /* this complement is used as an ItemComplement..
-                case ThirdParties::NODE_NS_NAME:
+                case ThirdParties::NODE_NS_URI_NAME:
                     $complement = ThirdParties::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;

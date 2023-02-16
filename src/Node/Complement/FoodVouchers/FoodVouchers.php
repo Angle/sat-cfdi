@@ -32,6 +32,7 @@ class FoodVouchers extends CFDINode
     const NODE_NS = "valesdedespensa";
     const NODE_NS_URI = "http://www.sat.gob.mx/valesdedespensa";
     const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [
         'xmlns:pago10' => "http://www.sat.gob.mx/valesdedespensa",
