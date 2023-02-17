@@ -97,7 +97,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
 
             // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
             $nodeNsUriName = $node->namespaceURI . ':' . $node->localName;
-            switch ($node->nodeName) {
+            switch ($nodeNsUriName) {
                 case FiscalStamp::NODE_NS_URI_NAME:
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
