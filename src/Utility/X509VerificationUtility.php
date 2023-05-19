@@ -70,9 +70,14 @@ abstract class X509VerificationUtility
             return -1;
         }
 
-        /** @var Sequence $certificateBodyAsn */
-        $certificateBodyAsn = $certificateAsn->getChildren()[0];
-        $certificateBodyBinary = $certificateBodyAsn->getBinary();
+        try {
+            /** @var Sequence $certificateBodyAsn */
+            $certificateBodyAsn = $certificateAsn->getChildren()[0];
+            $certificateBodyBinary = $certificateBodyAsn->getBinary();
+        } catch (\Exception $e) {
+            // ASN.1 string parsing failed.. it might contained invalid characters somewhere
+            return -1;
+        }
 
         /** @var BitString $certificateSignatureAsn */
         $certificateSignatureAsn = $certificateAsn->getChildren()[2];
