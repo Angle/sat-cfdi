@@ -238,14 +238,28 @@ class SignatureValidator
         //$auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [CFDI::SATRootCertificatePEM()]);
 
         $auth = X509VerificationUtility::verifySignature($certificatePem);
-        if ($auth === 0) {
+        if ($auth === 1) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
                 'message' => 'Issuer X.509 Certificate is not authentic',
             ];
             return false;
+        } elseif ($auth === 2) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer X.509 Certificate CA root was not found in local storage',
+            ];
+            return false;
         } elseif ($auth === -1) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer X.509 Certificate authenticity check failed, system error',
+            ];
+            return false;
+        } elseif ($auth !== 0) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -272,14 +286,14 @@ class SignatureValidator
         }
 
         $valid = X509VerificationUtility::verifyCertificateAtDate($certificatePem, $cfdi->getDate());
-        if ($valid === 0) {
+        if ($valid === 1) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
                 'message' => 'Issuer X.509 Certificate was invalid or expired at CFDI signing',
             ];
             return false;
-        } elseif ($valid === -1) {
+        } elseif ($valid !== 0) {
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
@@ -456,7 +470,6 @@ class SignatureValidator
             return false;
         }
 
-
         $certificatePem = $this->certificateStorage->getCertificatePEM($fiscalStamp->getSatCertificateNumber());
 
         if (!$certificatePem) {
@@ -493,19 +506,36 @@ class SignatureValidator
         // the previous method used the openssl_x509_checkpurpose function, but it was very inflexible when handling past dates
         //$auth = openssl_x509_checkpurpose($certificate, X509_PURPOSE_ANY, [CFDI::SATRootCertificatePEM()]);
 
+        //echo sprintf('SAT Certificate PEM [%s]:', $fiscalStamp->getSatCertificateNumber()) . PHP_EOL;
+        //echo $certificatePem;
+
         $auth = X509VerificationUtility::verifySignature($certificatePem);
-        if ($auth === 0) {
+        if ($auth === 1) {
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
                 'message' => 'SAT X.509 Certificate is not authentic',
             ];
             return false;
+        } elseif ($auth === 2) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer X.509 Certificate CA root was not found in local storage',
+            ];
+            return false;
         } elseif ($auth === -1) {
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
-                'message' => 'SAT X.509 Certificate authenticity check failed',
+                'message' => 'SAT X.509 Certificate authenticity check failed, system error',
+            ];
+            return false;
+        } elseif ($auth !== 0) {
+            $this->validations[] = [
+                'type' => 'signature:cfdi',
+                'success' => false,
+                'message' => 'Issuer X.509 Certificate authenticity check failed',
             ];
             return false;
         }
@@ -528,14 +558,14 @@ class SignatureValidator
         }
 
         $valid = X509VerificationUtility::verifyCertificateAtDate($certificatePem, $fiscalStamp->getStampDate());
-        if ($valid === 0) {
+        if ($valid === 1) {
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
                 'message' => 'SAT X.509 Certificate was invalid or expired at FiscalStamp signing',
             ];
             return false;
-        } elseif ($valid === -1) {
+        } elseif ($valid !== 0) {
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,

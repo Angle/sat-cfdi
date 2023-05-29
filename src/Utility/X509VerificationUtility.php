@@ -2,12 +2,16 @@
 
 namespace Angle\CFDI\Utility;
 
+use FG\ASN1\AbstractString;
 use FG\ASN1\ASNObject;
+use FG\ASN1\Construct;
 use FG\ASN1\Identifier;
 use FG\ASN1\Universal\BitString;
+use FG\ASN1\Universal\PrintableString;
 use FG\ASN1\Universal\Sequence;
 
 use DateTime;
+use FG\ASN1\Universal\UTF8String;
 
 abstract class X509VerificationUtility
 {
@@ -56,7 +60,6 @@ abstract class X509VerificationUtility
             return -1;
         }
 
-
         try {
             /** @var Sequence $certificateAsn */
             $certificateAsn = ASNObject::fromBinary($certificateDer);
@@ -65,17 +68,32 @@ abstract class X509VerificationUtility
             return -1;
         }
 
+        //self::printASNObject($certificateAsn);
+
         if ($certificateAsn->getNumberOfChildren() != 3) {
             // Certificate ASN1 invalid number of children, expecting 3
             return -1;
         }
 
         try {
-            /** @var Sequence $certificateBodyAsn */
-            $certificateBodyAsn = $certificateAsn->getChildren()[0];
-            $certificateBodyBinary = $certificateBodyAsn->getBinary();
+            try {
+                /** @var Sequence $certificateBodyAsn */
+                $certificateBodyAsn = $certificateAsn->getChildren()[0];
+                $certificateBodyBinary = $certificateBodyAsn->getBinary();
+
+            } catch (\Exception $e) {
+                // ASN.1 string parsing failed... it might contain invalid characters somewhere
+                //echo $e->getMessage() . PHP_EOL;
+                //print_r($e->getTraceAsString());
+
+                // If the certificate parsing failed, because of a non-compliant Certificate X.509, try to use the
+                // alternate method that extracts the Certificate Body straight from the Binary DER file
+                $certificateBodyBinary = self::getCertificateBodyFromDERBinary($certificateDer);
+
+                // another alternate method that parses the certificate and allows all strings
+                //$certificateBodyBinary = self::getBinaryAllowAllCharacters($certificateBodyAsn);
+            }
         } catch (\Exception $e) {
-            // ASN.1 string parsing failed.. it might contained invalid characters somewhere
             return -1;
         }
 
@@ -131,17 +149,17 @@ abstract class X509VerificationUtility
 
         if (!$decrypted) {
             // unable to decrypt the signature, this means none of the Local Trusted CA signed this certificate
-            return 0;
+            return 2;
         }
 
         // Compare the Certificate Body Hash to the Hash that was encrypted in the signature
         $certificateBodyHash = openssl_digest($certificateBodyBinary, 'SHA256', true);
 
         if ($certificateBodyHash == $hashInSignature) {
-            return 1;
+            return 0;
         } else {
             // hash mismatched
-            return 0;
+            return 1;
         }
     }
 
@@ -185,15 +203,15 @@ abstract class X509VerificationUtility
 
         if ($date < $validFrom) {
             // the date is _before_ the Certificate was created
-            return 0;
+            return 1;
         }
 
         if ($date > $validTo) {
             // the date is _after_ the Certificate expired
-            return 0;
+            return 2;
         }
 
-        return 1;
+        return 0;
     }
 
 
@@ -296,7 +314,7 @@ abstract class X509VerificationUtility
         $name = Identifier::getShortName($object->getType());
         echo "{$treeSymbol}{$depthString}{$name} : ";
 
-        echo $object->__toString().PHP_EOL;
+        echo $object->__toString() . PHP_EOL;
 
         $content = $object->getContent();
         if (is_array($content)) {
@@ -304,5 +322,114 @@ abstract class X509VerificationUtility
                 self::printASNObject($child, $depth + 1);
             }
         }
+    }
+
+    private static function getBinaryAllowAllCharacters(ASNObject $object): string
+    {
+        $b = '';
+
+        if ($object instanceof Construct) {
+            $b .= $object->getIdentifier() . self::ASNConstructCreateLengthPart($object);
+            foreach ($object as $child) {
+                $b .= self::getBinaryAllowAllCharacters($child);
+            }
+        } else {
+            if ($object instanceof PrintableString) {
+                // PrintableString identifier (hex): 13
+                // UTF8String identifier (hex): 0c
+
+                // Cast this as a UTF-8 string instead
+                $object = new UTF8String($object->getContent());
+
+                // replace the identifier
+                $newBinary = hex2bin('13') . hex2bin(substr(bin2hex($object->getBinary()), 2));
+
+                $b .= $newBinary;
+            } else {
+                $b .= $object->getBinary();
+            }
+        }
+
+        return $b;
+    }
+
+    /**
+     * Forked from ASNObject
+     * @return string
+     */
+    private static function ASNConstructCreateLengthPart(Construct $obj)
+    {
+        $contentLength = 0;
+        foreach ($obj->getChildren() as $component) {
+            $contentLength += $component->getObjectLength();
+        }
+
+        $cl = $contentLength;
+
+        $nrOfLengthOctets = 1;
+        if ($cl > 127) {
+            do { // long form
+                $nrOfLengthOctets++;
+                $cl = $cl >> 8;
+            } while ($cl > 0);
+        }
+
+        if ($nrOfLengthOctets == 1) {
+            return chr($contentLength);
+        } else {
+            // the first length octet determines the number subsequent length octets
+            $lengthOctets = chr(0x80 | ($nrOfLengthOctets - 1));
+            for ($shiftLength = 8 * ($nrOfLengthOctets - 2); $shiftLength >= 0; $shiftLength -= 8) {
+                $lengthOctets .= chr($contentLength >> $shiftLength);
+            }
+
+            return $lengthOctets;
+        }
+    }
+
+    private static function getCertificateBodyFromDERBinary($der): string
+    {
+        // The Certificate body is the first child of an X.509 Sequence
+        // calculate the envelope
+
+        // the very first octet should be 0x30
+        if (ord($der[0]) !== 0x30) {
+            throw new \Exception('Invalid DER format, expected a Sequence as Envelope');
+        }
+
+        list($envelopeLengthOctets, $envelopeLength) = self::parseLength($der);
+
+        // All good, we are ready to move to the body
+        $bodyOffset = 2 + $envelopeLengthOctets; // one octet for the identifier, one as the minimum for the length octets
+
+        if (ord($der[$bodyOffset]) !== 0x30) {
+            throw new \Exception('Invalid DER format, expected a Sequence as Body');
+        }
+
+        list($bodyLengthOctets, $bodyLength) = self::parseLength(substr($der, $bodyOffset));
+
+        // We are now able to extract the actual body Binary
+        return substr($der, $bodyOffset, 2 + $bodyLengthOctets + $bodyLength); // one octet for the identifier, one as the minimum for the length octets
+    }
+
+    private static function parseLength($bin): array
+    {
+        // Check if the bit 8 is set
+        if (ord($bin[1]) & 0x80) {
+            //echo "bit 8 is set, this is a multi octet part" . PHP_EOL;
+            $numberOfOctets = ord($bin[1]) & 0x7F;
+            $envelopeLength = 0;
+
+            for ($i = 0; $i < $numberOfOctets; $i++) {
+                $envelopeLength = $envelopeLength << 8;
+                $envelopeLength += ord($bin[2 + $i]);
+            }
+        } else {
+            //echo "bit 8 is NOT set, this is a simple length" . PHP_EOL;
+            $numberOfOctets = 0;
+            $envelopeLength = ord($bin[1]);
+        }
+
+        return [$numberOfOctets, $envelopeLength];
     }
 }
