@@ -236,9 +236,18 @@ abstract class X509VerificationUtility
             $rootCertificatePem = OpenSSLUtility::coerceBinaryCertificate($rootCertificateDer);
             $rootCertificate = @openssl_x509_read($rootCertificatePem);
 
+            if ($rootCertificate === false) {
+                throw new \Exception('Failed to read X509 CA certificate: ' . $filename . ' [OpenSSL: ' . openssl_error_string() . ']');
+            }
+
             $rootCertificateParsed = openssl_x509_parse($rootCertificate);
 
             $rootPublicKey = openssl_pkey_get_public($rootCertificate);
+
+            if ($rootPublicKey === false) {
+                throw new \Exception('Failed to get X509 Public Key from CA certificate: ' . $filename . ' [OpenSSL: ' . openssl_error_string() . ']');
+            }
+
             $rootPublicKeyDetails = openssl_pkey_get_details($rootPublicKey);
 
             $caCertificates[$rootCertificateParsed['hash']] = [
@@ -261,9 +270,18 @@ abstract class X509VerificationUtility
             $rootCertificateDer = self::certificatePemToDer($rootCertificatePem);
             $rootCertificate = @openssl_x509_read($rootCertificatePem);
 
+            if ($rootCertificate === false) {
+                throw new \Exception('Failed to read X509 CA certificate: ' . $filename . ' [OpenSSL: ' . openssl_error_string() . ']');
+            }
+
             $rootCertificateParsed = openssl_x509_parse($rootCertificate);
 
             $rootPublicKey = openssl_pkey_get_public($rootCertificate);
+
+            if ($rootPublicKey === false) {
+                throw new \Exception('Failed to get X509 Public Key from CA certificate: ' . $filename . ' [OpenSSL: ' . openssl_error_string() . ']');
+            }
+
             $rootPublicKeyDetails = openssl_pkey_get_details($rootPublicKey);
 
             $caCertificates[$rootCertificateParsed['hash']] = [

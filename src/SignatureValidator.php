@@ -249,7 +249,7 @@ class SignatureValidator
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'Issuer X.509 Certificate CA root was not found in local storage',
+                'message' => 'Issuer X.509 Certificate CA root was not found in trusted local storage',
             ];
             return false;
         } elseif ($auth === -1) {
@@ -521,7 +521,7 @@ class SignatureValidator
             $this->validations[] = [
                 'type' => 'signature:cfdi',
                 'success' => false,
-                'message' => 'Issuer X.509 Certificate CA root was not found in local storage',
+                'message' => 'Issuer X.509 Certificate CA root was not found in trusted local storage',
             ];
             return false;
         } elseif ($auth === -1) {
