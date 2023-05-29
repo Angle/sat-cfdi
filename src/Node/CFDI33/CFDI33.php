@@ -1491,15 +1491,7 @@ class CFDI33 extends CFDINode implements CFDIInterface
     ##      LIBRARY        ##
     #########################
 
-    /**
-     * Returns the filename of the trusted SAT Root CA used for validating certificates
-     *
-     * @return string|null
-     */
-    public static function SATRootCertificatePEM(): ?string
-    {
-        return PathUtility::join(__DIR__, '/../resources/certificates/sat-trusted-ca-prod.pem');
-    }
+    // none.
 
 
     #########################
