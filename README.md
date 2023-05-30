@@ -104,6 +104,8 @@ We've bundled the production root X.509 Certificates (CA) in a convenient PEM fi
 
 SAT publishes a list of all the certificates for every single registered and active taxpayer. You can consult any specific certificate with [SAT's official tool "Recuperación de Certificados"](https://portalsat.plataforma.sat.gob.mx/RecuperacionDeCertificados/faces/recuperaRFC.xhtml).
 
+You can use that system to look up all of SAT's certificates by searching their RFC: SAT970701NN3
+
 
 ## References
 The official publication regarding CFDI is called "Anexo 20" and we are currently on CFDI version 3.3. [View online](http://omawww.sat.gob.mx/tramitesyservicios/Paginas/anexo_20_version3-3.htm).
