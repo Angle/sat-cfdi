@@ -6,6 +6,8 @@ use Angle\CFDI\CFDINode;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
+use Angle\CFDI\Node\Complement\VehicleSale\VehicleSale;
+
 use DateTime;
 
 use DOMDocument;
@@ -79,6 +81,10 @@ class ItemComplement extends CFDINode
 
                 case ThirdParties::NODE_NS_NAME:
                     $complement = ThirdParties::createFromDOMNode($node);
+                    $this->addComplement($complement);
+                    break;
+                case VehicleSale::NODE_NS_NAME:
+                    $complement = VehicleSale::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 default:

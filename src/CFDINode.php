@@ -27,6 +27,7 @@ abstract class CFDINode implements CFDINodeInterface
     const PROPERTY_ATTRIBUTE        = 2;
     const PROPERTY_CHILDREN         = 3;
 
+    const DATE_FORMAT = 'Y-m-d';
     const DATETIME_FORMAT = 'Y-m-d\TH:i:s';
     const DATETIME_TIMEZONE = 'America/Mexico_City';
 
