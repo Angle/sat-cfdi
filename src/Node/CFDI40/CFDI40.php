@@ -52,7 +52,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     protected static $baseAttributes = [
         'xmlns:cfdi'            => 'http://www.sat.gob.mx/cfd/4',// TODO: fix this ?
         'xmlns:xsi'             => 'http://www.w3.org/2001/XMLSchema-instance',
-        'xsi:schemaLocation'    => 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv33.xsd',// TODO: fix this ?
+        'xsi:schemaLocation'    => 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd',// TODO: fix this ?
     ];
 
 
@@ -811,10 +811,11 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
                     if (!array_key_exists($key, $transfers)) {
                         $transfers[$key] = [
-                            'tax' => $tax->getTax(),
-                            'factorType' => $tax->getFactorType(),
-                            'rate' => $tax->getRate(),
-                            'amount' => '0',
+                            'base'          => $tax->getBase(),
+                            'tax'           => $tax->getTax(),
+                            'factorType'    => $tax->getFactorType(),
+                            'rate'          => $tax->getRate(),
+                            'amount'        => '0',
                         ];
                     }
 
@@ -977,7 +978,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
         } else {
             foreach ($this->getTaxes()->getRetainedList()->getRetentions() as $t) {
                 $t->setAmount(Math::round($t->getAmount(), 2));
-                $t->setRate(Math::round($t->getRate(), 6));
             }
         }
     }

@@ -49,7 +49,7 @@ class Recipient extends CFDINode
         ],
         'postalCode'    => [
             'keywords' => ['DomicilioFiscalReceptor', 'postalCode'],
-            'type' => CFDINode::ATTR_OPTIONAL
+            'type' => CFDINode::ATTR_REQUIRED
         ],
         'foreignCountry'          => [
             'keywords' => ['ResidenciaFiscal', 'foreignCountry'],
