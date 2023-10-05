@@ -980,6 +980,17 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 $t->setAmount(Math::round($t->getAmount(), 2));
             }
         }
+
+        // Local Taxes
+        if ($this->getLocalTaxes()) {
+            foreach ($this->getLocalTaxes()->getTaxesTransferred() as $t) {
+                $t->setAmount(Math::round($t->getAmount(), 2));
+            }
+
+            foreach ($this->getLocalTaxes()->getTaxesRetained() as $t) {
+                $t->setAmount(Math::round($t->getAmount(), 2));
+            }
+        }
     }
 
 
