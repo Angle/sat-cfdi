@@ -9,6 +9,9 @@ use RuntimeException;
  */
 abstract class CFDIUse
 {
+    const PAYMENTS = 'CP01';
+    const PAYROLL = 'CN01';
+
     const MERCHANDISE_ACQUISITION    = 'G01';
     const REFUND_DISCOUNT_OR_BONUS = 'G02';
     const GENERAL_EXPENSE   = 'G03';
@@ -33,10 +36,28 @@ abstract class CFDIUse
     const PENSION_AND_SAVINGS_DEPOSITS = 'D09';
     const EDUCATION_FEES_AND_TUITION = 'D10';
 
-    const PENDING_DEFINITION = 'P01';
+    const PENDING_DEFINITION = 'P01'; // TODO: deprecated, no longar available in CFDI4
+
+    const NO_FISCAL_EFFECTS = 'S01';
 
 
     private static $map = [
+        self::PAYMENTS => [
+            'name' => [
+                'en' => 'Payments',
+                'es' => 'Pagos',
+            ],
+            'natural_person'    => true,
+            'legal_entity'      => true,
+        ],
+        self::PAYROLL => [
+            'name' => [
+                'en' => 'Payroll',
+                'es' => 'Nómina',
+            ],
+            'natural_person'    => true,
+            'legal_entity'      => false,
+        ],
         self::MERCHANDISE_ACQUISITION => [
             'name' => [
                 'en' => 'Merchandise acquisition',
@@ -207,12 +228,18 @@ abstract class CFDIUse
             'natural_person'    => true,
             'legal_entity'      => false,
         ],
-
-
         self::PENDING_DEFINITION => [
             'name' => [
                 'en' => 'Pending definition',
                 'es' => 'Por definir',
+            ],
+            'natural_person'    => true,
+            'legal_entity'      => true,
+        ],
+        self::NO_FISCAL_EFFECTS => [
+            'name' => [
+                'en' => 'No fiscal effects',
+                'es' => 'Sin efectos fiscales',
             ],
             'natural_person'    => true,
             'legal_entity'      => true,
