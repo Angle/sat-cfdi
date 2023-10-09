@@ -941,6 +941,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 $it->getTaxes()->setTransferredList(null);
             } else {
                 foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
+                    $t->setBase(Math::round($t->getBase(), 2));
                     $t->setAmount(Math::round($t->getAmount(), 2));
                     $t->setRate(Math::round($t->getRate(), 6));
                 }
@@ -968,6 +969,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
             $this->getTaxes()->setTransferredList(null);
         } else {
             foreach ($this->getTaxes()->getTransferredList()->getTransfers() as $t) {
+                $t->setBase(Math::round($t->getBase(), 2));
                 $t->setAmount(Math::round($t->getAmount(), 2));
                 $t->setRate(Math::round($t->getRate(), 6));
             }
