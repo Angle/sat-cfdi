@@ -51,13 +51,11 @@ class Complement extends CFDINode implements CFDIComplementInterface
     ];
 
     protected static $children = [
-        /*
-        'complements' => [
-            'keywords'  => ['Complementos', 'complements'],
+        'localTaxes' => [
+            'keywords'  => ['ImpuestosLocales', 'localTaxes'],
             'class'     => LocalTaxes::class,
             'type'      => CFDINode::CHILD_ARRAY,
         ],
-        */
     ];
 
 
