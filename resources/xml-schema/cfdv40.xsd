@@ -23,6 +23,7 @@
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/aerolineas.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/CartaPorte20.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/CartaPorte30.xsd"/>
+	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/CartaPorte31.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/certificadodedestruccion.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/cfdiregistrofiscal.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ComercioExterior10.xsd"/>

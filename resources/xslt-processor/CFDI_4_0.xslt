@@ -46,6 +46,7 @@
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/aerolineas.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/CartaPorte20.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/CartaPorte30.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/CartaPorte31.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/certificadodedestruccion.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/cfdiregistrofiscal.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/ComercioExterior10.xslt"/>
