@@ -953,11 +953,11 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 if ($it->getTaxes()->getRetainedList()) {
                     if (empty($it->getTaxes()->getRetainedList()->getRetentions())) {
                         $it->getTaxes()->setRetainedList(null);
-                    }
-                } else {
-                    foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
-                        $t->setAmount(Math::round($t->getAmount(), 2));
-                        $t->setRate(Math::round($t->getRate(), 6));
+                    } else {
+                        foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
+                            $t->setAmount(Math::round($t->getAmount(), 2));
+                            $t->setRate(Math::round($t->getRate(), 6));
+                        }
                     }
                 }
             }
