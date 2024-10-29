@@ -935,26 +935,30 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 $it->setDiscount( Math::round($this->discount, 2) );
             }
 
-            // Clean up the object in case there are no Transfers
-            if ($it->getTaxes() && $it->getTaxes()->getTransferredList()
-                && empty($it->getTaxes()->getTransferredList()->getTransfers())) {
-                $it->getTaxes()->setTransferredList(null);
-            } else {
-                foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
-                    $t->setBase(Math::round($t->getBase(), 2));
-                    $t->setAmount(Math::round($t->getAmount(), 2));
-                    $t->setRate(Math::round($t->getRate(), 6));
+            if ($it->getTaxes()) {
+                // Clean up the object in case there are no Transfers
+                if ($it->getTaxes()->getTransferredList()) {
+                    if (empty($it->getTaxes()->getTransferredList()->getTransfers())) {
+                        $it->getTaxes()->setTransferredList(NULL);
+                    } else {
+                        foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
+                            $t->setBase(Math::round($t->getBase(), 2));
+                            $t->setAmount(Math::round($t->getAmount(), 2));
+                            $t->setRate(Math::round($t->getRate(), 6));
+                        }
+                    }
                 }
-            }
 
-            // Clean up the object in case there are no Retentions
-            if ($it->getTaxes() && $it->getTaxes()->getRetainedList()
-                && empty($it->getTaxes()->getRetainedList()->getRetentions())) {
-                $it->getTaxes()->setRetainedList(null);
-            } else {
-                foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
-                    $t->setAmount(Math::round($t->getAmount(), 2));
-                    $t->setRate(Math::round($t->getRate(), 6));
+                // Clean up the object in case there are no Retentions
+                if ($it->getTaxes()->getRetainedList()) {
+                    if (empty($it->getTaxes()->getRetainedList()->getRetentions())) {
+                        $it->getTaxes()->setRetainedList(null);
+                    }
+                } else {
+                    foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
+                        $t->setAmount(Math::round($t->getAmount(), 2));
+                        $t->setRate(Math::round($t->getRate(), 6));
+                    }
                 }
             }
         }

@@ -46,14 +46,14 @@ class Taxes extends CFDINode
     ];
 
     protected static $children = [
-        'transferredList' => [
-            'keywords'  => ['Traslados', 'transferredList'],
-            'class'     => TaxesTransferredList::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
-        ],
         'retainedList' => [
             'keywords'  => ['Retenciones', 'retainedList'],
             'class'     => TaxesRetainedList::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
+        'transferredList' => [
+            'keywords'  => ['Traslados', 'transferredList'],
+            'class'     => TaxesTransferredList::class,
             'type'      => CFDINode::CHILD_UNIQUE,
         ],
     ];
@@ -77,14 +77,14 @@ class Taxes extends CFDINode
     // CHILDREN NODES
 
     /**
-     * @var TaxesTransferredList|null
-     */
-    protected $transferredList;
-
-    /**
      * @var TaxesRetainedList|null
      */
     protected $retainedList;
+
+    /**
+     * @var TaxesTransferredList|null
+     */
+    protected $transferredList;
 
 
     #########################
@@ -106,13 +106,13 @@ class Taxes extends CFDINode
             }
 
             switch ($node->localName) {
-                case TaxesTransferredList::NODE_NAME:
-                    $transferred = TaxesTransferredList::createFromDomNode($node);
-                    $this->setTransferredList($transferred);
-                    break;
                 case TaxesRetainedList::NODE_NAME:
                     $retained = TaxesRetainedList::createFromDomNode($node);
                     $this->setRetainedList($retained);
+                    break;
+                case TaxesTransferredList::NODE_NAME:
+                    $transferred = TaxesTransferredList::createFromDomNode($node);
+                    $this->setTransferredList($transferred);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
@@ -133,18 +133,18 @@ class Taxes extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // TransferredList Node
-        if ($this->transferredList) {
-            // This can be null, no problem if not found
-            $transferredListNode = $this->transferredList->toDOMElement($dom);
-            $node->appendChild($transferredListNode);
-        }
-
         // RetainedList Node
         if ($this->retainedList) {
             // This can be null, no problem if not found
             $retainedListNode = $this->retainedList->toDOMElement($dom);
             $node->appendChild($retainedListNode);
+        }
+
+        // TransferredList Node
+        if ($this->transferredList) {
+            // This can be null, no problem if not found
+            $transferredListNode = $this->transferredList->toDOMElement($dom);
+            $node->appendChild($transferredListNode);
         }
 
         return $node;
@@ -209,24 +209,6 @@ class Taxes extends CFDINode
     #########################
 
     /**
-     * @return TaxesTransferredList|null
-     */
-    public function getTransferredList(): ?TaxesTransferredList
-    {
-        return $this->transferredList;
-    }
-
-    /**
-     * @param TaxesTransferredList|null $transferredList
-     * @return Taxes
-     */
-    public function setTransferredList(?TaxesTransferredList $transferredList): self
-    {
-        $this->transferredList = $transferredList;
-        return $this;
-    }
-
-    /**
      * @return TaxesRetainedList|null
      */
     public function getRetainedList(): ?TaxesRetainedList
@@ -241,6 +223,24 @@ class Taxes extends CFDINode
     public function setRetainedList(?TaxesRetainedList $retainedList): self
     {
         $this->retainedList = $retainedList;
+        return $this;
+    }
+    
+    /**
+     * @return TaxesTransferredList|null
+     */
+    public function getTransferredList(): ?TaxesTransferredList
+    {
+        return $this->transferredList;
+    }
+
+    /**
+     * @param TaxesTransferredList|null $transferredList
+     * @return Taxes
+     */
+    public function setTransferredList(?TaxesTransferredList $transferredList): self
+    {
+        $this->transferredList = $transferredList;
         return $this;
     }
 }

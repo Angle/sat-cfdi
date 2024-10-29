@@ -274,6 +274,24 @@ abstract class CFDIUse
         return self::$map[$id]['name'][$lang];
     }
 
+    public static function isNaturalPersonValid($id): bool
+    {
+        if (!self::exists($id)) {
+            return false;
+        }
+
+        return self::$map[$id]['natural_person'];
+    }
+
+    public static function isLegalEntityValid($id): bool
+    {
+        if (!self::exists($id)) {
+            return false;
+        }
+
+        return self::$map[$id]['legal_entity'];
+    }
+
     public static function exists($id): bool
     {
         return array_key_exists($id, self::$map);
