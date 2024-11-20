@@ -128,7 +128,7 @@ class FiscalStamp extends CFDINode
      * @var string
      */
     protected $satSignature;
-    
+
 
     #########################
     ##     CONSTRUCTOR     ##
@@ -230,7 +230,7 @@ class FiscalStamp extends CFDINode
         $items[] = $this->cfdiSignature;
         $items[] = $this->satCertificateNumber;
 
-        $items = array_map('Angle\CFDI\CFDI33::cleanWhitespace', $items);
+        $items = array_map('Angle\CFDI\CFDI40::cleanWhitespace', $items);
 
         return '||' . implode('|', $items) . '||';
     }
