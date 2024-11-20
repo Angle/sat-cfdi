@@ -811,7 +811,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
                     if (!array_key_exists($key, $transfers)) {
                         $transfers[$key] = [
-                            'base'          => $tax->getBase(),
+                            'base'          => '0',
                             'tax'           => $tax->getTax(),
                             'factorType'    => $tax->getFactorType(),
                             'rate'          => $tax->getRate(),
@@ -820,6 +820,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     }
 
                     $taxAmount = $tax->getAmount() ?? '0';
+                    $taxBase = $tax->getBase() ?? '0';
+                    $transfers[$key]['base'] = Math::add($transfers[$key]['base'],$taxBase);
                     $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], $taxAmount);
                     $totalTransferredAmount = Math::add($totalTransferredAmount, $taxAmount);
                 }
@@ -845,16 +847,16 @@ class CFDI40 extends CFDINode implements CFDIInterface
         }
 
         // Purge the taxes that amount to 0
-        foreach ($transfers as $k => $t) {
-            if (Math::equal($t['amount'], '0')) {
-                unset($transfers[$k]);
-            }
-        }
-        foreach ($retentions as $k => $t) {
-            if (Math::equal($t['amount'], '0')) {
-                unset($retentions[$k]);
-            }
-        }
+        // foreach ($transfers as $k => $t) {
+        //     if (Math::equal($t['amount'], '0')) {
+        //         unset($transfers[$k]);
+        //     }
+        // }
+        // foreach ($retentions as $k => $t) {
+        //     if (Math::equal($t['amount'], '0')) {
+        //         unset($retentions[$k]);
+        //     }
+        // }
 
 
         // Process Local Taxes
