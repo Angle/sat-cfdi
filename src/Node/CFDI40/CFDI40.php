@@ -847,16 +847,16 @@ class CFDI40 extends CFDINode implements CFDIInterface
         }
 
         // Purge the taxes that amount to 0
-        foreach ($transfers as $k => $t) {
-            if (Math::equal($t['amount'], '0')) {
-                unset($transfers[$k]);
-            }
-        }
-        foreach ($retentions as $k => $t) {
-            if (Math::equal($t['amount'], '0')) {
-                unset($retentions[$k]);
-            }
-        }
+        // foreach ($transfers as $k => $t) {
+        //     if (Math::equal($t['amount'], '0')) {
+        //         unset($transfers[$k]);
+        //     }
+        // }
+        // foreach ($retentions as $k => $t) {
+        //     if (Math::equal($t['amount'], '0')) {
+        //         unset($retentions[$k]);
+        //     }
+        // }
 
 
         // Process Local Taxes
