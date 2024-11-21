@@ -82,7 +82,11 @@ class RelatedDocument extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'relatedDocumentTaxes' => [
+            'keywords'  => ['ImpuestosDR', 'relatedDocumentTaxes'],
+            'class'     => RelatedDocumentTaxes::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
     ];
 
 
@@ -141,6 +145,12 @@ class RelatedDocument extends CFDINode
      */
     protected $operationTaxable;
 
+    // CHILDREN NODES
+    /**
+     * @var RelatedDocumentTaxes|null
+     */
+    protected $relatedDocumentTaxes;
+
 
     #########################
     ##     CONSTRUCTOR     ##
@@ -154,7 +164,21 @@ class RelatedDocument extends CFDINode
      */
     public function setChildrenFromDOMNodes(array $children): void
     {
-        // void
+        foreach ($children as $node) {
+            if ($node instanceof DOMText) {
+                // TODO: we are skipping the actual text inside the Node.. is this useful?
+                continue;
+            }
+
+            switch ($node->localName) {
+                case RelatedDocumentTaxes::NODE_NAME:
+                    $taxes = RelatedDocumentTaxes::createFromDOMNode($node);
+                    $this->setRelatedDocumentTaxes($taxes);
+                    break;
+                default:
+                    throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
+            }
+        }
     }
 
 
@@ -170,7 +194,11 @@ class RelatedDocument extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // no child nodes
+        if ($this->relatedDocumentTaxes) {
+            // relatedDocumentTaxes is optional, can be null
+            $taxesNode = $this->relatedDocumentTaxes->toDOMElement($dom);
+            $node->appendChild($taxesNode);
+        }
 
         return $node;
     }
@@ -368,5 +396,23 @@ class RelatedDocument extends CFDINode
     public function setOperationTaxable(?string $operationTaxable): void
     {
         $this->operationTaxable = $operationTaxable;
+    }
+
+    /**
+     * @return RelatedDocumentTaxes|null
+     */
+    public function getRelatedDocumentTaxes(): ?RelatedDocumentTaxes
+    {
+        return $this->relatedDocumentTaxes;
+    }
+
+    /**
+     * @param RelatedDocumentTaxes|null $relatedDocumentTaxes
+     * @return $this
+     */
+    public function setRelatedDocumentTaxes(?RelatedDocumentTaxes $relatedDocumentTaxes): self
+    {
+        $this->relatedDocumentTaxes = $relatedDocumentTaxes;
+        return $this;
     }
 }

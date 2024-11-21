@@ -56,6 +56,11 @@ class Complement extends CFDINode implements CFDIComplementInterface
             'class'     => LocalTaxes::class,
             'type'      => CFDINode::CHILD_ARRAY,
         ],
+        'paymentComplement' => [
+            'keywords' => ['Pagos', 'paymentComplement'],
+            'class'     => Payments20::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ]
     ];
 
 

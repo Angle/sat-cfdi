@@ -53,6 +53,11 @@ class Payments extends CFDINode implements PaymentsInterface
     ];
 
     protected static $children = [
+        'totals' => [
+            'keywords'  => ['Totales', 'totals'],
+            'class'     => Totals::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
         'payments' => [
             'keywords'  => ['Pago', 'payment'],
             'class'     => Payment::class,

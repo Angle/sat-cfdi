@@ -103,7 +103,16 @@ class Payment extends CFDINode implements PaymentInterface
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'relatedDocument' => [
+            'keywords'  => ['DoctoRelacionado', 'relatedDocument'],
+            'class'     => RelatedDocument::class,
+            'type'      => CFDINode::CHILD_ARRAY,
+        ],
+        'taxes' => [
+            'keywords'  => ['ImpuestosP', 'taxes'],
+            'class'     => Taxes::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
     ];
 
 
