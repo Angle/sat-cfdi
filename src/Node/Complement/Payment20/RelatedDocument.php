@@ -32,6 +32,20 @@ class RelatedDocument extends CFDINode
 
     protected static $baseAttributes = [];
 
+    #########################
+    ##     ATTRIBUTES      ##
+    #########################
+
+    public const ATTR_DOCUMENT_ID = 'IdDocumento';
+    public const ATTR_DOCUMENT_SERIES = 'Serie';
+    public const ATTR_DOCUMENT_FOLIO = 'Folio';
+    public const ATTR_DOCUMENT_CURRENCY = 'MonedaDR';
+    public const ATTR_DOCUMENT_EXCHANGE_RATE = 'EquivalenciaDR';
+    public const ATTR_DOCUMENT_INSTALLMENT_NUMBER = 'NumParcialidad';
+    public const ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT = 'ImpSaldoAnt';
+    public const ATTR_DOCUMENT_PAID_AMOUNT = 'ImpPagado';
+    public const ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT = 'ImpSaldoInsoluto';
+    public const ATTR_OPERATION_TAXABLE = 'ObjetoImpDR';
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -40,43 +54,43 @@ class RelatedDocument extends CFDINode
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
         'id' => [
-            'keywords' => ['IdDocumento', 'id'],
+            'keywords' => [self::ATTR_DOCUMENT_ID, 'id'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'series' => [
-            'keywords' => ['Serie', 'series'],
+            'keywords' => [self::ATTR_DOCUMENT_SERIES, 'series'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'folio' => [
-            'keywords' => ['Folio', 'folio'],
+            'keywords' => [self::ATTR_DOCUMENT_FOLIO, 'folio'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'currency' => [
-            'keywords' => ['MonedaDR', 'currency'], // currency used in the referenced related document
+            'keywords' => [self::ATTR_DOCUMENT_CURRENCY, 'currency'], // currency used in the referenced related document
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'exchangeRate' => [
-            'keywords' => ['EquivalenciaDR', 'exchangeRate'],
+            'keywords' => [self::ATTR_DOCUMENT_EXCHANGE_RATE, 'exchangeRate'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'instalmentNumber' => [
-            'keywords' => ['NumParcialidad', 'instalmentNumber'],
+            'keywords' => [self::ATTR_DOCUMENT_INSTALLMENT_NUMBER, 'instalmentNumber'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'previousBalanceAmount' => [
-            'keywords' => ['ImpSaldoAnt', 'previousBalanceAmount'],
+            'keywords' => [self::ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT, 'previousBalanceAmount'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paidAmount' => [
-            'keywords' => ['ImpPagado', 'paidAmount'],
+            'keywords' => [self::ATTR_DOCUMENT_PAID_AMOUNT, 'paidAmount'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'pendingBalanceAmount' => [
-            'keywords' => ['ImpSaldoInsoluto', 'pendingBalanceAmount'],
+            'keywords' => [self::ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT, 'pendingBalanceAmount'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'operationTaxable' => [
-            'keywords' => ['ObjetoImpDR', 'operationTaxable'],
+            'keywords' => [self::ATTR_OPERATION_TAXABLE, 'operationTaxable'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];

@@ -34,29 +34,39 @@ class RelatedDocumentTaxesRetained extends CFDINode
 
 
     #########################
+    ##     ATTRIBUTES      ##
+    #########################
+
+    public const ATTR_BASE = 'BaseDR';
+    public const ATTR_TAX = 'ImpuestoDR';
+    public const ATTR_FACTOR_TYPE = 'TipoFactorDR';
+    public const ATTR_RATE = 'TasaOCuotaDR';
+    public const ATTR_AMOUNT = 'ImporteDR';
+
+    #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
 
     protected static $attributes = [
-        'base'          => [
-            'keywords'  => ['BaseDR', 'base'],
-            'type'      => CFDINode::ATTR_REQUIRED
-        ],
-        'tax'          => [
-            'keywords'  => ['ImpuestoDR', 'tax'],
-            'type'      => CFDINode::ATTR_REQUIRED
-        ],
-        'factorType'        => [
-            'keywords' => ['TipoFactorDR', 'factorType'],
+        'base' => [
+            'keywords' => [self::ATTR_BASE, 'base'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'rate'        => [
-            'keywords'  => ['TasaOCuotaDR', 'rate'],
-            'type'      => CFDINode::ATTR_OPTIONAL
+        'tax' => [
+            'keywords' => [self::ATTR_TAX, 'tax'],
+            'type' => CFDINode::ATTR_REQUIRED
         ],
-        'amount'        => [
-            'keywords'  => ['ImporteDR', 'amount'],
-            'type'      => CFDINode::ATTR_REQUIRED
+        'factorType' => [
+            'keywords' => [self::ATTR_FACTOR_TYPE, 'factorType'],
+            'type' => CFDINode::ATTR_REQUIRED
+        ],
+        'rate' => [
+            'keywords' => [self::ATTR_RATE, 'rate'],
+            'type' => CFDINode::ATTR_OPTIONAL
+        ],
+        'amount' => [
+            'keywords' => [self::ATTR_AMOUNT, 'amount'],
+            'type' => CFDINode::ATTR_REQUIRED
         ],
     ];
 

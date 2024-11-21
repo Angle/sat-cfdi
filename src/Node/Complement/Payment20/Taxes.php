@@ -16,7 +16,7 @@ use DOMText;
  */
 class Taxes extends CFDINode
 {
-#########################
+    #########################
     ##        PRESETS      ##
     #########################
 
@@ -39,7 +39,16 @@ class Taxes extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'retainedList' => [
+            'keywords'  => ['RetencionesP', 'retainedList'],
+            'class'     => TaxesRetainedList::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
+        'transferredList' => [
+            'keywords'  => ['TrasladosP', 'transferredList'],
+            'class'     => TaxesTransferredList::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
     ];
 
 

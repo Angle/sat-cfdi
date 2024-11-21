@@ -32,6 +32,21 @@ class Totals extends CFDINode
 
     protected static $baseAttributes = [];
 
+    #########################
+    ##     ATTRIBUTES      ##
+    #########################
+
+    public const ATTR_TOTAL_RETAINED_IVA = 'TotalRetencionesIVA';
+    public const ATTR_TOTAL_RETAINED_ISR = 'TotalRetencionesISR';
+    public const ATTR_TOTAL_RETAINED_IEPS = 'TotalRetencionesIEPS';
+    public const ATTR_TOTAL_TRANSFERRED_BASE_IVA16 = 'TotalTrasladosBaseIVA16';
+    public const ATTR_TOTAL_TRANSFERRED_TAX_IVA16 = 'TotalTrasladosImpuestoIVA16';
+    public const ATTR_TOTAL_TRANSFERRED_BASE_IVA8 = 'TotalTrasladosBaseIVA8';
+    public const ATTR_TOTAL_TRANSFERRED_TAX_IVA8 = 'TotalTrasladosImpuestoIVA8';
+    public const ATTR_TOTAL_TRANSFERRED_BASE_IVA0 = 'TotalTrasladosBaseIVA0';
+    public const ATTR_TOTAL_TRANSFERRED_TAX_IVA0 = 'TotalTrasladosImpuestoIVA0';
+    public const ATTR_TOTAL_TRANSFERRED_BASE_VAT_EXEMPT = 'TotalTrasladosBaseIVAExento';
+    public const ATTR_TOTAL_PAYMENTS_AMOUNT = 'MontoTotalPagos';
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -40,47 +55,47 @@ class Totals extends CFDINode
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
         'totalRetainedIva'           => [
-            'keywords' => ['TotalRetencionesIVA', 'totalRetainedIva'],
+            'keywords' => [self::ATTR_TOTAL_RETAINED_IVA, 'totalRetainedIva'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalRetainedIsr'           => [
-            'keywords' => ['TotalRetencionesISR', 'totalRetainedIsr'],
+            'keywords' => [self::ATTR_TOTAL_RETAINED_ISR, 'totalRetainedIsr'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalRetainedIeps'           => [
-            'keywords' => ['TotalRetencionesIEPS', 'totalRetainedIeps'],
+            'keywords' => [self::ATTR_TOTAL_RETAINED_IEPS, 'totalRetainedIeps'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredBaseIva16'           => [
-            'keywords' => ['TotalTrasladosBaseIVA16', 'totalTransferredBaseIva16'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_BASE_IVA16, 'totalTransferredBaseIva16'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredTaxIva16'           => [
-            'keywords' => ['TotalTrasladosImpuestoIVA16', 'totalTransferredTaxIva16'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_TAX_IVA16, 'totalTransferredTaxIva16'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredBaseIva8'           => [
-            'keywords' => ['TotalTrasladosBaseIVA8', 'totalTransferredBaseIva8'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_BASE_IVA8, 'totalTransferredBaseIva8'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredTaxIva8'           => [
-            'keywords' => ['TotalTrasladosImpuestoIVA8', 'totalTransferredTaxIva8'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_TAX_IVA8, 'totalTransferredTaxIva8'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredBaseIva0'           => [
-            'keywords' => ['TotalTrasladosBaseIVA0', 'totalTransferredBaseIva0'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_BASE_IVA0, 'totalTransferredBaseIva0'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredTaxIva0'           => [
-            'keywords' => ['TotalTrasladosImpuestoIVA0', 'totalTransferredTaxIva0'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_TAX_IVA0, 'totalTransferredTaxIva0'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredBaseIvaExempt'           => [
-            'keywords' => ['TotalTrasladosBaseIVAExento', 'totalTransferredBaseIvaExempt'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_BASE_VAT_EXEMPT, 'totalTransferredBaseIvaExempt'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalPaymentsAmount'           => [
-            'keywords' => ['MontoTotalPagos', 'totalPaymentsAmount'],
+            'keywords' => [self::ATTR_TOTAL_PAYMENTS_AMOUNT, 'totalPaymentsAmount'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
     ];

@@ -37,7 +37,11 @@ class TaxesRetainedList extends CFDINode
     protected static $attributes = [];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'retentions' => [
+            'keywords'  => ['TrasRetencionPladoDR', 'retentions'],
+            'class'     => TaxesRetained::class,
+            'type'      => CFDINode::CHILD_ARRAY,
+        ],
     ];
 
 
