@@ -29,7 +29,7 @@ class SignatureValidator
     private $validations = [];
 
     /**
-     * Formatted libxml Error details
+     * Formatted libxml / OpenSSL Error details
      * @var array
      */
     private $errors = [];
@@ -47,7 +47,8 @@ class SignatureValidator
      */
     public function checkCfdiSignature(CFDIInterface $cfdi)
     {
-        // Reset any previous validations
+        // Reset any previous validations & errors
+        $this->errors = [];
         $this->validations = [];
 
         if ($cfdi->getVersion() == CFDI33::VERSION_3_3) {
@@ -96,7 +97,7 @@ class SignatureValidator
         $certificate = @openssl_x509_read($certificatePem);
 
         if ($certificate === false) {
-            //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:cfdi',
@@ -191,7 +192,7 @@ class SignatureValidator
             $lcoCertificate = @openssl_x509_read($lcoCertificatePem);
 
             if ($lcoCertificate === false) { // hotfix 2021-09-10: SAT LCO server was frequently returning garbled data that could not be parsed
-                //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+                $this->errors[] = 'Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
                 $this->validations[] = [
                     'type' => 'signature:cfdi',
@@ -205,7 +206,7 @@ class SignatureValidator
                 $lcoFingerprint = (String)openssl_x509_fingerprint($lcoCertificate, 'sha256');
 
                 if ($cerFingerprint === false || $lcoFingerprint === false) {
-                    //return ['Certificate X.509 fingerprint failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+                    $this->errors[] = 'Certificate X.509 fingerprint failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
                     $this->validations[] = [
                         'type' => 'signature:cfdi',
@@ -360,7 +361,7 @@ class SignatureValidator
         $publicKey = openssl_pkey_get_public($certificate);
 
         if ($publicKey === false) {
-            //return ['Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:cfdi',
@@ -375,7 +376,7 @@ class SignatureValidator
         $r = openssl_verify($chain, $signature, $publicKey, OPENSSL_ALGO_SHA256);
 
         if ($r === 0) {
-            //return ['Signature is incorrect: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Signature is incorrect: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:cfdi',
@@ -384,7 +385,7 @@ class SignatureValidator
             ];
             return false;
         } elseif ($r === -1) {
-            //return ['Signature verification failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Signature verification failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:cfdi',
@@ -415,7 +416,8 @@ class SignatureValidator
      */
     public function checkFiscalStampSignature(CFDIInterface $cfdi)
     {
-        // Reset any previous validations
+        // Reset any previous validations & errors
+        $this->errors = [];
         $this->validations = [];
 
         $fiscalStamp = $cfdi->getFiscalStamp();
@@ -486,7 +488,8 @@ class SignatureValidator
         $certificate = @openssl_x509_read($certificatePem);
 
         if ($certificate === false) {
-            //return ['Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Certificate X.509 read failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
+
             $this->validations[] = [
                 'type' => 'signature:tfd',
                 'success' => false,
@@ -636,7 +639,7 @@ class SignatureValidator
         $publicKey = openssl_pkey_get_public($certificate);
 
         if ($publicKey === false) {
-            //return ['Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Public Key extraction failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:tfd',
@@ -651,7 +654,7 @@ class SignatureValidator
         $r = openssl_verify($chain, $signature, $publicKey, OPENSSL_ALGO_SHA256);
 
         if ($r === 0) {
-            //return ['Signature is incorrect: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Signature is incorrect: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:tfd',
@@ -660,7 +663,7 @@ class SignatureValidator
             ];
             return false;
         } elseif ($r === -1) {
-            //return ['Signature verification failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString()];
+            $this->errors[] = 'Signature verification failed: ' . OpenSSLUtility::getOpenSSLErrorsAsString();
 
             $this->validations[] = [
                 'type' => 'signature:tfd',
