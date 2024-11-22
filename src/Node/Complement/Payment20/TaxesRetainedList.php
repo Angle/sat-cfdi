@@ -38,7 +38,7 @@ class TaxesRetainedList extends CFDINode
 
     protected static $children = [
         'retentions' => [
-            'keywords'  => ['TrasRetencionPladoDR', 'retentions'],
+            'keywords'  => ['RetencionP', 'retentions'],
             'class'     => TaxesRetained::class,
             'type'      => CFDINode::CHILD_ARRAY,
         ],

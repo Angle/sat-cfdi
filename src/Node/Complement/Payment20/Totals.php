@@ -45,7 +45,7 @@ class Totals extends CFDINode
     public const ATTR_TOTAL_TRANSFERRED_TAX_IVA8 = 'TotalTrasladosImpuestoIVA8';
     public const ATTR_TOTAL_TRANSFERRED_BASE_IVA0 = 'TotalTrasladosBaseIVA0';
     public const ATTR_TOTAL_TRANSFERRED_TAX_IVA0 = 'TotalTrasladosImpuestoIVA0';
-    public const ATTR_TOTAL_TRANSFERRED_BASE_VAT_EXEMPT = 'TotalTrasladosBaseIVAExento';
+    public const ATTR_TOTAL_TRANSFERRED_BASE_IVA_EXEMPT = 'TotalTrasladosBaseIVAExento';
     public const ATTR_TOTAL_PAYMENTS_AMOUNT = 'MontoTotalPagos';
 
     #########################
@@ -91,7 +91,7 @@ class Totals extends CFDINode
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalTransferredBaseIvaExempt'           => [
-            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_BASE_VAT_EXEMPT, 'totalTransferredBaseIvaExempt'],
+            'keywords' => [self::ATTR_TOTAL_TRANSFERRED_BASE_IVA_EXEMPT, 'totalTransferredBaseIvaExempt'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'totalPaymentsAmount'           => [
