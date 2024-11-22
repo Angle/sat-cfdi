@@ -32,6 +32,16 @@ class RelatedDocumentTaxesTransferred extends CFDINode
 
     protected static $baseAttributes = [];
 
+    #########################
+    ##     ATTRIBUTES      ##
+    #########################
+
+    public const ATTR_BASE = 'BaseDR';
+    public const ATTR_TAX = 'ImpuestoDR';
+    public const ATTR_FACTOR_TYPE = 'TipoFactorDR';
+    public const ATTR_RATE = 'TasaOCuotaDR';
+    public const ATTR_AMOUNT = 'ImporteDR';
+
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##

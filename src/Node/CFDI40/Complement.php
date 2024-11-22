@@ -238,6 +238,21 @@ class Complement extends CFDINode implements CFDIComplementInterface
     }
 
     /**
+     * This method will return the first encountered Payments20 inside the Complements items
+     * @return Payments20|null
+     */
+    public function getPayment20(): ?Payments20
+    {
+        foreach ($this->complements as $c) {
+            if ($c instanceof Payments20) {
+                return $c;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * This method will return the first encountered LocalTaxes inside the Complements items
      * @return LocalTaxes
      */

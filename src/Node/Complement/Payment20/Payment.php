@@ -7,6 +7,7 @@ use Angle\CFDI\CFDIException;
 use Angle\CFDI\CFDINode;
 
 use Angle\CFDI\Node\Complement\PaymentInterface;
+use Angle\CFDI\Utility\Math;
 use DateTime;
 use DateTimeZone;
 
@@ -33,6 +34,25 @@ class Payment extends CFDINode implements PaymentInterface
 
     protected static $baseAttributes = [];
 
+    #########################
+    ##     ATTRIBUTES      ##
+    #########################
+
+    public const ATTR_DATE = 'FechaPago';
+    public const ATTR_PAYMENT_METHOD = 'FormaDePagoP';
+    public const ATTR_CURRENCY = 'MonedaP';
+    public const ATTR_EXCHANGE_RATE = 'TipoCambioP';
+    public const ATTR_AMOUNT = 'Monto';
+    public const ATTR_TRANSACTION_NUMBER = 'NumOperacion';
+    public const ATTR_PAYER_BANK_RFC = 'RfcEmisorCtaOrd';
+    public const ATTR_PAYER_BANK_NAME = 'NomBancoOrdExt';
+    public const ATTR_PAYER_BANK_ACCOUNT = 'CtaOrdenante';
+    public const ATTR_BENEFICIARY_BANK_RFC = 'RfcEmisorCtaBen';
+    public const ATTR_BENEFICIARY_BANK_ACCOUNT = 'CtaBeneficiario';
+    public const ATTR_PAYMENT_CHAIN_TYPE = 'TipoCadPago';
+    public const ATTR_PAYMENT_CHAIN_CERT = 'CertPago';
+    public const ATTR_PAYMENT_CHAIN = 'CadPago';
+    public const ATTR_PAYMENT_CHAIN_SIGNATURE = 'SelloPago';
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -41,63 +61,63 @@ class Payment extends CFDINode implements PaymentInterface
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
         'date'           => [
-            'keywords' => ['FechaPago', 'date'],
+            'keywords' => [self::ATTR_DATE, 'date'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'paymentMethod'           => [
-            'keywords' => ['FormaDePagoP', 'paymentMethod'],
+            'keywords' => [self::ATTR_PAYMENT_METHOD, 'paymentMethod'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'currency'           => [
-            'keywords' => ['MonedaP', 'currency'],
+            'keywords' => [self::ATTR_CURRENCY, 'currency'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'exchangeRate'           => [
-            'keywords' => ['TipoCambioP', 'exchangeRate'],
+            'keywords' => [self::ATTR_EXCHANGE_RATE, 'exchangeRate'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'amount'           => [
-            'keywords' => ['Monto', 'amount'],
+            'keywords' => [self::ATTR_AMOUNT, 'amount'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
         'transactionNumber'           => [
-            'keywords' => ['NumOperacion', 'transactionNumber'],
+            'keywords' => [self::ATTR_TRANSACTION_NUMBER, 'transactionNumber'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'payerBankRfc'           => [
-            'keywords' => ['RfcEmisorCtaOrd', 'payerBankRfc'],
+            'keywords' => [self::ATTR_PAYER_BANK_RFC, 'payerBankRfc'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'payerBankName'           => [
-            'keywords' => ['NomBancoOrdExt', 'payerBankName'],
+            'keywords' => [self::ATTR_PAYER_BANK_NAME, 'payerBankName'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'payerAccount' => [
-            'keywords' => ['CtaOrdenante', 'payerAccount'],
+            'keywords' => [self::ATTR_PAYER_BANK_ACCOUNT, 'payerAccount'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'beneficiaryBankRfc' => [
-            'keywords' => ['RfcEmisorCtaBen', 'beneficiaryBankRfc'],
+            'keywords' => [self::ATTR_BENEFICIARY_BANK_RFC, 'beneficiaryBankRfc'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'beneficiaryAccount' => [
-            'keywords' => ['CtaBeneficiario', 'beneficiaryAccount'],
+            'keywords' => [self::ATTR_BENEFICIARY_BANK_ACCOUNT, 'beneficiaryAccount'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentChainType' => [
-            'keywords' => ['TipoCadPago', 'paymentChainType'],
+            'keywords' => [self::ATTR_PAYMENT_CHAIN_TYPE, 'paymentChainType'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentCertificate' => [
-            'keywords' => ['CertPago', 'paymentCertificate'],
+            'keywords' => [self::ATTR_PAYMENT_CHAIN_CERT, 'paymentCertificate'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentChain' => [
-            'keywords' => ['CadPago', 'paymentChain'],
+            'keywords' => [self::ATTR_PAYMENT_CHAIN, 'paymentChain'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
         'paymentSignature' => [
-            'keywords' => ['SelloPago', 'paymentSignature'],
+            'keywords' => [self::ATTR_PAYMENT_CHAIN_SIGNATURE, 'paymentSignature'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
@@ -268,6 +288,85 @@ class Payment extends CFDINode implements PaymentInterface
         }
 
         return $node;
+    }
+
+    #########################
+    ##   SPECIAL METHODS   ##
+    #########################
+
+    /**
+     * This method will calculate the total transferred and retained taxes for all related documents
+     *
+     * It will go through all the related documents and their related document taxes.
+     * Then it will calculate the total amount of each taxes and will store it in the
+     * $this->taxes variable.
+     *
+     * @return void
+     * @throws CFDIException
+     */
+    public function calculateTotalTaxes(): void
+    {
+
+        $transfers = [];
+        $retentions = [];
+
+        foreach ($this->getRelatedDocuments() as $document) {
+            $relatedDocumentTaxes = $document->getRelatedDocumentTaxes();
+            if (!is_null($relatedDocumentTaxes)){
+                $relatedDocumentRetainedList = $relatedDocumentTaxes->getRelatedDocumentRetainedList();
+                if (!is_null($relatedDocumentRetainedList)) {
+                    foreach ($relatedDocumentRetainedList->getRelatedDocumentRetentions() as $tax) {
+                        $key = $tax->getTax();
+
+                        if (!array_key_exists($key, $retentions)) {
+                            $retentions[$key] = [
+                                'tax' => $key,
+                                'amount' => '0',
+                            ];
+                        }
+
+                        $taxAmount = $tax->getAmount() ?? '0';
+                        $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
+                    }
+                }
+                $transferredList = $relatedDocumentTaxes->getRelatedDocumentTransferredList();
+                if (!is_null($transferredList)) {
+                    foreach ($transferredList->getRelatedDocumentTransfers() as $tax) {
+                        $key = $tax->getTax() . '-' . $tax->getFactorType() . '-' . $tax->getRate();
+
+                        if (!array_key_exists($key, $transfers)) {
+                            $transfers[$key] = [
+                                'base'          => '0',
+                                'tax'           => $tax->getTax(),
+                                'factorType'    => $tax->getFactorType(),
+                                'rate'          => $tax->getRate(),
+                                'amount'        => '0',
+                            ];
+                        }
+                        $taxAmount = $tax->getAmount() ?? '0';
+                        $taxBase = $tax->getBase() ?? '0';
+                        $transfers[$key]['base'] = Math::add($transfers[$key]['base'],$taxBase);
+                        $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], $taxAmount);
+                    }
+                }
+            }
+        }
+
+        $this->taxes = new Taxes([]);
+        $transferredList = new TaxesTransferredList([]);
+        foreach ($transfers as $k => $t) {
+            $tax = new TaxesTransferred($t);
+            $transferredList->addTransfer($tax);
+        }
+        $this->taxes->setTransferredList($transferredList);
+
+        $retentionList = new TaxesRetainedList([]);
+        foreach ($retentions as $k => $t) {
+            $tax = new TaxesRetained($t);
+            $retentionList->addRetention($tax);
+        }
+        $this->taxes->setRetainedList($retentionList);
+
     }
 
 
