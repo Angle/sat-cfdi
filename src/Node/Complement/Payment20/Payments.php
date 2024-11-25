@@ -2,11 +2,14 @@
 
 namespace Angle\CFDI\Node\Complement\Payment20;
 
+use Angle\CFDI\Catalog\TaxFactorType;
+use Angle\CFDI\Catalog\TaxType;
 use Angle\CFDI\CFDIException;
 
 use Angle\CFDI\CFDINode;
 
 use Angle\CFDI\Node\Complement\PaymentsInterface;
+use Angle\CFDI\Utility\Math;
 use DateTime;
 use DateTimeZone;
 
@@ -27,6 +30,7 @@ class Payments extends CFDINode implements PaymentsInterface
     const VERSION_2_0 = "2.0";
 
     const NODE_NAME = "Pagos";
+    public const NODE_NAME_EN = 'paymentComplement';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -46,7 +50,7 @@ class Payments extends CFDINode implements PaymentsInterface
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'version'           => [
+        'version' => [
             'keywords' => ['Version', 'version'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
@@ -54,14 +58,14 @@ class Payments extends CFDINode implements PaymentsInterface
 
     protected static $children = [
         'totals' => [
-            'keywords'  => ['Totales', 'totals'],
-            'class'     => Totals::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['Totales', 'totals'],
+            'class' => Totals::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
         'payments' => [
-            'keywords'  => ['Pago', 'payment'],
-            'class'     => Payment::class,
-            'type'      => CFDINode::CHILD_ARRAY,
+            'keywords' => ['Pago', 'payment'],
+            'class' => Payment::class,
+            'type' => CFDINode::CHILD_ARRAY,
         ],
     ];
 
@@ -150,6 +154,95 @@ class Payments extends CFDINode implements PaymentsInterface
         return $node;
     }
 
+    #########################
+    ##   SPECIAL METHODS   ##
+    #########################
+
+    /**
+     * This method will calculate the total transferred and retained taxes for all related documents
+     *
+     * It will go through all the related documents and their related document taxes.
+     * Then it will calculate the total amount of each tax and will store it in the
+     * $this->totals variable.
+     *
+     * @return void
+     * @throws CFDIException
+     */
+    public function calculateTotals(): void
+    {
+        $this->totals = new Totals([]);
+        foreach ($this->payments as $payment) {
+            $this->totals->setTotalPaymentsAmount(
+                Math::mul(Math::add($this->totals->getTotalPaymentsAmount(), $payment->getAmount()), $payment->getExchangeRate())
+            );
+            foreach ($payment->getTaxes() as $tax) {
+                if ($tax->getRetainedList()) {
+                    foreach ($tax->getRetainedList()->getRetentions() as $retention) {
+                        switch ($retention->getTax()) {
+                            case TaxType::ISR:
+                                $this->totals->setTotalRetainedIsr(
+                                    Math::mul(Math::add($this->totals->getTotalRetainedIsr(), $retention->getAmount()), $payment->getExchangeRate())
+                                );
+                                break;
+                            case TaxType::IVA:
+                                $this->totals->setTotalRetainedIva(
+                                    Math::mul(Math::add($this->totals->getTotalRetainedIva(), $retention->getAmount()), $payment->getExchangeRate())
+                                );
+                                break;
+                            case TaxType::IEPS:
+                                $this->totals->setTotalRetainedIeps(
+                                    Math::mul(Math::add($this->totals->getTotalRetainedIeps(), $retention->getAmount()), $payment->getExchangeRate())
+                                );
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+                }
+
+                if ($tax->getTransferredList()) {
+                    foreach ($tax->getTransferredList()->getTransfers() as $transferred) {
+                        if ($transferred->getFactorType() === TaxFactorType::RATE && TaxType::IVA === $transferred->getTax()) {
+                            switch ((float)$transferred->getRate()) {
+                                // TODO set this rates as catalog constants
+                                case 0.16:
+                                    $this->totals->setTotalTransferredBaseIva16(
+                                        Math::mul(Math::add($this->totals->getTotalTransferredBaseIva16(), $transferred->getBase()), $payment->getExchangeRate())
+                                    );
+                                    $this->totals->setTotalTransferredTaxIva16(
+                                        Math::mul(Math::add($this->totals->getTotalTransferredTaxIva16(), $transferred->getAmount()), $payment->getExchangeRate())
+                                    );
+                                    break;
+                                case 0.08:
+                                    $this->totals->setTotalTransferredBaseIva8(
+                                        Math::mul(Math::add($this->totals->getTotalTransferredBaseIva8(), $transferred->getBase()), $payment->getExchangeRate())
+                                    );
+                                    $this->totals->setTotalTransferredTaxIva8(
+                                        Math::mul(Math::add($this->totals->getTotalTransferredTaxIva8(), $transferred->getAmount()), $payment->getExchangeRate())
+                                    );
+                                    break;
+                                case 0:
+                                    $this->totals->setTotalTransferredBaseIva0(
+                                        Math::mul(Math::add($this->totals->getTotalTransferredBaseIva0(), $transferred->getBase()), $payment->getExchangeRate())
+                                    );
+                                    $this->totals->setTotalTransferredTaxIva0(
+                                        Math::mul(Math::add($this->totals->getTotalTransferredTaxIva0(), $transferred->getAmount()), $payment->getExchangeRate())
+                                    );
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+                        if ($transferred->getFactorType() === TaxFactorType::EXEMPT && TaxType::IVA === $transferred->getTax()) {
+                            $this->totals->setTotalTransferredBaseIvaExempt(
+                                $this->totals->getTotalTransferredBaseIvaExempt() + $transferred->getBase()
+                            );
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     #########################

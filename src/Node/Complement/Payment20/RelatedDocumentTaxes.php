@@ -21,6 +21,7 @@ class RelatedDocumentTaxes extends CFDINode
     #########################
 
     const NODE_NAME = "ImpuestosDR";
+    public const NODE_NAME_EN = 'relatedDocumentTaxes';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";

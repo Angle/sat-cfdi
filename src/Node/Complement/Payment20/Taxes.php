@@ -16,11 +16,12 @@ use DOMText;
  */
 class Taxes extends CFDINode
 {
-#########################
+    #########################
     ##        PRESETS      ##
     #########################
 
     const NODE_NAME = "ImpuestosP";
+    public const NODE_NAME_EN = 'taxes';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -39,7 +40,16 @@ class Taxes extends CFDINode
     ];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'retainedList' => [
+            'keywords'  => ['RetencionesP', 'retainedList'],
+            'class'     => TaxesRetainedList::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
+        'transferredList' => [
+            'keywords'  => ['TrasladosP', 'transferredList'],
+            'class'     => TaxesTransferredList::class,
+            'type'      => CFDINode::CHILD_UNIQUE,
+        ],
     ];
 
 
