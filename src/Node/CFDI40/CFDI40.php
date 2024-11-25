@@ -916,8 +916,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
             $payments20 = $complement->getPayment20();
             if (!is_null($payments20)) {
                 foreach ($payments20->getPayments() as $payment) {
-                    $payment->calculateTotalTaxes();
+                    $payment->calculatePaymentTaxes();
                 }
+                $payments20->calculateTotals();
             }
         }
     }

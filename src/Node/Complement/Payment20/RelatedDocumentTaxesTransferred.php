@@ -24,6 +24,7 @@ class RelatedDocumentTaxesTransferred extends CFDINode
     #########################
 
     const NODE_NAME = "TrasladoDR";
+    public const NODE_NAME_EN = 'relatedDocumentTaxesTransferred';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -36,11 +37,11 @@ class RelatedDocumentTaxesTransferred extends CFDINode
     ##     ATTRIBUTES      ##
     #########################
 
-    public const ATTR_BASE = 'BaseDR';
-    public const ATTR_TAX = 'ImpuestoDR';
-    public const ATTR_FACTOR_TYPE = 'TipoFactorDR';
-    public const ATTR_RATE = 'TasaOCuotaDR';
-    public const ATTR_AMOUNT = 'ImporteDR';
+    public const ATTR_BASE = 'base';
+    public const ATTR_TAX = 'tax';
+    public const ATTR_FACTOR_TYPE = 'factorType';
+    public const ATTR_RATE = 'rate';
+    public const ATTR_AMOUNT = 'amount';
 
 
     #########################
@@ -49,24 +50,24 @@ class RelatedDocumentTaxesTransferred extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'base'          => [
-            'keywords' => ['BaseDR', 'base'],
+        self::ATTR_BASE         => [
+            'keywords' => ['BaseDR', self::ATTR_BASE],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'tax'          => [
-            'keywords' => ['ImpuestoDR', 'tax'],
+        self::ATTR_TAX         => [
+            'keywords' => ['ImpuestoDR', self::ATTR_TAX],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'factorType'        => [
-            'keywords' => ['TipoFactorDR', 'factorType'],
+        self::ATTR_FACTOR_TYPE        => [
+            'keywords' => ['TipoFactorDR', self::ATTR_FACTOR_TYPE],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'rate'        => [
-            'keywords' => ['TasaOCuotaDR', 'rate'],
+        self::ATTR_RATE        => [
+            'keywords' => ['TasaOCuotaDR', self::ATTR_RATE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'amount'        => [
-            'keywords' => ['ImporteDR', 'amount'],
+        self::ATTR_AMOUNT        => [
+            'keywords' => ['ImporteDR', self::ATTR_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];

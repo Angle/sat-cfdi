@@ -24,6 +24,7 @@ class RelatedDocument extends CFDINode
     #########################
 
     const NODE_NAME = "DoctoRelacionado";
+    public const NODE_NAME_EN = 'relatedDocument';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -36,16 +37,16 @@ class RelatedDocument extends CFDINode
     ##     ATTRIBUTES      ##
     #########################
 
-    public const ATTR_DOCUMENT_ID = 'IdDocumento';
-    public const ATTR_DOCUMENT_SERIES = 'Serie';
-    public const ATTR_DOCUMENT_FOLIO = 'Folio';
-    public const ATTR_DOCUMENT_CURRENCY = 'MonedaDR';
-    public const ATTR_DOCUMENT_EXCHANGE_RATE = 'EquivalenciaDR';
-    public const ATTR_DOCUMENT_INSTALLMENT_NUMBER = 'NumParcialidad';
-    public const ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT = 'ImpSaldoAnt';
-    public const ATTR_DOCUMENT_PAID_AMOUNT = 'ImpPagado';
-    public const ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT = 'ImpSaldoInsoluto';
-    public const ATTR_OPERATION_TAXABLE = 'ObjetoImpDR';
+    public const ATTR_DOCUMENT_ID = 'id';
+    public const ATTR_DOCUMENT_SERIES = 'series';
+    public const ATTR_DOCUMENT_FOLIO = 'folio';
+    public const ATTR_DOCUMENT_CURRENCY = 'currency';
+    public const ATTR_DOCUMENT_EXCHANGE_RATE = 'exchangeRate';
+    public const ATTR_DOCUMENT_INSTALLMENT_NUMBER = 'instalmentNumber';
+    public const ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT = 'previousBalanceAmount';
+    public const ATTR_DOCUMENT_PAID_AMOUNT = 'paidAmount';
+    public const ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT = 'pendingBalanceAmount';
+    public const ATTR_OPERATION_TAXABLE = 'operationTaxable';
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -53,44 +54,44 @@ class RelatedDocument extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'id' => [
-            'keywords' => [self::ATTR_DOCUMENT_ID, 'id'],
+        self::ATTR_DOCUMENT_ID => [
+            'keywords' => ['IdDocumento', self::ATTR_DOCUMENT_ID],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'series' => [
-            'keywords' => [self::ATTR_DOCUMENT_SERIES, 'series'],
+        self::ATTR_DOCUMENT_SERIES => [
+            'keywords' => ['Serie', self::ATTR_DOCUMENT_SERIES],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'folio' => [
-            'keywords' => [self::ATTR_DOCUMENT_FOLIO, 'folio'],
+        self::ATTR_DOCUMENT_FOLIO => [
+            'keywords' => ['Folio', self::ATTR_DOCUMENT_FOLIO],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'currency' => [
-            'keywords' => [self::ATTR_DOCUMENT_CURRENCY, 'currency'], // currency used in the referenced related document
+        self::ATTR_DOCUMENT_CURRENCY => [
+            'keywords' => ['MonedaDR', self::ATTR_DOCUMENT_CURRENCY], // currency used in the referenced related document
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'exchangeRate' => [
-            'keywords' => [self::ATTR_DOCUMENT_EXCHANGE_RATE, 'exchangeRate'],
+        self::ATTR_DOCUMENT_EXCHANGE_RATE => [
+            'keywords' => ['EquivalenciaDR', self::ATTR_DOCUMENT_EXCHANGE_RATE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'instalmentNumber' => [
-            'keywords' => [self::ATTR_DOCUMENT_INSTALLMENT_NUMBER, 'instalmentNumber'],
+        self::ATTR_DOCUMENT_INSTALLMENT_NUMBER => [
+            'keywords' => ['NumParcialidad', self::ATTR_DOCUMENT_INSTALLMENT_NUMBER],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'previousBalanceAmount' => [
-            'keywords' => [self::ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT, 'previousBalanceAmount'],
+        self::ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT => [
+            'keywords' => ['ImpSaldoAnt', self::ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'paidAmount' => [
-            'keywords' => [self::ATTR_DOCUMENT_PAID_AMOUNT, 'paidAmount'],
+        self::ATTR_DOCUMENT_PAID_AMOUNT => [
+            'keywords' => ['ImpPagado', self::ATTR_DOCUMENT_PAID_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'pendingBalanceAmount' => [
-            'keywords' => [self::ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT, 'pendingBalanceAmount'],
+        self::ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT => [
+            'keywords' => ['ImpSaldoInsoluto', self::ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'operationTaxable' => [
-            'keywords' => [self::ATTR_OPERATION_TAXABLE, 'operationTaxable'],
+        self::ATTR_OPERATION_TAXABLE => [
+            'keywords' => ['ObjetoImpDR', self::ATTR_OPERATION_TAXABLE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];

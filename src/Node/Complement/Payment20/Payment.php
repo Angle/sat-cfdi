@@ -26,6 +26,7 @@ class Payment extends CFDINode implements PaymentInterface
     #########################
 
     const NODE_NAME = "Pago";
+    public const NODE_NAME_EN = 'payment';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -38,21 +39,21 @@ class Payment extends CFDINode implements PaymentInterface
     ##     ATTRIBUTES      ##
     #########################
 
-    public const ATTR_DATE = 'FechaPago';
-    public const ATTR_PAYMENT_METHOD = 'FormaDePagoP';
-    public const ATTR_CURRENCY = 'MonedaP';
-    public const ATTR_EXCHANGE_RATE = 'TipoCambioP';
-    public const ATTR_AMOUNT = 'Monto';
-    public const ATTR_TRANSACTION_NUMBER = 'NumOperacion';
-    public const ATTR_PAYER_BANK_RFC = 'RfcEmisorCtaOrd';
-    public const ATTR_PAYER_BANK_NAME = 'NomBancoOrdExt';
-    public const ATTR_PAYER_BANK_ACCOUNT = 'CtaOrdenante';
-    public const ATTR_BENEFICIARY_BANK_RFC = 'RfcEmisorCtaBen';
-    public const ATTR_BENEFICIARY_BANK_ACCOUNT = 'CtaBeneficiario';
-    public const ATTR_PAYMENT_CHAIN_TYPE = 'TipoCadPago';
-    public const ATTR_PAYMENT_CHAIN_CERT = 'CertPago';
-    public const ATTR_PAYMENT_CHAIN = 'CadPago';
-    public const ATTR_PAYMENT_CHAIN_SIGNATURE = 'SelloPago';
+    public const ATTR_DATE = 'date';
+    public const ATTR_PAYMENT_METHOD = 'paymentMethod';
+    public const ATTR_CURRENCY = 'currency';
+    public const ATTR_EXCHANGE_RATE = 'exchangeRate';
+    public const ATTR_AMOUNT = 'amount';
+    public const ATTR_TRANSACTION_NUMBER = 'transactionNumber';
+    public const ATTR_PAYER_BANK_RFC = 'payerBankRfc';
+    public const ATTR_PAYER_BANK_NAME = 'payerBankName';
+    public const ATTR_PAYER_BANK_ACCOUNT = 'payerAccount';
+    public const ATTR_BENEFICIARY_BANK_RFC = 'beneficiaryBankRfc';
+    public const ATTR_BENEFICIARY_BANK_ACCOUNT = 'beneficiaryAccount';
+    public const ATTR_PAYMENT_CHAIN_TYPE = 'paymentChainType';
+    public const ATTR_PAYMENT_CHAIN_CERT = 'paymentCertificate';
+    public const ATTR_PAYMENT_CHAIN = 'paymentChain';
+    public const ATTR_PAYMENT_CHAIN_SIGNATURE = 'paymentSignature';
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -60,64 +61,64 @@ class Payment extends CFDINode implements PaymentInterface
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'date'           => [
-            'keywords' => [self::ATTR_DATE, 'date'],
+        self::ATTR_DATE          => [
+            'keywords' => ['FechaPago', self::ATTR_DATE],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'paymentMethod'           => [
-            'keywords' => [self::ATTR_PAYMENT_METHOD, 'paymentMethod'],
+        self::ATTR_PAYMENT_METHOD           => [
+            'keywords' => ['FormaDePagoP', self::ATTR_PAYMENT_METHOD],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'currency'           => [
-            'keywords' => [self::ATTR_CURRENCY, 'currency'],
+        self::ATTR_CURRENCY          => [
+            'keywords' => ['MonedaP', self::ATTR_CURRENCY],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'exchangeRate'           => [
-            'keywords' => [self::ATTR_EXCHANGE_RATE, 'exchangeRate'],
+        self::ATTR_EXCHANGE_RATE           => [
+            'keywords' => ['TipoCambioP', self::ATTR_EXCHANGE_RATE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'amount'           => [
-            'keywords' => [self::ATTR_AMOUNT, 'amount'],
+        self::ATTR_AMOUNT          => [
+            'keywords' => ['Monto', self::ATTR_AMOUNT],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'transactionNumber'           => [
-            'keywords' => [self::ATTR_TRANSACTION_NUMBER, 'transactionNumber'],
+        self::ATTR_TRANSACTION_NUMBER           => [
+            'keywords' => ['NumOperacion', self::ATTR_TRANSACTION_NUMBER],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'payerBankRfc'           => [
-            'keywords' => [self::ATTR_PAYER_BANK_RFC, 'payerBankRfc'],
+        self::ATTR_PAYER_BANK_RFC          => [
+            'keywords' => ['RfcEmisorCtaOrd', self::ATTR_PAYER_BANK_RFC],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'payerBankName'           => [
-            'keywords' => [self::ATTR_PAYER_BANK_NAME, 'payerBankName'],
+        self::ATTR_PAYER_BANK_NAME          => [
+            'keywords' => ['NomBancoOrdExt', self::ATTR_PAYER_BANK_NAME],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'payerAccount' => [
-            'keywords' => [self::ATTR_PAYER_BANK_ACCOUNT, 'payerAccount'],
+        self::ATTR_PAYER_BANK_ACCOUNT => [
+            'keywords' => ['CtaOrdenante', self::ATTR_PAYER_BANK_ACCOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'beneficiaryBankRfc' => [
-            'keywords' => [self::ATTR_BENEFICIARY_BANK_RFC, 'beneficiaryBankRfc'],
+        self::ATTR_BENEFICIARY_BANK_RFC => [
+            'keywords' => ['RfcEmisorCtaBen', self::ATTR_BENEFICIARY_BANK_RFC],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'beneficiaryAccount' => [
-            'keywords' => [self::ATTR_BENEFICIARY_BANK_ACCOUNT, 'beneficiaryAccount'],
+        self::ATTR_BENEFICIARY_BANK_ACCOUNT => [
+            'keywords' => ['CtaBeneficiario', self::ATTR_BENEFICIARY_BANK_ACCOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'paymentChainType' => [
-            'keywords' => [self::ATTR_PAYMENT_CHAIN_TYPE, 'paymentChainType'],
+        self::ATTR_PAYMENT_CHAIN_TYPE => [
+            'keywords' => ['TipoCadPago', self::ATTR_PAYMENT_CHAIN_TYPE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'paymentCertificate' => [
-            'keywords' => [self::ATTR_PAYMENT_CHAIN_CERT, 'paymentCertificate'],
+        self::ATTR_PAYMENT_CHAIN_CERT => [
+            'keywords' => ['CertPago', self::ATTR_PAYMENT_CHAIN_CERT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'paymentChain' => [
-            'keywords' => [self::ATTR_PAYMENT_CHAIN, 'paymentChain'],
+        self::ATTR_PAYMENT_CHAIN => [
+            'keywords' => ['CadPago', self::ATTR_PAYMENT_CHAIN],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'paymentSignature' => [
-            'keywords' => [self::ATTR_PAYMENT_CHAIN_SIGNATURE, 'paymentSignature'],
+        self::ATTR_PAYMENT_CHAIN_SIGNATURE => [
+            'keywords' => ['SelloPago', self::ATTR_PAYMENT_CHAIN_SIGNATURE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
@@ -304,7 +305,7 @@ class Payment extends CFDINode implements PaymentInterface
      * @return void
      * @throws CFDIException
      */
-    public function calculateTotalTaxes(): void
+    public function calculatePaymentTaxes(): void
     {
 
         $transfers = [];
@@ -312,9 +313,9 @@ class Payment extends CFDINode implements PaymentInterface
 
         foreach ($this->getRelatedDocuments() as $document) {
             $relatedDocumentTaxes = $document->getRelatedDocumentTaxes();
-            if (!is_null($relatedDocumentTaxes)){
+            if ($relatedDocumentTaxes){
                 $relatedDocumentRetainedList = $relatedDocumentTaxes->getRelatedDocumentRetainedList();
-                if (!is_null($relatedDocumentRetainedList)) {
+                if ($relatedDocumentRetainedList) {
                     foreach ($relatedDocumentRetainedList->getRelatedDocumentRetentions() as $tax) {
                         $key = $tax->getTax();
 
@@ -329,9 +330,9 @@ class Payment extends CFDINode implements PaymentInterface
                         $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
                     }
                 }
-                $transferredList = $relatedDocumentTaxes->getRelatedDocumentTransferredList();
-                if (!is_null($transferredList)) {
-                    foreach ($transferredList->getRelatedDocumentTransfers() as $tax) {
+                $relatedDocumentTransferredList = $relatedDocumentTaxes->getRelatedDocumentTransferredList();
+                if ($relatedDocumentTransferredList) {
+                    foreach ($relatedDocumentTransferredList->getRelatedDocumentTransfers() as $tax) {
                         $key = $tax->getTax() . '-' . $tax->getFactorType() . '-' . $tax->getRate();
 
                         if (!array_key_exists($key, $transfers)) {

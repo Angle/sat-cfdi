@@ -21,6 +21,7 @@ class Taxes extends CFDINode
     #########################
 
     const NODE_NAME = "ImpuestosP";
+    public const NODE_NAME_EN = 'taxes';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";

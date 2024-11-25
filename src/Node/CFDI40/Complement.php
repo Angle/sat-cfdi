@@ -33,6 +33,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
     #########################
 
     const NODE_NAME = "Complemento";
+    public const NODE_NAME_EN = "complements";
 
     const NODE_NS = "cfdi";
     const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
