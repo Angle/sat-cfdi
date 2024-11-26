@@ -37,7 +37,11 @@ class TaxesTransferredList extends CFDINode
     protected static $attributes = [];
 
     protected static $children = [
-        // PropertyName => ClassName (full namespace)
+        'transfers' => [
+            'keywords'  => ['TrasladoP', 'transfers'],
+            'class'     => TaxesRetained::class,
+            'type'      => CFDINode::CHILD_ARRAY,
+        ],
     ];
 
 

@@ -33,6 +33,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
     #########################
 
     const NODE_NAME = "Complemento";
+    public const NODE_NAME_EN = "complements";
 
     const NODE_NS = "cfdi";
     const NODE_NS_URI = "http://www.sat.gob.mx/cfd/4";
@@ -229,6 +230,21 @@ class Complement extends CFDINode implements CFDIComplementInterface
             if ($c instanceof Payments10) {
                 return $c;
             }
+            if ($c instanceof Payments20) {
+                return $c;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * This method will return the first encountered Payments20 inside the Complements items
+     * @return Payments20|null
+     */
+    public function getPayment20(): ?Payments20
+    {
+        foreach ($this->complements as $c) {
             if ($c instanceof Payments20) {
                 return $c;
             }

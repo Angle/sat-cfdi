@@ -910,6 +910,17 @@ class CFDI40 extends CFDINode implements CFDIInterface
             $retentionList->addRetention($tax);
         }
         $this->taxes->setRetainedList($retentionList);
+
+        // Same process but for each complement payment
+        foreach ($this->complements as $complement) {
+            $payments20 = $complement->getPayment20();
+            if (!is_null($payments20)) {
+                foreach ($payments20->getPayments() as $payment) {
+                    $payment->calculatePaymentTaxes();
+                }
+                $payments20->calculateTotals();
+            }
+        }
     }
 
     public function cleanUpValuesAndEmptyProperties()

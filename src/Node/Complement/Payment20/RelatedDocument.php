@@ -24,6 +24,7 @@ class RelatedDocument extends CFDINode
     #########################
 
     const NODE_NAME = "DoctoRelacionado";
+    public const NODE_NAME_EN = 'relatedDocument';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -32,6 +33,20 @@ class RelatedDocument extends CFDINode
 
     protected static $baseAttributes = [];
 
+    #########################
+    ##     ATTRIBUTES      ##
+    #########################
+
+    public const ATTR_DOCUMENT_ID = 'id';
+    public const ATTR_DOCUMENT_SERIES = 'series';
+    public const ATTR_DOCUMENT_FOLIO = 'folio';
+    public const ATTR_DOCUMENT_CURRENCY = 'currency';
+    public const ATTR_DOCUMENT_EXCHANGE_RATE = 'exchangeRate';
+    public const ATTR_DOCUMENT_INSTALLMENT_NUMBER = 'instalmentNumber';
+    public const ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT = 'previousBalanceAmount';
+    public const ATTR_DOCUMENT_PAID_AMOUNT = 'paidAmount';
+    public const ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT = 'pendingBalanceAmount';
+    public const ATTR_OPERATION_TAXABLE = 'operationTaxable';
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -39,44 +54,44 @@ class RelatedDocument extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'id' => [
-            'keywords' => ['IdDocumento', 'id'],
+        self::ATTR_DOCUMENT_ID => [
+            'keywords' => ['IdDocumento', self::ATTR_DOCUMENT_ID],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'series' => [
-            'keywords' => ['Serie', 'series'],
+        self::ATTR_DOCUMENT_SERIES => [
+            'keywords' => ['Serie', self::ATTR_DOCUMENT_SERIES],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'folio' => [
-            'keywords' => ['Folio', 'folio'],
+        self::ATTR_DOCUMENT_FOLIO => [
+            'keywords' => ['Folio', self::ATTR_DOCUMENT_FOLIO],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'currency' => [
-            'keywords' => ['MonedaDR', 'currency'], // currency used in the referenced related document
+        self::ATTR_DOCUMENT_CURRENCY => [
+            'keywords' => ['MonedaDR', self::ATTR_DOCUMENT_CURRENCY], // currency used in the referenced related document
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'exchangeRate' => [
-            'keywords' => ['EquivalenciaDR', 'exchangeRate'],
+        self::ATTR_DOCUMENT_EXCHANGE_RATE => [
+            'keywords' => ['EquivalenciaDR', self::ATTR_DOCUMENT_EXCHANGE_RATE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'instalmentNumber' => [
-            'keywords' => ['NumParcialidad', 'instalmentNumber'],
+        self::ATTR_DOCUMENT_INSTALLMENT_NUMBER => [
+            'keywords' => ['NumParcialidad', self::ATTR_DOCUMENT_INSTALLMENT_NUMBER],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'previousBalanceAmount' => [
-            'keywords' => ['ImpSaldoAnt', 'previousBalanceAmount'],
+        self::ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT => [
+            'keywords' => ['ImpSaldoAnt', self::ATTR_DOCUMENT_PREVIOUS_BALANCE_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'paidAmount' => [
-            'keywords' => ['ImpPagado', 'paidAmount'],
+        self::ATTR_DOCUMENT_PAID_AMOUNT => [
+            'keywords' => ['ImpPagado', self::ATTR_DOCUMENT_PAID_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'pendingBalanceAmount' => [
-            'keywords' => ['ImpSaldoInsoluto', 'pendingBalanceAmount'],
+        self::ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT => [
+            'keywords' => ['ImpSaldoInsoluto', self::ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'operationTaxable' => [
-            'keywords' => ['ObjetoImpDR', 'operationTaxable'],
+        self::ATTR_OPERATION_TAXABLE => [
+            'keywords' => ['ObjetoImpDR', self::ATTR_OPERATION_TAXABLE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
