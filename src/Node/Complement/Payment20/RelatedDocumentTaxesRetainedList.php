@@ -55,7 +55,7 @@ class RelatedDocumentTaxesRetainedList extends CFDINode
     /**
      * @var RelatedDocumentTaxesRetained[]
      */
-    protected $relatedDocumentRetentions = [];
+    protected $relatedDocumentTaxesRetained = [];
 
 
 
@@ -80,7 +80,7 @@ class RelatedDocumentTaxesRetainedList extends CFDINode
             switch ($node->localName) {
                 case RelatedDocumentTaxesRetained::NODE_NAME:
                     $retention = RelatedDocumentTaxesRetained::createFromDomNode($node);
-                    $this->addRetention($retention);
+                    $this->addRelatedDocumentTaxesRetained($retention);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
@@ -102,7 +102,7 @@ class RelatedDocumentTaxesRetainedList extends CFDINode
         }
 
         // Retentions node (array)
-        foreach ($this->relatedDocumentRetentions as $retention) {
+        foreach ($this->relatedDocumentTaxesRetained as $retention) {
             $retentionNode = $retention->toDOMElement($dom);
             $node->appendChild($retentionNode);
         }
@@ -137,18 +137,18 @@ class RelatedDocumentTaxesRetainedList extends CFDINode
     /**
      * @return RelatedDocumentTaxesRetained[]
      */
-    public function getRelatedDocumentRetentions(): ?array
+    public function getRelatedDocumentTaxesRetained(): ?array
     {
-        return $this->relatedDocumentRetentions;
+        return $this->relatedDocumentTaxesRetained;
     }
 
     /**
      * @param RelatedDocumentTaxesRetained $retention
      * @return RelatedDocumentTaxesRetainedList
      */
-    public function addRetention(RelatedDocumentTaxesRetained $retention): self
+    public function addRelatedDocumentTaxesRetained(RelatedDocumentTaxesRetained $retention): self
     {
-        $this->relatedDocumentRetentions[] = $retention;
+        $this->relatedDocumentTaxesRetained[] = $retention;
         return $this;
     }
 
@@ -156,9 +156,9 @@ class RelatedDocumentTaxesRetainedList extends CFDINode
      * @param TaxesRetained[] $retentions
      * @return RelateddocumentTaxesRetainedList
      */
-    public function setRetentions(array $retentions): self
+    public function setRelatedDocumentTaxesRetained(array $retentions): self
     {
-        $this->relatedDocumentRetentions = $retentions;
+        $this->relatedDocumentTaxesRetained = $retentions;
         return $this;
     }
 
