@@ -65,12 +65,12 @@ class RelatedDocumentTaxes extends CFDINode
     /**
      * @var RelatedDocumentTaxesTransferredList|null
      */
-    protected $relatedDocumentTransferredList;
+    protected $relatedDocumentTaxesTransferredList;
 
     /**
      * @var RelatedDocumentTaxesRetainedList|null
      */
-    protected $relatedDocumentRetainedList;
+    protected $relatedDocumentTaxesRetainedList;
 
 
     #########################
@@ -149,50 +149,35 @@ class RelatedDocumentTaxes extends CFDINode
     }
 
 
+
+
     #########################
     ## GETTERS AND SETTERS ##
     #########################
 
-    // no attributes
+    public function getRelatedDocumentTaxesTransferredList(): ?RelatedDocumentTaxesTransferredList
+    {
+        return $this->relatedDocumentTaxesTransferredList;
+    }
 
+    public function setRelatedDocumentTaxesTransferredList(?RelatedDocumentTaxesTransferredList $relatedDocumentTaxesTransferredList): void
+    {
+        $this->relatedDocumentTaxesTransferredList = $relatedDocumentTaxesTransferredList;
+    }
+
+    public function getRelatedDocumentTaxesRetainedList(): ?RelatedDocumentTaxesRetainedList
+    {
+        return $this->relatedDocumentTaxesRetainedList;
+    }
+
+    public function setRelatedDocumentTaxesRetainedList(?RelatedDocumentTaxesRetainedList $relatedDocumentTaxesRetainedList): void
+    {
+        $this->relatedDocumentTaxesRetainedList = $relatedDocumentTaxesRetainedList;
+    }
 
     #########################
     ## CHILDREN
     #########################
 
-    /**
-     * @return RelatedDocumentTaxesTransferredList|null
-     */
-    public function getRelatedDocumentTransferredList(): ?RelatedDocumentTaxesTransferredList
-    {
-        return $this->relatedDocumentTransferredList;
-    }
 
-    /**
-     * @param RelatedDocumentTaxesTransferredList|null $relatedDocumentTransferredList
-     * @return RelatedDocumentTaxes
-     */
-    public function setRelatedDocumentTransferredList(?RelatedDocumentTaxesTransferredList $relatedDocumentTransferredList): self
-    {
-        $this->relatedDocumentTransferredList = $relatedDocumentTransferredList;
-        return $this;
-    }
-
-    /**
-     * @return RelatedDocumentTaxesRetainedList|null
-     */
-    public function getRelatedDocumentRetainedList(): ?RelatedDocumentTaxesRetainedList
-    {
-        return $this->relatedDocumentRetainedList;
-    }
-
-    /**
-     * @param RelatedDocumentTaxesRetainedList|null $relatedDocumentRetainedList
-     * @return RelatedDocumentTaxes
-     */
-    public function setRelatedDocumentRetainedList(?RelatedDocumentTaxesRetainedList $relatedDocumentRetainedList): self
-    {
-        $this->relatedDocumentRetainedList = $relatedDocumentRetainedList;
-        return $this;
-    }
 }

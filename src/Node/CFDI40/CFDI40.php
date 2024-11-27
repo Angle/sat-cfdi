@@ -165,7 +165,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
         'complements' => [
             'keywords'  => ['Complemento', 'complements'],
             'class'     => Complement::class,
-            'type'      => CFDINode::CHILD_ARRAY,
+            'type'      => CFDINode::CHILD_UNIQUE,
         ],
     ];
 
@@ -1516,10 +1516,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @param Complement[] $complements
+     * @param Complement $complements
      * @return CFDI40
      */
-    public function setComplements(array $complements): self
+    public function setComplements(Complement $complements): self
     {
         $this->complements = $complements;
         return $this;

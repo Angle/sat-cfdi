@@ -21,7 +21,7 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
     #########################
 
     const NODE_NAME = "TrasladosDR";
-    public const NODE_NAME_EN = 'transferredList';
+    public const NODE_NAME_EN = 'relatedDocumentTaxesTransferredList';
 
     const NODE_NS = "pago20";
     const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
@@ -55,7 +55,7 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
     /**
      * @var RelatedDocumentTaxesTransferred[]
      */
-    protected $relatedDocumentTransfers = [];
+    protected $relatedDocumentTaxesTransferred = [];
 
 
 
@@ -137,18 +137,18 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
     /**
      * @return RelatedDocumentTaxesTransferred[]
      */
-    public function getRelatedDocumentTransfers(): ?array
+    public function getRelatedDocumentTaxesTransferred(): ?array
     {
-        return $this->relatedDocumentTransfers;
+        return $this->relatedDocumentTaxesTransferred;
     }
 
     /**
      * @param RelatedDocumentTaxesTransferred $transfer
      * @return RelatedDocumentTaxesTransferredList
      */
-    public function addTransfer(RelatedDocumentTaxesTransferred $transfer): self
+    public function addRelatedDocumentTaxesTransferred(RelatedDocumentTaxesTransferred $transfer): self
     {
-        $this->relatedDocumentTransfers[] = $transfer;
+        $this->relatedDocumentTaxesTransferred[] = $transfer;
         return $this;
     }
 
@@ -156,9 +156,9 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
      * @param TaxesTransferred[] $transfers
      * @return RelatedDocumentTaxesTransferredList
      */
-    public function setTransfers(array $transfers): self
+    public function setRelatedDocumentTaxesTransferred(array $transfers): self
     {
-        $this->relatedDocumentTransfers = $transfers;
+        $this->relatedDocumentTaxesTransferred = $transfers;
         return $this;
     }
 

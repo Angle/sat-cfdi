@@ -11,6 +11,16 @@ use Angle\CFDI\Catalog\TaxFactorType;
 use Angle\CFDI\Catalog\PaymentType;
 use Angle\CFDI\Catalog\PaymentMethod;
 
+use Angle\CFDI\Node\CFDI40\CFDI40;
+use Angle\CFDI\Node\CFDI40\Complement;
+use Angle\CFDI\Node\Complement\Payment20\Payment;
+use Angle\CFDI\Node\Complement\Payment20\Payments;
+use Angle\CFDI\Node\Complement\Payment20\RelatedDocument;
+use Angle\CFDI\Node\Complement\Payment20\RelatedDocumentTaxes;
+use Angle\CFDI\Node\Complement\Payment20\RelatedDocumentTaxesRetained;
+use Angle\CFDI\Node\Complement\Payment20\RelatedDocumentTaxesRetainedList;
+use Angle\CFDI\Node\Complement\Payment20\RelatedDocumentTaxesTransferred;
+use Angle\CFDI\Node\Complement\Payment20\RelatedDocumentTaxesTransferredList;
 use PHPUnit\Framework\TestCase;
 
 final class InvoiceTest extends TestCase
@@ -18,40 +28,40 @@ final class InvoiceTest extends TestCase
     public function testInvoiceCreationEnglish(): void
     {
         $data = [
-            'version'           => CFDI33::VERSION_3_3,
-            'series'            => 'TEST',
-            'folio'             => '12345',
-            'date'              => new \DateTime('now'),
-            'paymentMethod'     => PaymentMethod::TRANSFER,
+            'version' => CFDI33::VERSION_3_3,
+            'series' => 'TEST',
+            'folio' => '12345',
+            'date' => new \DateTime('now'),
+            'paymentMethod' => PaymentMethod::TRANSFER,
             'paymentConditions' => null,
-            'subTotal'          => 100.0,
-            'discount'          => null,
-            'currency'          => 'MXN', // todo: make this as a catalog
-            'exchangeRate'      => null,
-            'total'             => 116.0,
-            'cfdiType'          => CFDIType::INCOME,
-            'paymentType'       => PaymentType::SINGLE,
-            'postalCode'        => '00200'
+            'subTotal' => 100.0,
+            'discount' => null,
+            'currency' => 'MXN', // todo: make this as a catalog
+            'exchangeRate' => null,
+            'total' => 116.0,
+            'cfdiType' => CFDIType::INCOME,
+            'paymentType' => PaymentType::SINGLE,
+            'postalCode' => '00200'
         ];
 
         // We're building an unsigned CFDI, but we cannot pass the fields as null, we'll write some filler data
-        $data['signature']          = 'unsigned';
-        $data['certificateNumber']  = 'unsigned';
-        $data['certificate']        = 'unsigned';
+        $data['signature'] = 'unsigned';
+        $data['certificateNumber'] = 'unsigned';
+        $data['certificate'] = 'unsigned';
 
         // Create the children nodes
         $data['issuer'] = [
-            'rfc'       => 'XAXX010101000',
-            'name'      => 'Test Issuer',
-            'regime'    => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            'rfc' => 'XAXX010101000',
+            'name' => 'Test Issuer',
+            'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
         ];
 
         $data['recipient'] = [
-            'rfc'               => 'XAXX010101000',
-            'name'              => 'Test Recipient',
-            'foreignCountry'    => null,
-            'foreignTaxCode'    => null,
-            'cfdiUse'           => CFDIUse::GENERAL_EXPENSE,
+            'rfc' => 'XAXX010101000',
+            'name' => 'Test Recipient',
+            'foreignCountry' => null,
+            'foreignTaxCode' => null,
+            'cfdiUse' => CFDIUse::GENERAL_EXPENSE,
         ];
 
         $data['relatedCFDIList'] = [
@@ -66,12 +76,12 @@ final class InvoiceTest extends TestCase
         $data['itemList'] = [
             'items' => [
                 [
-                    'code'          => '1234',
-                    'quantity'      => 1.0,
-                    'unitCode'      => 'XNA',
-                    'description'   => 'Test item / product',
-                    'unitPrice'     => 100.0,
-                    'amount'        => 100.0,
+                    'code' => '1234',
+                    'quantity' => 1.0,
+                    'unitCode' => 'XNA',
+                    'description' => 'Test item / product',
+                    'unitPrice' => 100.0,
+                    'amount' => 100.0,
                     'taxes' => [
                         'transferredList' => [
                             'transfers' => [
@@ -129,6 +139,207 @@ final class InvoiceTest extends TestCase
         }
 
         $this->assertInstanceOf(CFDI33::class, $cfdi);
+
+        echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
+        print_r($cfdi);
+        echo PHP_EOL . PHP_EOL;
+
+        echo "## Output XML (reproduced) ## " . PHP_EOL . PHP_EOL;
+        echo $cfdi->toXML();
+        echo PHP_EOL . PHP_EOL;
+    }
+
+    public function testComplementPayments(): void
+    {
+        $data = [
+            'version' => CFDI40::VERSION_4_0,
+            'series' => 'TEST',
+            'folio' => '1',
+            'date' => new \DateTime('now'),
+            'paymentMethod' => PaymentMethod::TRANSFER,
+            'paymentConditions' => null,
+            'subTotal' => '0.00000',
+            'discount' => '0.00000',
+            'currency' => 'XXX',
+            'exchangeRate' => null,
+            'total' => '0.00000',
+            'cfdiType' => 'P',
+            'paymentType' => null,
+            'postalCode' => '00200',
+            'signature' => 'unsigned',
+            'certificateNumber' => 'unsigned',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Issuer',
+                'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            ],
+            'recipient' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Recipient',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::GENERAL_EXPENSE,
+                'postalCode' => '64920',
+            ],
+            'itemList' => [
+                'items' => [],
+            ],
+            Complement::NODE_NAME_EN => [
+                Payments::NODE_NAME_EN => [
+                    Payment::NODE_NAME_EN => [
+                        [
+                            'date' => new \DateTime('now'),
+                            'paymentMethod' => '01',
+                            'currency' => 'MXN',
+                            'exchangeRate' => '1.00000',
+                            'amount' => '10000.00000',
+                            'transactionNumber' => null,
+                            'taxes' => [],
+                            RelatedDocument::NODE_NAME_EN => [
+                                [
+                                    'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                    'series' => '2',
+                                    'folio' => '1',
+                                    'currency' => 'MXN',
+                                    'exchangeRate' => 1,
+                                    'instalmentNumber' => '1',
+                                    'previousBalanceAmount' => '649.00000',
+                                    'paidAmount' => '649.00000',
+                                    'pendingBalanceAmount' => '0.00000',
+                                    'operationTaxable' => null,
+                                    RelatedDocumentTaxes::NODE_NAME_EN => [
+                                        RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                [
+                                                    'base' => '500.00000',
+                                                    'tax' => '002',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.16000',
+                                                    'amount' => '80.00000',
+                                                ],
+                                                [
+                                                    'base' => '500.00000',
+                                                    'tax' => '002',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.00000',
+                                                    'amount' => '0.00000',
+                                                ],
+                                                [
+                                                    'base' => '500.00000',
+                                                    'tax' => '003',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.00000',
+                                                    'amount' => '0.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '002',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.16000',
+                                                    'amount' => '16.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '003',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.00000',
+                                                    'amount' => '0.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '003',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.30000',
+                                                    'amount' => '30.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '003',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.03000',
+                                                    'amount' => '3.00000',
+                                                ],
+                                            ]
+                                            ],
+                                        RelatedDocumentTaxesRetainedList::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesRetained::NODE_NAME_EN => [
+                                                [
+                                                    'base' => '500.00000',
+                                                    'tax' => '002',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.05000',
+                                                    'amount' => '25.00000',
+                                                ],
+                                                [
+                                                    'base' => '500.00000',
+                                                    'tax' => '001',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.02000',
+                                                    'amount' => '10.00000',
+                                                ],
+                                                [
+                                                    'base' => '500.00000',
+                                                    'tax' => '003',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.06000',
+                                                    'amount' => '30.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '002',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.04000',
+                                                    'amount' => '4.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '002',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.05000',
+                                                    'amount' => '5.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '001',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.04000',
+                                                    'amount' => '4.00000',
+                                                ],
+                                                [
+                                                    'base' => '100.00000',
+                                                    'tax' => '001',
+                                                    'factorType' => 'Tasa',
+                                                    'rate' => '0.02000',
+                                                    'amount' => '2.00000',
+                                                ],
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
 
         echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
         print_r($cfdi);

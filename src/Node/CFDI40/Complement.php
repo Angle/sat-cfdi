@@ -81,6 +81,11 @@ class Complement extends CFDINode implements CFDIComplementInterface
      */
     protected $unknownNodes = [];
 
+    /**
+     * @var Payments20
+     */
+    protected $paymentComplement = [];
+
 
     #########################
     ##     CONSTRUCTOR     ##
@@ -321,6 +326,22 @@ class Complement extends CFDINode implements CFDIComplementInterface
     public function getComplements(): array
     {
         return $this->complements;
+    }
+
+    /**
+     * @return Payments20|array
+     */
+    public function getPaymentComplement()
+    {
+        return $this->paymentComplement;
+    }
+
+    /**
+     * @param Payments20|array $paymentComplement
+     */
+    public function setPaymentComplement($paymentComplement): void
+    {
+        $this->paymentComplement = $paymentComplement;
     }
 
 }

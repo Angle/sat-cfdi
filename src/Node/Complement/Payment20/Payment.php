@@ -404,6 +404,7 @@ class Payment extends CFDINode implements PaymentInterface
     {
         if ($rawDate instanceof DateTime) {
             $this->date = $rawDate;
+            return $this;
         }
 
         // sample format: 2019-09-06T10:09:46
@@ -727,7 +728,7 @@ class Payment extends CFDINode implements PaymentInterface
      * @param Taxes[] $taxes
      * @return Payment
      */
-    public function setTaxes(array $taxes): self
+    public function setTaxes(Taxes $taxes): self
     {
         $this->taxes = $taxes;
         return $this;
