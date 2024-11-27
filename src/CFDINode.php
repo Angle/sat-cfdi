@@ -50,7 +50,6 @@ abstract class CFDINode implements CFDINodeInterface
         // Lookup each element in the given array, attempt to find the corresponding property even if the input is in english or spanish
         foreach ($data as $key => $value) {
             $propertyType = $this->findPropertyType($key);
-            error_log('Key: ' . $key . ' -> ' . $this->getShortName());
             if ($propertyType == self::PROPERTY_BASE_ATTRIBUTE) {
                 // If the property is in the "base attributes" list, ignore it.
                 continue;
