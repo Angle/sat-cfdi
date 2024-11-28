@@ -193,7 +193,7 @@ final class InvoiceTest extends TestCase
                         'description' => 'Pago',
                         'unitPrice' => 0.00000,
                         'amount' => 0.00000,
-                        'operationTaxable' => 01,
+                        'operationTaxable' => "01",
                         'discount' => 0.00000,
                     ]
                 ],
