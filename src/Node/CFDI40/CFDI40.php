@@ -1037,6 +1037,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
         if ($this->complements) {
             $payment20 = $this->complements->getPayment20();
             if ($payment20) {
+                $this->total = '0';
+                $this->subTotal = '0';
                 $totals = $payment20->getTotals();
                 if ($totals) {
                     $totals->setTotalPaymentsAmount(Math::round($totals->getTotalPaymentsAmount(), 2));

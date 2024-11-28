@@ -119,18 +119,18 @@ class Taxes extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // TransferredList Node
-        if ($this->transferredList) {
-            // This can be null, no problem if not found
-            $transferredListNode = $this->transferredList->toDOMElement($dom);
-            $node->appendChild($transferredListNode);
-        }
-
         // RetainedList Node
         if ($this->retainedList) {
             // This can be null, no problem if not found
             $retainedListNode = $this->retainedList->toDOMElement($dom);
             $node->appendChild($retainedListNode);
+        }
+
+        // TransferredList Node
+        if ($this->transferredList) {
+            // This can be null, no problem if not found
+            $transferredListNode = $this->transferredList->toDOMElement($dom);
+            $node->appendChild($transferredListNode);
         }
 
         return $node;

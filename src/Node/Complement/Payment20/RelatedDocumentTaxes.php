@@ -119,6 +119,13 @@ class RelatedDocumentTaxes extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
+        // RetainedList Node
+        if ($this->relatedDocumentTaxesRetainedList) {
+            // This can be null, no problem if not found
+            $retainedListNode = $this->relatedDocumentTaxesRetainedList->toDOMElement($dom);
+            $node->appendChild($retainedListNode);
+        }
+
         // TransferredList Node
         if ($this->relatedDocumentTaxesTransferredList) {
             // This can be null, no problem if not found
@@ -126,12 +133,6 @@ class RelatedDocumentTaxes extends CFDINode
             $node->appendChild($transferredListNode);
         }
 
-        // RetainedList Node
-        if ($this->relatedDocumentTaxesRetainedList) {
-            // This can be null, no problem if not found
-            $retainedListNode = $this->relatedDocumentTaxesRetainedList->toDOMElement($dom);
-            $node->appendChild($retainedListNode);
-        }
 
         return $node;
     }
