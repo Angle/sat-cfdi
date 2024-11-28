@@ -225,9 +225,9 @@ class Payment extends CFDINode implements PaymentInterface
     protected $documents = [];
 
     /**
-     * @var Taxes[]
+     * @var Taxes
      */
-    protected $taxes = [];
+    protected $taxes = null;
 
 
     #########################
@@ -283,8 +283,8 @@ class Payment extends CFDINode implements PaymentInterface
         }
 
         // Taxes Node
-        foreach ($this->taxes as $taxes) {
-            $taxesNode = $taxes->toDOMElement($dom);
+        if($this->taxes) {
+            $taxesNode = $this->taxes->toDOMElement($dom);
             $node->appendChild($taxesNode);
         }
 
@@ -314,9 +314,9 @@ class Payment extends CFDINode implements PaymentInterface
         foreach ($this->getRelatedDocuments() as $document) {
             $relatedDocumentTaxes = $document->getRelatedDocumentTaxes();
             if ($relatedDocumentTaxes){
-                $relatedDocumentRetainedList = $relatedDocumentTaxes->getRelatedDocumentRetainedList();
+                $relatedDocumentRetainedList = $relatedDocumentTaxes->getRelatedDocumentTaxesRetainedList();
                 if ($relatedDocumentRetainedList) {
-                    foreach ($relatedDocumentRetainedList->getRelatedDocumentRetentions() as $tax) {
+                    foreach ($relatedDocumentRetainedList->getRelatedDocumentTaxesRetained() as $tax) {
                         $key = $tax->getTax();
 
                         if (!array_key_exists($key, $retentions)) {
@@ -330,9 +330,9 @@ class Payment extends CFDINode implements PaymentInterface
                         $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
                     }
                 }
-                $relatedDocumentTransferredList = $relatedDocumentTaxes->getRelatedDocumentTransferredList();
+                $relatedDocumentTransferredList = $relatedDocumentTaxes->getRelatedDocumentTaxesTransferredList();
                 if ($relatedDocumentTransferredList) {
-                    foreach ($relatedDocumentTransferredList->getRelatedDocumentTransfers() as $tax) {
+                    foreach ($relatedDocumentTransferredList->getRelatedDocumentTaxesTransferred() as $tax) {
                         $key = $tax->getTax() . '-' . $tax->getFactorType() . '-' . $tax->getRate();
 
                         if (!array_key_exists($key, $transfers)) {
@@ -707,9 +707,9 @@ class Payment extends CFDINode implements PaymentInterface
     }
 
     /**
-     * @return Taxes[]
+     * @return Taxes
      */
-    public function getTaxes(): ?array
+    public function getTaxes(): Taxes
     {
         return $this->taxes;
     }

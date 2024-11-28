@@ -2,6 +2,7 @@
 
 namespace Angle\CFDI\Node\CFDI40;
 
+use Angle\CFDI\Catalog\CFDIType;
 use Angle\CFDI\CFDINode;
 use Angle\CFDI\CFDIException;
 use Angle\CFDI\CFDIInterface;
@@ -323,9 +324,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
     protected $taxes;
 
     /**
-     * @var Complement[]
+     * @var Complement|null
      */
-    protected $complements = [];
+    protected $complements = null;
 
 
     // TODO: Addendum
@@ -341,9 +342,16 @@ class CFDI40 extends CFDINode implements CFDIInterface
     ##     CONSTRUCTOR     ##
     #########################
 
-    public function autoCalculate()
+    /**
+     * @return void
+     * @throws CFDIException
+     */
+    public function autoCalculate(): void
     {
-        $this->calculateTaxesAndTotals();
+        if (!($this->complements && $this->complements->getPayment20())) {
+            $this->calculateTaxesAndTotals();
+        }
+        $this->calculatePaymentComplementTaxesAndTotals();
         $this->cleanUpValuesAndEmptyProperties();
     }
 
@@ -443,8 +451,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
         }
 
         // Complements Node
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
+        if ($this->complements) {
+            $complementNode = $this->complements->toDOMElement($dom);
             $node->appendChild($complementNode);
         }
 
@@ -910,16 +918,30 @@ class CFDI40 extends CFDINode implements CFDIInterface
             $retentionList->addRetention($tax);
         }
         $this->taxes->setRetainedList($retentionList);
+    }
 
-        // Same process but for each complement payment
-        foreach ($this->complements as $complement) {
-            $payments20 = $complement->getPayment20();
+    /**
+     * Calculate the payment complement taxes and totals.
+     *
+     * This method checks if there are any complements, and if so, it retrieves the Payment 2.0 data.
+     * It iterates over each payment to calculate the payment taxes and then calculates the total amounts.
+     * Logs are generated to indicate the start and completion of the tax calculation process.
+     * @throws CFDIException
+     * @return void
+     */
+    public function calculatePaymentComplementTaxesAndTotals(): void
+    {
+        if ($this->complements) {
+            error_log('Calculating payment taxes');
+            $payments20 = $this->complements->getPayment20();
+            print_r($payments20);
             if (!is_null($payments20)) {
                 foreach ($payments20->getPayments() as $payment) {
                     $payment->calculatePaymentTaxes();
                 }
                 $payments20->calculateTotals();
             }
+            error_log('Payment taxes calculated');
         }
     }
 
@@ -977,28 +999,31 @@ class CFDI40 extends CFDINode implements CFDIInterface
         }
 
 
-        // GLOBAL TAXES
-        $this->taxes->setTotalTransferredAmount(Math::round($this->taxes->getTotalTransferredAmount(),2));
-        $this->taxes->setTotalRetainedAmount(Math::round($this->taxes->getTotalRetainedAmount(),2));
+        if ($this->taxes) {
+            // GLOBAL TAXES
+            $this->taxes->setTotalTransferredAmount(Math::round($this->taxes->getTotalTransferredAmount(),2));
+            $this->taxes->setTotalRetainedAmount(Math::round($this->taxes->getTotalRetainedAmount(),2));
 
-        // Check the global (total) taxes
-        if (empty($this->getTaxes()->getTransferredList()->getTransfers())) {
-            $this->getTaxes()->setTransferredList(null);
-        } else {
-            foreach ($this->getTaxes()->getTransferredList()->getTransfers() as $t) {
-                $t->setBase(Math::round($t->getBase(), 2));
-                $t->setAmount(Math::round($t->getAmount(), 2));
-                $t->setRate(Math::round($t->getRate(), 6));
+            // Check the global (total) taxes
+            if (empty($this->getTaxes()->getTransferredList()->getTransfers())) {
+                $this->getTaxes()->setTransferredList(null);
+            } else {
+                foreach ($this->getTaxes()->getTransferredList()->getTransfers() as $t) {
+                    $t->setBase(Math::round($t->getBase(), 2));
+                    $t->setAmount(Math::round($t->getAmount(), 2));
+                    $t->setRate(Math::round($t->getRate(), 6));
+                }
+            }
+
+            if (empty($this->getTaxes()->getRetainedList()->getRetentions())) {
+                $this->getTaxes()->setRetainedList(null);
+            } else {
+                foreach ($this->getTaxes()->getRetainedList()->getRetentions() as $t) {
+                    $t->setAmount(Math::round($t->getAmount(), 2));
+                }
             }
         }
 
-        if (empty($this->getTaxes()->getRetainedList()->getRetentions())) {
-            $this->getTaxes()->setRetainedList(null);
-        } else {
-            foreach ($this->getTaxes()->getRetainedList()->getRetentions() as $t) {
-                $t->setAmount(Math::round($t->getAmount(), 2));
-            }
-        }
 
         // Local Taxes
         if ($this->getLocalTaxes()) {

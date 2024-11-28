@@ -120,16 +120,16 @@ class RelatedDocumentTaxes extends CFDINode
         }
 
         // TransferredList Node
-        if ($this->relatedDocumentTransferredList) {
+        if ($this->relatedDocumentTaxesTransferredList) {
             // This can be null, no problem if not found
-            $transferredListNode = $this->relatedDocumentTransferredList->toDOMElement($dom);
+            $transferredListNode = $this->relatedDocumentTaxesTransferredList->toDOMElement($dom);
             $node->appendChild($transferredListNode);
         }
 
         // RetainedList Node
-        if ($this->relatedDocumentRetainedList) {
+        if ($this->relatedDocumentTaxesRetainedList) {
             // This can be null, no problem if not found
-            $retainedListNode = $this->relatedDocumentRetainedList->toDOMElement($dom);
+            $retainedListNode = $this->relatedDocumentTaxesRetainedList->toDOMElement($dom);
             $node->appendChild($retainedListNode);
         }
 

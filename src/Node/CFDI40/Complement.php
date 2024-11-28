@@ -84,7 +84,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
     /**
      * @var Payments20
      */
-    protected $paymentComplement = [];
+    protected $paymentComplement = null;
 
 
     #########################
@@ -171,9 +171,9 @@ class Complement extends CFDINode implements CFDIComplementInterface
         }
 
         // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        if($this->paymentComplement){
+            $paymentComplementNode = $this->paymentComplement->toDOMElement($dom);
+            $node->appendChild($paymentComplementNode);
         }
 
         return $node;
@@ -249,10 +249,8 @@ class Complement extends CFDINode implements CFDIComplementInterface
      */
     public function getPayment20(): ?Payments20
     {
-        foreach ($this->complements as $c) {
-            if ($c instanceof Payments20) {
-                return $c;
-            }
+        if ($this->paymentComplement instanceof Payments20) {
+            return $this->paymentComplement;
         }
 
         return null;
