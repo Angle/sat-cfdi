@@ -175,7 +175,8 @@ class Payments extends CFDINode implements PaymentsInterface
             $this->totals->setTotalPaymentsAmount(
                 Math::mul(Math::add($this->totals->getTotalPaymentsAmount(), $payment->getAmount()), $payment->getExchangeRate())
             );
-            foreach ($payment->getTaxes() as $tax) {
+            $tax = $payment->getTaxes();
+            if ($tax) {
                 if ($tax->getRetainedList()) {
                     foreach ($tax->getRetainedList()->getRetentions() as $retention) {
                         switch ($retention->getTax()) {

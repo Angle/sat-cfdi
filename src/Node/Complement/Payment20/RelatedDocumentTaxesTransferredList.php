@@ -102,7 +102,7 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
         }
 
         // Transfers node (array)
-        foreach ($this->relatedDocumentTransfers as $transfer) {
+        foreach ($this->relatedDocumentTaxesTransferred as $transfer) {
             $transferNode = $transfer->toDOMElement($dom);
             $node->appendChild($transferNode);
         }
