@@ -932,9 +932,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     public function calculatePaymentComplementTaxesAndTotals(): void
     {
         if ($this->complements) {
-            error_log('Calculating payment taxes');
             $payments20 = $this->complements->getPayment20();
-            print_r($payments20);
             if (!is_null($payments20)) {
                 foreach ($payments20->getPayments() as $payment) {
                     $payment->calculatePaymentTaxes();
