@@ -81,7 +81,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
      */
     protected $unknownNodes = [];
 
-    /**
+    /** 
      * @var Payments20
      */
     protected $paymentComplement = null;
