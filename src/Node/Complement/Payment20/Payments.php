@@ -245,6 +245,13 @@ class Payments extends CFDINode implements PaymentsInterface
         }
     }
 
+    /**
+     * @return string[]
+     */
+    public static function getBaseAttributes() {
+        return self::$baseAttributes;
+    }
+
 
     #########################
     ## VALIDATION

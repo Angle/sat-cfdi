@@ -12,6 +12,7 @@ use Angle\CFDI\Catalog\PaymentType;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
 
+use Angle\CFDI\Node\Complement\Payment20\Payments;
 use Angle\CFDI\Node\Complement\Payment20\RelatedDocument;
 use Angle\CFDI\Node\Complement\PaymentsInterface;
 use Angle\CFDI\Utility\Math;
@@ -400,6 +401,21 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     //throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
             }
         }
+    }
+
+    /**
+     * @return array
+     * @throws CFDIException
+     */
+    public function getAttributes(): array
+    {
+        $attr = parent::getAttributes();
+
+        if ($this->complements && $this->complements->getPayment20()) {
+            $attr['xsi:schemaLocation'] .= ' ' . Payments::getBaseAttributes()['xsi:schemaLocation'];
+        }
+
+        return $attr;
     }
 
 
@@ -1053,7 +1069,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     $totals->setTotalTransferredTaxIva16($totals->getTotalTransferredTaxIva16() ? Math::round($totals->getTotalTransferredTaxIva16(), 2) : null);
                 }
                 foreach ($payment20->getPayments() as $payment) {
-                    //$baseAttributeToAppend = $payment->findPropertyNameForAttribute('xsi:schemaLocation');
                     $payment->setExchangeRate((int)$payment->getExchangeRate());
                     $payment->setAmount(Math::round($payment->getAmount(), 2));
                     if ($payment->getTaxes() && $payment->getTaxes()->getTransferredList()) {
