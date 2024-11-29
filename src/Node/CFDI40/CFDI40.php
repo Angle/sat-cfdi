@@ -1054,18 +1054,30 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 foreach ($payment20->getPayments() as $payment) {
                     $payment->setExchangeRate((int)$payment->getExchangeRate());
                     $payment->setAmount(Math::round($payment->getAmount(), 2));
-                    if ($payment->getTaxes() && $payment->getTaxes()->getTransferredList()) {
-                        foreach ($payment->getTaxes()->getTransferredList()->getTransfers() as $transfer) {
-                            $transfer->setRate(Math::round($transfer->getRate(), 6));
-                            $transfer->setAmount(Math::round($transfer->getAmount(), 2));
-                            $transfer->setBase(Math::round($transfer->getBase(), 2));
+
+                    if ($payment->getTaxes()) {
+                        if ($payment->getTaxes()->getTransferredList()) {
+                            if (empty($payment->getTaxes()->getTransferredList()->getTransfers())) {
+                                $payment->getTaxes()->setTransferredList(NULL);
+                            } else {
+                                foreach ($payment->getTaxes()->getTransferredList()->getTransfers() as $transfer) {
+                                    $transfer->setRate(Math::round($transfer->getRate(), 6));
+                                    $transfer->setAmount(Math::round($transfer->getAmount(), 2));
+                                    $transfer->setBase(Math::round($transfer->getBase(), 2));
+                                }
+                            }
+                        }
+                        if ($payment->getTaxes()->getRetainedList()) {
+                            if (empty($payment->getTaxes()->getRetainedList()->getRetentions())) {
+                                $payment->getTaxes()->setRetainedList(NULL);
+                            } else {
+                                foreach ($payment->getTaxes()->getRetainedList()->getRetentions() as $retention) {
+                                    $retention->setAmount(Math::round($retention->getAmount(), 2));
+                                }
+                            }
                         }
                     }
-                    if ($payment->getTaxes() && $payment->getTaxes()->getRetainedList()) {
-                        foreach ($payment->getTaxes()->getRetainedList()->getRetentions() as $retention) {
-                            $retention->setAmount(Math::round($retention->getAmount(), 2));
-                        }
-                    }
+
                     /** @var RelatedDocument $relatedDocument */
                     foreach ($payment->getRelatedDocuments() as $relatedDocument) {
                         $relatedDocument->setPreviousBalanceAmount(($relatedDocument->getPreviousBalanceAmount()) ? Math::round($relatedDocument->getPreviousBalanceAmount(), 2) : null);
