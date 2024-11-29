@@ -39,9 +39,9 @@ interface CFDIInterface
     // Complements
 
     /**
-     * @return array|null|Complement
+     * @return array|null
      */
-    public function getComplements(): array|Complement|null;
+    public function getComplements(): ?array;
 
     // XML Functions
     public static function createFromDOMNode(DOMNode $node);

@@ -168,7 +168,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
         'complements' => [
             'keywords' => ['Complemento', 'complements'],
             'class' => Complement::class,
-            'type' => CFDINode::CHILD_UNIQUE,
+            'type' => CFDINode::CHILD_ARRAY,
         ],
     ];
 
@@ -325,9 +325,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
     protected $taxes;
 
     /**
-     * @var Complement|null
+     * @var Complement[]|null
      */
-    protected ?Complement $complements;
+    protected ?array $complements;
 
 
     // TODO: Addendum
@@ -349,8 +349,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function autoCalculate(): void
     {
-        if (!($this->complements && $this->complements->getPayment20())) {
-            $this->calculateTaxesAndTotals();
+        foreach ($this->complements as $complement) {
+            if ($complement->getPaymentComplement()) {
+                $this->calculateTaxesAndTotals();
+            }
         }
         $this->calculatePaymentComplementTaxesAndTotals();
         $this->cleanUpValuesAndEmptyProperties();
@@ -392,7 +394,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     break;
                 case Complement::NODE_NAME:
                     $complement = Complement::createFromDOMNode($node);
-                    $this->setComplements($complement);
+                    $this->addComplement($complement);
                     break;
                 case Addendum::NODE_NAME:
                     // TODO: implement Addendum
@@ -411,8 +413,14 @@ class CFDI40 extends CFDINode implements CFDIInterface
     {
         $attr = parent::getAttributes();
 
-        if ($this->complements && $this->complements->getPayment20()) {
-            $attr['xsi:schemaLocation'] .= ' ' . Payments::getBaseAttributes()['xsi:schemaLocation'];
+        $attributeToAdd = null;
+        foreach ($this->complements as $complement) {
+            if ($complement->getPaymentComplement()) {
+                $attributeToAdd = Payments::getBaseAttributes()['xsi:schemaLocation'];
+            }
+        }
+        if ($attributeToAdd) {
+            $attr['xsi:schemaLocation'] .= ' ' . $attributeToAdd;
         }
 
         return $attr;
@@ -423,6 +431,12 @@ class CFDI40 extends CFDINode implements CFDIInterface
     ## CFDI TO DOM TRANSLATION
     #########################
 
+    /**
+     * @param DOMDocument $dom
+     * @return DOMElement
+     * @throws CFDIException
+     * @throws \DOMException
+     */
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
         $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
@@ -467,8 +481,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
         }
 
         // Complements Node
-        if ($this->complements) {
-            $complementNode = $this->complements->toDOMElement($dom);
+        foreach ($this->complements as $complement) {
+            $complementNode = $complement->toDOMElement($dom);
             $node->appendChild($complementNode);
         }
 
@@ -729,9 +743,12 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getUuid(): ?string
     {
-        if ($this->complements && $this->complements->getFiscalStamp() && $this->complements->getFiscalStamp()->getUuid()) {
-            return $this->complements->getFiscalStamp()->getUuid();
+        foreach ($this->getComplements() as $complement) {
+            if ($complement->getFiscalStamp() && $complement->getFiscalStamp()->getUuid()) {
+                return $complement->getFiscalStamp()->getUuid();
+            }
         }
+
         // nothing found
         return null;
     }
@@ -741,8 +758,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getFiscalStamp(): ?FiscalStamp
     {
-        if ($this->complements->getFiscalStamp() instanceof FiscalStamp) {
-            return $this->complements->getFiscalStamp();
+        foreach ($this->getComplements() as $complement) {
+            if ($complement->getFiscalStamp() instanceof FiscalStamp) {
+                return $complement->getFiscalStamp();
+            }
         }
         // nothing found
         return null;
@@ -753,8 +772,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getLocalTaxes(): ?LocalTaxes
     {
-        if ($this->complements->getLocalTaxes() instanceof LocalTaxes) {
-            return $this->complements->getLocalTaxes();
+        foreach ($this->getComplements() as $complement) {
+            if ($complement->getLocalTaxes() instanceof LocalTaxes) {
+                return $complement->getLocalTaxes();
+            }
         }
 
         // nothing found
@@ -766,8 +787,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getPaymentComplement(): ?PaymentsInterface
     {
-        if ($this->complements->getPayment() instanceof PaymentsInterface) {
-            return $this->complements->getPayment();
+        foreach ($this->getComplements() as $complement) {
+            if ($complement->getPayment() instanceof PaymentsInterface) {
+                return $complement->getPayment();
+            }
         }
         // nothing found
         return null;
@@ -780,8 +803,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getComplement($class): ?CFDINode
     {
-        if ($this->complements instanceof $class) {
-            return $this->complements;
+        foreach ($this->getComplements() as $complement) {
+            if ($complement instanceof $class) {
+                return $complement;
+            }
         }
 
         // nothing found
@@ -931,18 +956,19 @@ class CFDI40 extends CFDINode implements CFDIInterface
     public function calculatePaymentComplementTaxesAndTotals(): void
     {
         if ($this->complements) {
-            $payments20 = $this->complements->getPayment20();
-            if (!is_null($payments20)) {
-                foreach ($payments20->getPayments() as $payment) {
-                    $payment->calculatePaymentTaxes();
+            foreach ($this->complements as $complement) {
+                $payments20 = $complement->getPaymentComplement();
+                if (!is_null($payments20)) {
+                    foreach ($payments20->getPayments() as $payment) {
+                        $payment->calculatePaymentTaxes();
+                    }
+                    $payments20->calculateTotals();
                 }
-                $payments20->calculateTotals();
             }
-            error_log('Payment taxes calculated');
         }
     }
 
-    public function cleanUpValuesAndEmptyProperties()
+    public function cleanUpValuesAndEmptyProperties(): void
     {
         $this->total = Math::round($this->total, 2);
         $this->subTotal = Math::round($this->subTotal, 2);
@@ -1034,72 +1060,75 @@ class CFDI40 extends CFDINode implements CFDIInterface
         }
 
         if ($this->complements) {
-            $payment20 = $this->complements->getPayment20();
-            if ($payment20) {
-                $this->total = '0';
-                $this->subTotal = '0';
-                $totals = $payment20->getTotals();
-                if ($totals) {
-                    $totals->setTotalPaymentsAmount(Math::round($totals->getTotalPaymentsAmount(), 2));
-                    $totals->setTotalRetainedIeps(($totals->getTotalRetainedIeps()) ? Math::round($totals->getTotalRetainedIeps(), 2) : null);
-                    $totals->setTotalRetainedIsr($totals->getTotalRetainedIsr() ? Math::round($totals->getTotalRetainedIsr(), 2) : null);
-                    $totals->setTotalRetainedIva($totals->getTotalRetainedIva() ? Math::round($totals->getTotalRetainedIva(), 2) : null);
-                    $totals->setTotalTransferredBaseIva0($totals->getTotalTransferredBaseIva0() ? Math::round($totals->getTotalTransferredBaseIva0(), 2) : null);
-                    $totals->setTotalTransferredBaseIva8($totals->getTotalTransferredBaseIva8() ? Math::round($totals->getTotalTransferredBaseIva8(), 2) : null);
-                    $totals->setTotalTransferredBaseIva16($totals->getTotalTransferredBaseIva16() ? Math::round($totals->getTotalTransferredBaseIva16(), 2) : null);
-                    $totals->setTotalTransferredTaxIva0($totals->getTotalTransferredTaxIva0() ? Math::round($totals->getTotalTransferredTaxIva0(), 2) : null);
-                    $totals->setTotalTransferredTaxIva8($totals->getTotalTransferredTaxIva8() ? Math::round($totals->getTotalTransferredTaxIva8(), 2) : null);
-                    $totals->setTotalTransferredTaxIva16($totals->getTotalTransferredTaxIva16() ? Math::round($totals->getTotalTransferredTaxIva16(), 2) : null);
-                }
-                foreach ($payment20->getPayments() as $payment) {
-                    $payment->setExchangeRate((int)$payment->getExchangeRate());
-                    $payment->setAmount(Math::round($payment->getAmount(), 2));
+            foreach ($this->complements as $c) {
+                $payment20 = $c->getPaymentComplement();
+                if ($payment20) {
+                    $this->total = '0';
+                    $this->subTotal = '0';
+                    $totals = $payment20->getTotals();
+                    if ($totals) {
+                        $totals->setTotalPaymentsAmount(Math::round($totals->getTotalPaymentsAmount(), 2));
+                        $totals->setTotalRetainedIeps(($totals->getTotalRetainedIeps()) ? Math::round($totals->getTotalRetainedIeps(), 2) : null);
+                        $totals->setTotalRetainedIsr($totals->getTotalRetainedIsr() ? Math::round($totals->getTotalRetainedIsr(), 2) : null);
+                        $totals->setTotalRetainedIva($totals->getTotalRetainedIva() ? Math::round($totals->getTotalRetainedIva(), 2) : null);
+                        $totals->setTotalTransferredBaseIva0($totals->getTotalTransferredBaseIva0() ? Math::round($totals->getTotalTransferredBaseIva0(), 2) : null);
+                        $totals->setTotalTransferredBaseIva8($totals->getTotalTransferredBaseIva8() ? Math::round($totals->getTotalTransferredBaseIva8(), 2) : null);
+                        $totals->setTotalTransferredBaseIva16($totals->getTotalTransferredBaseIva16() ? Math::round($totals->getTotalTransferredBaseIva16(), 2) : null);
+                        $totals->setTotalTransferredTaxIva0($totals->getTotalTransferredTaxIva0() ? Math::round($totals->getTotalTransferredTaxIva0(), 2) : null);
+                        $totals->setTotalTransferredTaxIva8($totals->getTotalTransferredTaxIva8() ? Math::round($totals->getTotalTransferredTaxIva8(), 2) : null);
+                        $totals->setTotalTransferredTaxIva16($totals->getTotalTransferredTaxIva16() ? Math::round($totals->getTotalTransferredTaxIva16(), 2) : null);
+                    }
+                    foreach ($payment20->getPayments() as $payment) {
+                        $payment->setExchangeRate((int)$payment->getExchangeRate());
+                        $payment->setAmount(Math::round($payment->getAmount(), 2));
 
-                    if ($payment->getTaxes()) {
-                        if ($payment->getTaxes()->getTransferredList()) {
-                            if (empty($payment->getTaxes()->getTransferredList()->getTransfers())) {
-                                $payment->getTaxes()->setTransferredList(NULL);
-                            } else {
-                                foreach ($payment->getTaxes()->getTransferredList()->getTransfers() as $transfer) {
+                        if ($payment->getTaxes()) {
+                            if ($payment->getTaxes()->getTransferredList()) {
+                                if (empty($payment->getTaxes()->getTransferredList()->getTransfers())) {
+                                    $payment->getTaxes()->setTransferredList(NULL);
+                                } else {
+                                    foreach ($payment->getTaxes()->getTransferredList()->getTransfers() as $transfer) {
+                                        $transfer->setRate(Math::round($transfer->getRate(), 6));
+                                        $transfer->setAmount(Math::round($transfer->getAmount(), 2));
+                                        $transfer->setBase(Math::round($transfer->getBase(), 2));
+                                    }
+                                }
+                            }
+                            if ($payment->getTaxes()->getRetainedList()) {
+                                if (empty($payment->getTaxes()->getRetainedList()->getRetentions())) {
+                                    $payment->getTaxes()->setRetainedList(NULL);
+                                } else {
+                                    foreach ($payment->getTaxes()->getRetainedList()->getRetentions() as $retention) {
+                                        $retention->setAmount(Math::round($retention->getAmount(), 2));
+                                    }
+                                }
+                            }
+                        }
+
+                        /** @var RelatedDocument $relatedDocument */
+                        foreach ($payment->getRelatedDocuments() as $relatedDocument) {
+                            $relatedDocument->setPreviousBalanceAmount(($relatedDocument->getPreviousBalanceAmount()) ? Math::round($relatedDocument->getPreviousBalanceAmount(), 2) : null);
+                            $relatedDocument->setPendingBalanceAmount(($relatedDocument->getPendingBalanceAmount()) ? Math::round($relatedDocument->getPendingBalanceAmount(), 2) : null);
+                            $relatedDocument->setPaidAmount(($relatedDocument->getPaidAmount()) ? Math::round($relatedDocument->getPaidAmount(), 2) : null);
+                            if ($relatedDocument->getRelatedDocumentTaxes() && $relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesTransferredList()) {
+                                foreach ($relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesTransferredList()->getRelatedDocumentTaxesTransferred() as $transfer) {
                                     $transfer->setRate(Math::round($transfer->getRate(), 6));
                                     $transfer->setAmount(Math::round($transfer->getAmount(), 2));
                                     $transfer->setBase(Math::round($transfer->getBase(), 2));
                                 }
                             }
-                        }
-                        if ($payment->getTaxes()->getRetainedList()) {
-                            if (empty($payment->getTaxes()->getRetainedList()->getRetentions())) {
-                                $payment->getTaxes()->setRetainedList(NULL);
-                            } else {
-                                foreach ($payment->getTaxes()->getRetainedList()->getRetentions() as $retention) {
+                            if ($relatedDocument->getRelatedDocumentTaxes() && $relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesRetainedList()) {
+                                foreach ($relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesRetainedList()->getRelatedDocumentTaxesRetained() as $retention) {
+                                    $retention->setRate(Math::round($retention->getRate(), 6));
                                     $retention->setAmount(Math::round($retention->getAmount(), 2));
+                                    $retention->setBase(Math::round($retention->getBase(), 2));
                                 }
-                            }
-                        }
-                    }
-
-                    /** @var RelatedDocument $relatedDocument */
-                    foreach ($payment->getRelatedDocuments() as $relatedDocument) {
-                        $relatedDocument->setPreviousBalanceAmount(($relatedDocument->getPreviousBalanceAmount()) ? Math::round($relatedDocument->getPreviousBalanceAmount(), 2) : null);
-                        $relatedDocument->setPendingBalanceAmount(($relatedDocument->getPendingBalanceAmount()) ? Math::round($relatedDocument->getPendingBalanceAmount(), 2) : null);
-                        $relatedDocument->setPaidAmount(($relatedDocument->getPaidAmount()) ? Math::round($relatedDocument->getPaidAmount(), 2) : null);
-                        if ($relatedDocument->getRelatedDocumentTaxes() && $relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesTransferredList()) {
-                            foreach ($relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesTransferredList()->getRelatedDocumentTaxesTransferred() as $transfer) {
-                                $transfer->setRate(Math::round($transfer->getRate(), 6));
-                                $transfer->setAmount(Math::round($transfer->getAmount(), 2));
-                                $transfer->setBase(Math::round($transfer->getBase(), 2));
-                            }
-                        }
-                        if ($relatedDocument->getRelatedDocumentTaxes() && $relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesRetainedList()) {
-                            foreach ($relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesRetainedList()->getRelatedDocumentTaxesRetained() as $retention) {
-                                $retention->setRate(Math::round($retention->getRate(), 6));
-                                $retention->setAmount(Math::round($retention->getAmount(), 2));
-                                $retention->setBase(Math::round($retention->getBase(), 2));
                             }
                         }
                     }
                 }
             }
+
         }
     }
 
@@ -1589,19 +1618,29 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @return Complement|null
+     * @return Complement[]|null
      */
-    public function getComplements(): ?Complement
+    public function getComplements(): ?array
     {
         return $this->complements;
     }
 
-
     /**
-     * @param Complement $complements
+     * @param Complement $complement
      * @return CFDI40
      */
-    public function setComplements(Complement $complements): self
+    public function addComplement(Complement $complement): self
+    {
+        $this->complements[] = $complement;
+        return $this;
+    }
+
+
+    /**
+     * @param Complement[] $complements
+     * @return CFDI40
+     */
+    public function setComplements(array $complements): self
     {
         $this->complements = $complements;
         return $this;
