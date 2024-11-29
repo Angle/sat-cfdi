@@ -327,7 +327,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     /**
      * @var Complement[]|null
      */
-    protected ?array $complements;
+    protected $complements = [];
 
 
     // TODO: Addendum
@@ -349,11 +349,18 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function autoCalculate(): void
     {
-        foreach ($this->complements as $complement) {
-            if ($complement->getPaymentComplement()) {
+        if($this->complements) {
+            $hasPayment = false;
+            foreach ($this->complements as $complement) {
+                if ($complement->getPaymentComplement()) {
+                    $hasPayment = true;
+                }
+            }
+            if(!$hasPayment) {
                 $this->calculateTaxesAndTotals();
             }
         }
+
         $this->calculatePaymentComplementTaxesAndTotals();
         $this->cleanUpValuesAndEmptyProperties();
     }
