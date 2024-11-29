@@ -2,17 +2,13 @@
 
 namespace Angle\CFDI\Node\Complement\Payment20;
 
-use Angle\CFDI\CFDIException;
-
-use Angle\CFDI\CFDINode;
-
 use Angle\CFDI\Catalog\TaxFactorType;
 use Angle\CFDI\Catalog\TaxType;
-
+use Angle\CFDI\CFDIException;
+use Angle\CFDI\CFDINode;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use DOMText;
 
 /**
  * @method static RelatedDocumentTaxesTransferred createFromDOMNode(DOMNode $node)
@@ -23,50 +19,47 @@ class RelatedDocumentTaxesTransferred extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "TrasladoDR";
+    public const NODE_NAME = "TrasladoDR";
     public const NODE_NAME_EN = 'relatedDocumentTaxesTransferred';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
-
-    protected static $baseAttributes = [];
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const ATTR_BASE = 'base';
 
     #########################
     ##     ATTRIBUTES      ##
     #########################
-
-    public const ATTR_BASE = 'base';
     public const ATTR_TAX = 'tax';
     public const ATTR_FACTOR_TYPE = 'factorType';
     public const ATTR_RATE = 'rate';
     public const ATTR_AMOUNT = 'amount';
+    protected static $baseAttributes = [];
 
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
-
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        self::ATTR_BASE         => [
+        self::ATTR_BASE => [
             'keywords' => ['BaseDR', self::ATTR_BASE],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_TAX         => [
+        self::ATTR_TAX => [
             'keywords' => ['ImpuestoDR', self::ATTR_TAX],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_FACTOR_TYPE        => [
+        self::ATTR_FACTOR_TYPE => [
             'keywords' => ['TipoFactorDR', self::ATTR_FACTOR_TYPE],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_RATE        => [
+        self::ATTR_RATE => [
             'keywords' => ['TasaOCuotaDR', self::ATTR_RATE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_AMOUNT        => [
+        self::ATTR_AMOUNT => [
             'keywords' => ['ImporteDR', self::ATTR_AMOUNT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
@@ -111,7 +104,6 @@ class RelatedDocumentTaxesTransferred extends CFDINode
 
     // CHILDREN NODES
     // none
-
 
 
     #########################
@@ -164,12 +156,12 @@ class RelatedDocumentTaxesTransferred extends CFDINode
     ##   SPECIAL METHODS   ##
     #########################
 
-    public function getTaxName($lang='es'): ?string
+    public function getTaxName($lang = 'es'): ?string
     {
         return TaxType::getName($this->tax, $lang);
     }
 
-    public function getFactorTypeName($lang='es'): ?string
+    public function getFactorTypeName($lang = 'es'): ?string
     {
         return TaxFactorType::getName($this->factorType, $lang);
     }
@@ -178,7 +170,7 @@ class RelatedDocumentTaxesTransferred extends CFDINode
     #########################
     ## GETTERS AND SETTERS ##
     #########################
-    
+
     /**
      * @return string
      */
@@ -196,7 +188,7 @@ class RelatedDocumentTaxesTransferred extends CFDINode
         $this->base = $base;
         return $this;
     }
-    
+
     /**
      * @return string
      */

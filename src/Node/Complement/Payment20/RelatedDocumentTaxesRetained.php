@@ -2,17 +2,13 @@
 
 namespace Angle\CFDI\Node\Complement\Payment20;
 
-use Angle\CFDI\CFDIException;
-
-use Angle\CFDI\CFDINode;
-
 use Angle\CFDI\Catalog\TaxFactorType;
 use Angle\CFDI\Catalog\TaxType;
-
+use Angle\CFDI\CFDIException;
+use Angle\CFDI\CFDINode;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use DOMText;
 
 /**
  * @method static RelatedDocumentTaxesRetained createFromDOMNode(DOMNode $node)
@@ -23,32 +19,29 @@ class RelatedDocumentTaxesRetained extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "RetencionDR";
+    public const NODE_NAME = "RetencionDR";
     public const NODE_NAME_EN = 'relatedDocumentTaxesRetained';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
-
-    protected static $baseAttributes = [];
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const ATTR_BASE = 'base';
 
 
     #########################
     ##     ATTRIBUTES      ##
     #########################
-
-    public const ATTR_BASE = 'base';
     public const ATTR_TAX = 'tax';
     public const ATTR_FACTOR_TYPE = 'factorType';
     public const ATTR_RATE = 'rate';
     public const ATTR_AMOUNT = 'amount';
+    protected static $baseAttributes = [];
 
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
-
     protected static $attributes = [
         self::ATTR_BASE => [
             'keywords' => ['BaseDR', self::ATTR_BASE],
@@ -162,12 +155,12 @@ class RelatedDocumentTaxesRetained extends CFDINode
     ##   SPECIAL METHODS   ##
     #########################
 
-    public function getTaxName($lang='es'): ?string
+    public function getTaxName($lang = 'es'): ?string
     {
         return TaxType::getName($this->tax, $lang);
     }
 
-    public function getFactorTypeName($lang='es'): ?string
+    public function getFactorTypeName($lang = 'es'): ?string
     {
         return TaxFactorType::getName($this->factorType, $lang);
     }

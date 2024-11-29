@@ -327,7 +327,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     /**
      * @var Complement|null
      */
-    protected $complements = null;
+    protected ?Complement $complements;
 
 
     // TODO: Addendum
@@ -392,7 +392,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     break;
                 case Complement::NODE_NAME:
                     $complement = Complement::createFromDOMNode($node);
-                    $this->addComplement($complement);
+                    $this->setComplements($complement);
                     break;
                 case Addendum::NODE_NAME:
                     // TODO: implement Addendum
@@ -729,14 +729,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getUuid(): ?string
     {
-        foreach ($this->complements as $complement) {
-            if ($complement->getFiscalStamp()) {
-                if ($complement->getFiscalStamp()->getUuid()) {
-                    return $complement->getFiscalStamp()->getUuid();
-                }
-            }
+        if ($this->complements && $this->complements->getFiscalStamp() && $this->complements->getFiscalStamp()->getUuid()) {
+            return $this->complements->getFiscalStamp()->getUuid();
         }
-
         // nothing found
         return null;
     }
@@ -746,12 +741,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getFiscalStamp(): ?FiscalStamp
     {
-        foreach ($this->complements as $complement) {
-            if ($complement->getFiscalStamp() instanceof FiscalStamp) {
-                return $complement->getFiscalStamp();
-            }
+        if ($this->complements->getFiscalStamp() instanceof FiscalStamp) {
+            return $this->complements->getFiscalStamp();
         }
-
         // nothing found
         return null;
     }
@@ -761,10 +753,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getLocalTaxes(): ?LocalTaxes
     {
-        foreach ($this->complements as $complement) {
-            if ($complement->getLocalTaxes() instanceof LocalTaxes) {
-                return $complement->getLocalTaxes();
-            }
+        if ($this->complements->getLocalTaxes() instanceof LocalTaxes) {
+            return $this->complements->getLocalTaxes();
         }
 
         // nothing found
@@ -776,12 +766,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getPaymentComplement(): ?PaymentsInterface
     {
-        foreach ($this->complements as $complement) {
-            if ($complement->getPayment() instanceof PaymentsInterface) {
-                return $complement->getPayment();
-            }
+        if ($this->complements->getPayment() instanceof PaymentsInterface) {
+            return $this->complements->getPayment();
         }
-
         // nothing found
         return null;
     }
@@ -793,12 +780,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function getComplement($class): ?CFDINode
     {
-        foreach ($this->complements as $complement) {
-            foreach ($complement->getComplements() as $node) {
-                if ($node instanceof $class) {
-                    return $node;
-                }
-            }
+        if ($this->complements instanceof $class) {
+            return $this->complements;
         }
 
         // nothing found
@@ -1291,7 +1274,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @param string $discount
+     * @param string|null $discount
      * @return CFDI40
      */
     public function setDiscount(?string $discount): self
@@ -1301,7 +1284,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getCurrency(): ?string
     {
@@ -1309,7 +1292,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @param string $currency
+     * @param string|null $currency
      * @return CFDI40
      */
     public function setCurrency(?string $currency): self
@@ -1319,7 +1302,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @return string
+     * @return string|null
      */
     public function getExchangeRate(): ?string
     {
@@ -1594,22 +1577,13 @@ class CFDI40 extends CFDINode implements CFDIInterface
     }
 
     /**
-     * @return Complement[]
+     * @return Complement|null
      */
-    public function getComplements(): ?array
+    public function getComplements(): ?Complement
     {
         return $this->complements;
     }
 
-    /**
-     * @param Complement $complement
-     * @return CFDI40
-     */
-    public function addComplement(Complement $complement): self
-    {
-        $this->complements[] = $complement;
-        return $this;
-    }
 
     /**
      * @param Complement $complements

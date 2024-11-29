@@ -82,9 +82,11 @@ class Complement extends CFDINode implements CFDIComplementInterface
     protected $unknownNodes = [];
 
     /** 
-     * @var Payments20
+     * @var ?Payments20
      */
-    protected $paymentComplement = null;
+    protected ?Payments20 $paymentComplement = null;
+
+    protected ?LocalTaxes $localTaxes = null;
 
 
     #########################
@@ -109,16 +111,21 @@ class Complement extends CFDINode implements CFDIComplementInterface
             // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
             $nodeNsUriName = $node->namespaceURI . ':' . $node->localName;
             switch ($nodeNsUriName) {
-                case FiscalStamp::NODE_NS_URI_NAME:
+
+                case Payments20::NODE_NS_URI_NAME:
+                    $payments = Payments20::createFromDOMNode($node);
+                    $this->setPaymentComplement($payments);
+                    break;
+                case LocalTaxes::NODE_NS_URI_NAME:
+                    $complement = LocalTaxes::createFromDOMNode($node);
+                    $this->setLocalTaxes($complement);
+                    break;
+                /* case FiscalStamp::NODE_NS_URI_NAME:
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
                     break;
                 case Payments10::NODE_NS_URI_NAME:
                     $payments = Payments10::createFromDOMNode($node);
-                    $this->addComplement($payments);
-                    break;
-                case Payments20::NODE_NS_URI_NAME:
-                    $payments = Payments20::createFromDOMNode($node);
                     $this->addComplement($payments);
                     break;
                 case CFDIFiscalRegistry::NODE_NS_URI_NAME:
@@ -129,15 +136,11 @@ class Complement extends CFDINode implements CFDIComplementInterface
                     $complement = FiscalLegends::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                case LocalTaxes::NODE_NS_URI_NAME:
-                    $complement = LocalTaxes::createFromDOMNode($node);
-                    $this->addComplement($complement);
-                    break;
                 case FoodVouchers::NODE_NS_URI_NAME:
                     $complement = FoodVouchers::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                /* this complement is used as an ItemComplement..
+                 this complement is used as an ItemComplement..
                 case ThirdParties::NODE_NS_URI_NAME:
                     $complement = ThirdParties::createFromDOMNode($node);
                     $this->addComplement($complement);
@@ -262,10 +265,8 @@ class Complement extends CFDINode implements CFDIComplementInterface
      */
     public function getLocalTaxes(): ?LocalTaxes
     {
-        foreach ($this->complements as $c) {
-            if ($c instanceof LocalTaxes) {
-                return $c;
-            }
+        if ($this->localTaxes instanceof LocalTaxes) {
+            return $this->localTaxes;
         }
 
         return null;
@@ -340,6 +341,11 @@ class Complement extends CFDINode implements CFDIComplementInterface
     public function setPaymentComplement($paymentComplement): void
     {
         $this->paymentComplement = $paymentComplement;
+    }
+
+    public function setLocalTaxes(LocalTaxes $localTaxes)
+    {
+        $this->localTaxes = $localTaxes;
     }
 
 }

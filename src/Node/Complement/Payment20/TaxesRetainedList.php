@@ -3,9 +3,7 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -20,14 +18,14 @@ class TaxesRetainedList extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "RetencionesP";
+    public const NODE_NAME = "RetencionesP";
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
-    protected static $baseAttributes = [];
+    protected static array $baseAttributes = [];
 
 
     #########################
@@ -38,9 +36,9 @@ class TaxesRetainedList extends CFDINode
 
     protected static $children = [
         'retentions' => [
-            'keywords'  => ['RetencionP', 'retentions'],
-            'class'     => TaxesRetained::class,
-            'type'      => CFDINode::CHILD_ARRAY,
+            'keywords' => ['RetencionP', 'retentions'],
+            'class' => TaxesRetained::class,
+            'type' => CFDINode::CHILD_ARRAY,
         ],
     ];
 
@@ -55,7 +53,6 @@ class TaxesRetainedList extends CFDINode
      * @var TaxesRetained[]
      */
     protected $retentions = [];
-
 
 
     #########################

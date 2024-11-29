@@ -3,9 +3,7 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -20,13 +18,13 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "TrasladosDR";
+    public const NODE_NAME = "TrasladosDR";
     public const NODE_NAME_EN = 'relatedDocumentTaxesTransferredList';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
 
@@ -39,9 +37,9 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
 
     protected static $children = [
         'relatedDocumentTaxesTransferred' => [
-            'keywords'  => ['TrasladoDR', 'relatedDocumentTaxesTransferred'],
-            'class'     => RelatedDocumentTaxesTransferred::class,
-            'type'      => CFDINode::CHILD_ARRAY,
+            'keywords' => ['TrasladoDR', 'relatedDocumentTaxesTransferred'],
+            'class' => RelatedDocumentTaxesTransferred::class,
+            'type' => CFDINode::CHILD_ARRAY,
         ],
     ];
 
@@ -56,7 +54,6 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
      * @var RelatedDocumentTaxesTransferred[]
      */
     protected $relatedDocumentTaxesTransferred = [];
-
 
 
     #########################
@@ -80,7 +77,7 @@ class RelatedDocumentTaxesTransferredList extends CFDINode
             switch ($node->localName) {
                 case RelatedDocumentTaxesTransferred::NODE_NAME:
                     $transfer = RelatedDocumentTaxesTransferred::createFromDomNode($node);
-                    $this->addTransfer($transfer);
+                    $this->addRelatedDocumentTaxesTransferred($transfer);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));

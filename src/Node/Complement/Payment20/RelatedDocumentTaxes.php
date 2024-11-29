@@ -3,9 +3,7 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -20,13 +18,13 @@ class RelatedDocumentTaxes extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "ImpuestosDR";
+    public const NODE_NAME = "ImpuestosDR";
     public const NODE_NAME_EN = 'relatedDocumentTaxes';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
     protected static $baseAttributes = [];
 
@@ -41,14 +39,14 @@ class RelatedDocumentTaxes extends CFDINode
 
     protected static $children = [
         'relatedDocumentTaxesRetainedList' => [
-            'keywords'  => ['RetencionesDR', 'relatedDocumentTaxesRetainedList'],
-            'class'     => RelatedDocumentTaxesRetainedList::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['RetencionesDR', 'relatedDocumentTaxesRetainedList'],
+            'class' => RelatedDocumentTaxesRetainedList::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
         'relatedDocumentTaxesTransferredList' => [
-            'keywords'  => ['TrasladosDR', 'relatedDocumentTaxesTransferredList'],
-            'class'     => RelatedDocumentTaxesTransferredList::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['TrasladosDR', 'relatedDocumentTaxesTransferredList'],
+            'class' => RelatedDocumentTaxesTransferredList::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
     ];
 
@@ -80,7 +78,7 @@ class RelatedDocumentTaxes extends CFDINode
     // constructor implemented in the CFDINode abstract class
 
     /**
-     * @param DOMNode[]
+     * @param DOMNode[]|array $children
      * @throws CFDIException
      */
     public function setChildrenFromDOMNodes(array $children): void
@@ -94,11 +92,11 @@ class RelatedDocumentTaxes extends CFDINode
             switch ($node->localName) {
                 case RelatedDocumentTaxesTransferredList::NODE_NAME:
                     $transferred = RelatedDocumentTaxesTransferredList::createFromDomNode($node);
-                    $this->setRelatedDocumentTransferredList($transferred);
+                    $this->setRelatedDocumentTaxesTransferredList($transferred);
                     break;
                 case RelatedDocumentTaxesRetainedList::NODE_NAME:
                     $retained = RelatedDocumentTaxesRetainedList::createFromDomNode($node);
-                    $this->setRelatedDocumentRetainedList($retained);
+                    $this->setRelatedDocumentTaxesRetainedList($retained);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));

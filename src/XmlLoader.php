@@ -217,8 +217,9 @@ class XmlLoader
 
         if ($version == CFDI33::VERSION_3_3) {
             return CFDI33::class;
+        }
 
-        } elseif ($version == CFDI40::VERSION_4_0) {
+        if ($version == CFDI40::VERSION_4_0) {
             return CFDI40::class;
         }
 

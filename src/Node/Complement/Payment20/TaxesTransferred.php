@@ -2,17 +2,13 @@
 
 namespace Angle\CFDI\Node\Complement\Payment20;
 
-use Angle\CFDI\CFDIException;
-
-use Angle\CFDI\CFDINode;
-
 use Angle\CFDI\Catalog\TaxFactorType;
 use Angle\CFDI\Catalog\TaxType;
-
+use Angle\CFDI\CFDIException;
+use Angle\CFDI\CFDINode;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use DOMText;
 
 /**
  * @method static TaxesTransferred createFromDOMNode(DOMNode $node)
@@ -23,14 +19,14 @@ class TaxesTransferred extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "TrasladoP";
+    public const NODE_NAME = "TrasladoP";
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
-    protected static $baseAttributes = [];
+    protected static array $baseAttributes = [];
 
 
     #########################
@@ -39,23 +35,23 @@ class TaxesTransferred extends CFDINode
 
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        'base'          => [
+        'base' => [
             'keywords' => ['BaseP', 'base'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'tax'          => [
+        'tax' => [
             'keywords' => ['ImpuestoP', 'tax'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'factorType'        => [
+        'factorType' => [
             'keywords' => ['TipoFactorP', 'factorType'],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        'rate'        => [
+        'rate' => [
             'keywords' => ['TasaOCuotaP', 'rate'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        'amount'        => [
+        'amount' => [
             'keywords' => ['ImporteP', 'amount'],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
@@ -100,7 +96,6 @@ class TaxesTransferred extends CFDINode
 
     // CHILDREN NODES
     // none
-
 
 
     #########################
@@ -153,12 +148,12 @@ class TaxesTransferred extends CFDINode
     ##   SPECIAL METHODS   ##
     #########################
 
-    public function getTaxName($lang='es')
+    public function getTaxName($lang = 'es'): ?string
     {
         return TaxType::getName($this->tax, $lang);
     }
 
-    public function getFactorTypeName($lang='es')
+    public function getFactorTypeName($lang = 'es'): ?string
     {
         return TaxFactorType::getName($this->factorType, $lang);
     }
@@ -167,7 +162,7 @@ class TaxesTransferred extends CFDINode
     #########################
     ## GETTERS AND SETTERS ##
     #########################
-    
+
     /**
      * @return string
      */
@@ -185,7 +180,7 @@ class TaxesTransferred extends CFDINode
         $this->base = $base;
         return $this;
     }
-    
+
     /**
      * @return string
      */
