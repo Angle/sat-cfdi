@@ -349,16 +349,14 @@ class CFDI40 extends CFDINode implements CFDIInterface
      */
     public function autoCalculate(): void
     {
-        if($this->complements) {
-            $hasPayment = false;
-            foreach ($this->complements as $complement) {
-                if ($complement->getPaymentComplement()) {
-                    $hasPayment = true;
-                }
+        $hasPayment = false;
+        foreach ($this->complements as $complement) {
+            if ($complement->getPaymentComplement()) {
+                $hasPayment = true;
             }
-            if(!$hasPayment) {
-                $this->calculateTaxesAndTotals();
-            }
+        }
+        if(!$hasPayment) {
+            $this->calculateTaxesAndTotals();
         }
 
         $this->calculatePaymentComplementTaxesAndTotals();
