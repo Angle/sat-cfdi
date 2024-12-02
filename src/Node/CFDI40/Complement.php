@@ -112,7 +112,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
                     $complement = LocalTaxes::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                /* case FiscalStamp::NODE_NS_URI_NAME:
+                case FiscalStamp::NODE_NS_URI_NAME:
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
                     break;
@@ -132,7 +132,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
                     $complement = FoodVouchers::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
-                 this complement is used as an ItemComplement..
+                /* this complement is used as an ItemComplement..
                 case ThirdParties::NODE_NS_URI_NAME:
                     $complement = ThirdParties::createFromDOMNode($node);
                     $this->addComplement($complement);
