@@ -477,7 +477,7 @@ abstract class RegimeType
     public static function getValidCfdiUse($id): ?array
     {
         if (!self::exists($id)) {
-            return false;
+            return null;
         }
         return self::$map[$id]['cfdi_use'];
     }
