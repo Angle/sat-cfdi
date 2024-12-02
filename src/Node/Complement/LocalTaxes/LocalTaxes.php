@@ -27,6 +27,7 @@ class LocalTaxes extends CFDINode
     const VERSION_1_0 = "1.0";
 
     const NODE_NAME = "ImpuestosLocales";
+    const NODE_NAME_EN = 'localTaxes';
 
     const NODE_NS = "implocal";
     const NODE_NS_URI = "http://www.sat.gob.mx/implocal";

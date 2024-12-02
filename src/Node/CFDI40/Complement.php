@@ -177,6 +177,15 @@ class Complement extends CFDINode implements CFDIComplementInterface
                 if ($c instanceof Payments20) {
                     $node->appendChild($c->toDOMElement($dom));
                 }
+                if ($c instanceof LocalTaxes) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }
+                if ($c instanceof FiscalStamp) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }
+                /*if ($c instanceof FoodVouchers) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }*/
             }
         }
 

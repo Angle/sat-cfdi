@@ -481,4 +481,109 @@ final class InvoiceTest extends TestCase
         echo $cfdi->toXML();
         echo PHP_EOL . PHP_EOL;
     }
+
+    public function testLocalTaxesComplement()
+    {
+        $data = [
+            'version' => 4.0,
+            'series' => 'SegmentoPruebaA',
+            'folio' => 1,
+            'date' => new \DateTime(),
+            'paymentMethod' => '01',
+            'paymentConditions' => null,
+            'subTotal' => 0.00000,
+            'discount' => 0.00000,
+            'currency' => 'MXN',
+            'exchangeRate' => null,
+            'total' => 0.00000,
+            'cfdiType' => 'I',
+            'paymentType' => 'PUE',
+            'postalCode' => '64000',
+            'signature' => 'unsigned',
+            'certificateNumber' => '3',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Issuer',
+                'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            ],
+            'recipient' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Recipient',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::PAYMENTS,
+                'postalCode' => '64920',
+            ],
+            'itemList' => [
+                'items' => [
+                    [
+                        'code' => '01010101',
+                        'quantity' => 1.00000,
+                        'unitCode' => '18',
+                        'description' => 'x',
+                        'unitPrice' => 100.00000,
+                        'amount' => 100.00000,
+                        'operationTaxable' => '02',
+                        'discount' => 0.00000,
+                        'taxes' => [
+                            'transferredList' => [
+                                'transfers' => [
+                                    [
+                                        'base' => 100.00000,
+                                        'tax' => '002',
+                                        'factorType' => 'Tasa',
+                                        'rate' => 0.16000,
+                                        'amount' => 16.00000
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'complements' => [
+                'complements' => [
+                    'localTaxes' => [
+                        'localTaxes' => [
+                            'taxesTransferred' => [[
+                                'tax' => 'DSA',
+                                'rate' => 0.10000,
+                                'amount' => 10.00000
+                            ],
+                            ],
+                            'retentions' => [
+                            ]],
+
+                    ]
+                ]
+            ]
+        ];
+
+
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
+
+        echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
+        print_r($cfdi);
+        echo PHP_EOL . PHP_EOL;
+
+        echo "## Output XML (reproduced) ## " . PHP_EOL . PHP_EOL;
+        echo $cfdi->toXML();
+        echo PHP_EOL . PHP_EOL;
+    }
 }
