@@ -474,6 +474,14 @@ abstract class RegimeType
         return self::$map[$id]['legal_entity'];
     }
 
+    public static function getValidCfdiUse($id): ?array
+    {
+        if (!self::exists($id)) {
+            return false;
+        }
+        return self::$map[$id]['cfdi_use'];
+    }
+
     public static function exists($id): bool
     {
         return array_key_exists($id, self::$map);
