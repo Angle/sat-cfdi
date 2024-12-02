@@ -3,18 +3,17 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
 use Angle\CFDI\Node\Complement\PaymentInterface;
 use Angle\CFDI\Utility\Math;
 use DateTime;
 use DateTimeZone;
-
 use DOMDocument;
 use DOMElement;
+use DOMException;
 use DOMNode;
 use DOMText;
+use Exception;
 
 /**
  * @method static Payment createFromDOMNode(DOMNode $node)
@@ -25,21 +24,18 @@ class Payment extends CFDINode implements PaymentInterface
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Pago";
+    public const NODE_NAME = "Pago";
     public const NODE_NAME_EN = 'payment';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
-
-    protected static $baseAttributes = [];
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const ATTR_DATE = 'date';
 
     #########################
     ##     ATTRIBUTES      ##
     #########################
-
-    public const ATTR_DATE = 'date';
     public const ATTR_PAYMENT_METHOD = 'paymentMethod';
     public const ATTR_CURRENCY = 'currency';
     public const ATTR_EXCHANGE_RATE = 'exchangeRate';
@@ -54,42 +50,42 @@ class Payment extends CFDINode implements PaymentInterface
     public const ATTR_PAYMENT_CHAIN_CERT = 'paymentCertificate';
     public const ATTR_PAYMENT_CHAIN = 'paymentChain';
     public const ATTR_PAYMENT_CHAIN_SIGNATURE = 'paymentSignature';
+    protected static array $baseAttributes = [];
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
-
-    protected static $attributes = [
+    protected static array $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        self::ATTR_DATE          => [
+        self::ATTR_DATE => [
             'keywords' => ['FechaPago', self::ATTR_DATE],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_PAYMENT_METHOD           => [
+        self::ATTR_PAYMENT_METHOD => [
             'keywords' => ['FormaDePagoP', self::ATTR_PAYMENT_METHOD],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_CURRENCY          => [
+        self::ATTR_CURRENCY => [
             'keywords' => ['MonedaP', self::ATTR_CURRENCY],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_EXCHANGE_RATE           => [
+        self::ATTR_EXCHANGE_RATE => [
             'keywords' => ['TipoCambioP', self::ATTR_EXCHANGE_RATE],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_AMOUNT          => [
+        self::ATTR_AMOUNT => [
             'keywords' => ['Monto', self::ATTR_AMOUNT],
             'type' => CFDINode::ATTR_REQUIRED
         ],
-        self::ATTR_TRANSACTION_NUMBER           => [
+        self::ATTR_TRANSACTION_NUMBER => [
             'keywords' => ['NumOperacion', self::ATTR_TRANSACTION_NUMBER],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_PAYER_BANK_RFC          => [
+        self::ATTR_PAYER_BANK_RFC => [
             'keywords' => ['RfcEmisorCtaOrd', self::ATTR_PAYER_BANK_RFC],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_PAYER_BANK_NAME          => [
+        self::ATTR_PAYER_BANK_NAME => [
             'keywords' => ['NomBancoOrdExt', self::ATTR_PAYER_BANK_NAME],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
@@ -123,19 +119,18 @@ class Payment extends CFDINode implements PaymentInterface
         ],
     ];
 
-    protected static $children = [
+    protected static array $children = [
         'relatedDocument' => [
-            'keywords'  => ['DoctoRelacionado', 'relatedDocument'],
-            'class'     => RelatedDocument::class,
-            'type'      => CFDINode::CHILD_ARRAY,
+            'keywords' => ['DoctoRelacionado', 'relatedDocument'],
+            'class' => RelatedDocument::class,
+            'type' => CFDINode::CHILD_ARRAY,
         ],
         'taxes' => [
-            'keywords'  => ['ImpuestosP', 'taxes'],
-            'class'     => Taxes::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['ImpuestosP', 'taxes'],
+            'class' => Taxes::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
     ];
-
 
 
     #########################
@@ -222,12 +217,12 @@ class Payment extends CFDINode implements PaymentInterface
     /**
      * @var RelatedDocument[]
      */
-    protected $documents = [];
+    protected array $documents = [];
 
     /**
-     * @var Taxes[]
+     * @var ?Taxes
      */
-    protected $taxes = [];
+    protected ?Taxes $taxes;
 
 
     #########################
@@ -255,7 +250,7 @@ class Payment extends CFDINode implements PaymentInterface
                     break;
                 case Taxes::NODE_NAME:
                     $taxes = Taxes::createFromDomNode($node);
-                    $this->addTaxes($taxes);
+                    $this->setTaxes($taxes);
                     break;
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
@@ -283,8 +278,8 @@ class Payment extends CFDINode implements PaymentInterface
         }
 
         // Taxes Node
-        foreach ($this->taxes as $taxes) {
-            $taxesNode = $taxes->toDOMElement($dom);
+        if($this->taxes) {
+            $taxesNode = $this->taxes->toDOMElement($dom);
             $node->appendChild($taxesNode);
         }
 
@@ -313,10 +308,10 @@ class Payment extends CFDINode implements PaymentInterface
 
         foreach ($this->getRelatedDocuments() as $document) {
             $relatedDocumentTaxes = $document->getRelatedDocumentTaxes();
-            if ($relatedDocumentTaxes){
-                $relatedDocumentRetainedList = $relatedDocumentTaxes->getRelatedDocumentRetainedList();
+            if ($relatedDocumentTaxes) {
+                $relatedDocumentRetainedList = $relatedDocumentTaxes->getRelatedDocumentTaxesRetainedList();
                 if ($relatedDocumentRetainedList) {
-                    foreach ($relatedDocumentRetainedList->getRelatedDocumentRetentions() as $tax) {
+                    foreach ($relatedDocumentRetainedList->getRelatedDocumentTaxesRetained() as $tax) {
                         $key = $tax->getTax();
 
                         if (!array_key_exists($key, $retentions)) {
@@ -330,23 +325,23 @@ class Payment extends CFDINode implements PaymentInterface
                         $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
                     }
                 }
-                $relatedDocumentTransferredList = $relatedDocumentTaxes->getRelatedDocumentTransferredList();
+                $relatedDocumentTransferredList = $relatedDocumentTaxes->getRelatedDocumentTaxesTransferredList();
                 if ($relatedDocumentTransferredList) {
-                    foreach ($relatedDocumentTransferredList->getRelatedDocumentTransfers() as $tax) {
+                    foreach ($relatedDocumentTransferredList->getRelatedDocumentTaxesTransferred() as $tax) {
                         $key = $tax->getTax() . '-' . $tax->getFactorType() . '-' . $tax->getRate();
 
                         if (!array_key_exists($key, $transfers)) {
                             $transfers[$key] = [
-                                'base'          => '0',
-                                'tax'           => $tax->getTax(),
-                                'factorType'    => $tax->getFactorType(),
-                                'rate'          => $tax->getRate(),
-                                'amount'        => '0',
+                                'base' => '0',
+                                'tax' => $tax->getTax(),
+                                'factorType' => $tax->getFactorType(),
+                                'rate' => $tax->getRate(),
+                                'amount' => '0',
                             ];
                         }
                         $taxAmount = $tax->getAmount() ?? '0';
                         $taxBase = $tax->getBase() ?? '0';
-                        $transfers[$key]['base'] = Math::add($transfers[$key]['base'],$taxBase);
+                        $transfers[$key]['base'] = Math::add($transfers[$key]['base'], $taxBase);
                         $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], $taxAmount);
                     }
                 }
@@ -355,14 +350,14 @@ class Payment extends CFDINode implements PaymentInterface
 
         $this->taxes = new Taxes([]);
         $transferredList = new TaxesTransferredList([]);
-        foreach ($transfers as $k => $t) {
+        foreach ($transfers as $t) {
             $tax = new TaxesTransferred($t);
             $transferredList->addTransfer($tax);
         }
         $this->taxes->setTransferredList($transferredList);
 
         $retentionList = new TaxesRetainedList([]);
-        foreach ($retentions as $k => $t) {
+        foreach ($retentions as $t) {
             $tax = new TaxesRetained($t);
             $retentionList->addRetention($tax);
         }
@@ -397,10 +392,10 @@ class Payment extends CFDINode implements PaymentInterface
 
     /**
      * @param DateTime|string $rawDate
-     * @throws CFDIException
      * @return Payment
+     *@throws CFDIException
      */
-    public function setDate($rawDate): self
+    public function setDate(DateTime|string $rawDate): self
     {
         if ($rawDate instanceof DateTime) {
             $this->date = $rawDate;
@@ -412,7 +407,7 @@ class Payment extends CFDINode implements PaymentInterface
         try {
             $tz = new DateTimeZone(CFDINode::DATETIME_TIMEZONE);
             $date = DateTime::createFromFormat(CFDINode::DATETIME_FORMAT, $rawDate, $tz);
-        } catch (\Exception $e) {
+        } catch (Exception) {
             throw new CFDIException('Raw date string is in invalid format, cannot parse stamp date');
         }
 
@@ -707,9 +702,9 @@ class Payment extends CFDINode implements PaymentInterface
     }
 
     /**
-     * @return Taxes[]
+     * @return Taxes
      */
-    public function getTaxes(): ?array
+    public function getTaxes(): Taxes
     {
         return $this->taxes;
     }

@@ -72,20 +72,14 @@ class Complement extends CFDINode implements CFDIComplementInterface
     /**
      * @var CFDINode[]|array
      */
-    protected $complements = [];
+    protected array $complements = [];
 
     /**
      * This is a special non-spec property used to keep track of the Complement nodes that were not parsed
      * this will be used to write warnings in other places
      * @var array
      */
-    protected $unknownNodes = [];
-
-    /**
-     * @var Payments20
-     */
-    protected $paymentComplement = [];
-
+    protected array $unknownNodes = [];
 
     #########################
     ##     CONSTRUCTOR     ##
@@ -109,6 +103,15 @@ class Complement extends CFDINode implements CFDIComplementInterface
             // Note: since we don't know the namespace of the possible Complements, we'll validate against its non-ns name
             $nodeNsUriName = $node->namespaceURI . ':' . $node->localName;
             switch ($nodeNsUriName) {
+
+                case Payments20::NODE_NS_URI_NAME:
+                    $payments = Payments20::createFromDOMNode($node);
+                    $this->addComplement($payments);
+                    break;
+                case LocalTaxes::NODE_NS_URI_NAME:
+                    $complement = LocalTaxes::createFromDOMNode($node);
+                    $this->addComplement($complement);
+                    break;
                 case FiscalStamp::NODE_NS_URI_NAME:
                     $stamp = FiscalStamp::createFromDOMNode($node);
                     $this->addFiscalStamp($stamp);
@@ -117,20 +120,12 @@ class Complement extends CFDINode implements CFDIComplementInterface
                     $payments = Payments10::createFromDOMNode($node);
                     $this->addComplement($payments);
                     break;
-                case Payments20::NODE_NS_URI_NAME:
-                    $payments = Payments20::createFromDOMNode($node);
-                    $this->addComplement($payments);
-                    break;
                 case CFDIFiscalRegistry::NODE_NS_URI_NAME:
                     $complement = CFDIFiscalRegistry::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 case FiscalLegends::NODE_NS_URI_NAME:
                     $complement = FiscalLegends::createFromDOMNode($node);
-                    $this->addComplement($complement);
-                    break;
-                case LocalTaxes::NODE_NS_URI_NAME:
-                    $complement = LocalTaxes::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
                 case FoodVouchers::NODE_NS_URI_NAME:
@@ -162,6 +157,12 @@ class Complement extends CFDINode implements CFDIComplementInterface
     ## CFDI NODE TO DOM TRANSLATION
     #########################
 
+    /**
+     * @param DOMDocument $dom
+     * @return DOMElement
+     * @throws CFDIException
+     * @throws \DOMException
+     */
     public function toDOMElement(DOMDocument $dom): DOMElement
     {
         $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
@@ -171,9 +172,21 @@ class Complement extends CFDINode implements CFDIComplementInterface
         }
 
         // Complements node (array)
-        foreach ($this->complements as $complement) {
-            $complementNode = $complement->toDOMElement($dom);
-            $node->appendChild($complementNode);
+        if($this->complements){
+            foreach ($this->complements as $c) {
+                if ($c instanceof Payments20) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }
+                if ($c instanceof LocalTaxes) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }
+                if ($c instanceof FiscalStamp) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }
+                /*if ($c instanceof FoodVouchers) {
+                    $node->appendChild($c->toDOMElement($dom));
+                }*/
+            }
         }
 
         return $node;
@@ -247,7 +260,7 @@ class Complement extends CFDINode implements CFDIComplementInterface
      * This method will return the first encountered Payments20 inside the Complements items
      * @return Payments20|null
      */
-    public function getPayment20(): ?Payments20
+    public function getPaymentComplement(): ?Payments20
     {
         foreach ($this->complements as $c) {
             if ($c instanceof Payments20) {
@@ -256,6 +269,27 @@ class Complement extends CFDINode implements CFDIComplementInterface
         }
 
         return null;
+    }
+
+    public function addPaymentComplement(Payments20 $paymentComplement): self
+    {
+        // Check if there is another fiscal stamp
+        if ($this->getPaymentComplement() !== null) {
+            throw new CFDIException('Cannot add more than one LocalTaxes to the CFDI\'s Complements');
+        }
+
+        $this->complements[] = $paymentComplement;
+        return $this;
+    }
+
+    public function setPaymentComplement(Payments20 $paymentComplement): self
+    {
+        if ($this->getPaymentComplement() !== null) {
+            throw new CFDIException('Cannot add more than one LocalTaxes to the CFDI\'s Complements');
+        }
+
+        $this->complements[] = $paymentComplement;
+        return $this;
     }
 
     /**
@@ -328,20 +362,9 @@ class Complement extends CFDINode implements CFDIComplementInterface
         return $this->complements;
     }
 
-    /**
-     * @return Payments20|array
-     */
-    public function getPaymentComplement()
+    public function setComplements(array $complements): void
     {
-        return $this->paymentComplement;
-    }
-
-    /**
-     * @param Payments20|array $paymentComplement
-     */
-    public function setPaymentComplement($paymentComplement): void
-    {
-        $this->paymentComplement = $paymentComplement;
+        $this->complements = $complements;
     }
 
 }

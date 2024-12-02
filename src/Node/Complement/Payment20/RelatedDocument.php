@@ -3,12 +3,7 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
-use DateTime;
-use DateTimeZone;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -23,21 +18,18 @@ class RelatedDocument extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "DoctoRelacionado";
+    public const NODE_NAME = "DoctoRelacionado";
     public const NODE_NAME_EN = 'relatedDocument';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
-
-    protected static $baseAttributes = [];
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const ATTR_DOCUMENT_ID = 'id';
 
     #########################
     ##     ATTRIBUTES      ##
     #########################
-
-    public const ATTR_DOCUMENT_ID = 'id';
     public const ATTR_DOCUMENT_SERIES = 'series';
     public const ATTR_DOCUMENT_FOLIO = 'folio';
     public const ATTR_DOCUMENT_CURRENCY = 'currency';
@@ -47,11 +39,11 @@ class RelatedDocument extends CFDINode
     public const ATTR_DOCUMENT_PAID_AMOUNT = 'paidAmount';
     public const ATTR_DOCUMENT_OUTSTANDING_BALANCE_AMOUNT = 'pendingBalanceAmount';
     public const ATTR_OPERATION_TAXABLE = 'operationTaxable';
+    protected static $baseAttributes = [];
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
-
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
         self::ATTR_DOCUMENT_ID => [
@@ -98,12 +90,11 @@ class RelatedDocument extends CFDINode
 
     protected static $children = [
         'relatedDocumentTaxes' => [
-            'keywords'  => ['ImpuestosDR', 'relatedDocumentTaxes'],
-            'class'     => RelatedDocumentTaxes::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['ImpuestosDR', 'relatedDocumentTaxes'],
+            'class' => RelatedDocumentTaxes::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
     ];
-
 
 
     #########################

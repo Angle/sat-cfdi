@@ -3,9 +3,7 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -41,14 +39,14 @@ class Taxes extends CFDINode
 
     protected static $children = [
         'retainedList' => [
-            'keywords'  => ['RetencionesP', 'retainedList'],
-            'class'     => TaxesRetainedList::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['RetencionesP', 'retainedList'],
+            'class' => TaxesRetainedList::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
         'transferredList' => [
-            'keywords'  => ['TrasladosP', 'transferredList'],
-            'class'     => TaxesTransferredList::class,
-            'type'      => CFDINode::CHILD_UNIQUE,
+            'keywords' => ['TrasladosP', 'transferredList'],
+            'class' => TaxesTransferredList::class,
+            'type' => CFDINode::CHILD_UNIQUE,
         ],
     ];
 
@@ -119,18 +117,18 @@ class Taxes extends CFDINode
             $node->setAttribute($attr, $value);
         }
 
-        // TransferredList Node
-        if ($this->transferredList) {
-            // This can be null, no problem if not found
-            $transferredListNode = $this->transferredList->toDOMElement($dom);
-            $node->appendChild($transferredListNode);
-        }
-
         // RetainedList Node
         if ($this->retainedList) {
             // This can be null, no problem if not found
             $retainedListNode = $this->retainedList->toDOMElement($dom);
             $node->appendChild($retainedListNode);
+        }
+
+        // TransferredList Node
+        if ($this->transferredList) {
+            // This can be null, no problem if not found
+            $transferredListNode = $this->transferredList->toDOMElement($dom);
+            $node->appendChild($transferredListNode);
         }
 
         return $node;

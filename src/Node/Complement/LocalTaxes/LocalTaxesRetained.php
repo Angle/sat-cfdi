@@ -25,6 +25,7 @@ class LocalTaxesRetained extends CFDINode
     #########################
 
     const NODE_NAME = "RetencionesLocales";
+    const NODE_NAME_EN = "taxesRetained";
 
     const NODE_NS = "implocal";
     const NODE_NS_URI = "http://www.sat.gob.mx/implocal";

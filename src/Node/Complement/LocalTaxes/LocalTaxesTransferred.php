@@ -25,6 +25,7 @@ class LocalTaxesTransferred extends CFDINode
     #########################
 
     const NODE_NAME = "TrasladosLocales";
+    const NODE_NAME_EN = "taxesTransferred";
 
     const NODE_NS = "implocal";
     const NODE_NS_URI = "http://www.sat.gob.mx/implocal";

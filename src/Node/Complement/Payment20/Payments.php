@@ -5,14 +5,9 @@ namespace Angle\CFDI\Node\Complement\Payment20;
 use Angle\CFDI\Catalog\TaxFactorType;
 use Angle\CFDI\Catalog\TaxType;
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
 use Angle\CFDI\Node\Complement\PaymentsInterface;
 use Angle\CFDI\Utility\Math;
-use DateTime;
-use DateTimeZone;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
@@ -27,17 +22,17 @@ class Payments extends CFDINode implements PaymentsInterface
     ##        PRESETS      ##
     #########################
 
-    const VERSION_2_0 = "2.0";
+    public const VERSION_2_0 = "2.0";
 
-    const NODE_NAME = "Pagos";
+    public const NODE_NAME = "Pagos";
     public const NODE_NAME_EN = 'paymentComplement';
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
 
-    protected static $baseAttributes = [
+    protected static array $baseAttributes = [
         'xmlns:pago20' => "http://www.sat.gob.mx/Pagos20",
         'xmlns:xsi' => "http://www.w3.org/2001/XMLSchema-instance",
         'xsi:schemaLocation' => "http://www.sat.gob.mx/Pagos20 http://www.sat.gob.mx/sitio_internet/cfd/Pagos/Pagos20.xsd",
@@ -175,7 +170,8 @@ class Payments extends CFDINode implements PaymentsInterface
             $this->totals->setTotalPaymentsAmount(
                 Math::mul(Math::add($this->totals->getTotalPaymentsAmount(), $payment->getAmount()), $payment->getExchangeRate())
             );
-            foreach ($payment->getTaxes() as $tax) {
+            $tax = $payment->getTaxes();
+            if ($tax) {
                 if ($tax->getRetainedList()) {
                     foreach ($tax->getRetainedList()->getRetentions() as $retention) {
                         switch ($retention->getTax()) {
@@ -242,6 +238,13 @@ class Payments extends CFDINode implements PaymentsInterface
                 }
             }
         }
+    }
+
+    /**
+     * @return string[]
+     */
+    public static function getBaseAttributes() {
+        return self::$baseAttributes;
     }
 
 

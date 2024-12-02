@@ -2,6 +2,7 @@
 
 namespace Angle\CFDI;
 
+use Angle\CFDI\Node\CFDI40\Complement;
 use DateTime;
 use DOMDocument;
 use DOMNode;
@@ -36,7 +37,10 @@ interface CFDIInterface
     public function getPaymentComplement(): ?PaymentsInterface;
 
     // Complements
-    /** @return CFDIComplementInterface[]|null */
+
+    /**
+     * @return array|null
+     */
     public function getComplements(): ?array;
 
     // XML Functions

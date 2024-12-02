@@ -2,15 +2,14 @@
 
 namespace Angle\CFDI\Tests;
 
-use Angle\CFDI\Catalog\RegimeType;
-use Angle\CFDI\Node\CFDI33\CFDI33;
 use Angle\CFDI\Catalog\CFDIType;
 use Angle\CFDI\Catalog\CFDIUse;
-use Angle\CFDI\Catalog\TaxType;
-use Angle\CFDI\Catalog\TaxFactorType;
-use Angle\CFDI\Catalog\PaymentType;
 use Angle\CFDI\Catalog\PaymentMethod;
-
+use Angle\CFDI\Catalog\PaymentType;
+use Angle\CFDI\Catalog\RegimeType;
+use Angle\CFDI\Catalog\TaxFactorType;
+use Angle\CFDI\Catalog\TaxType;
+use Angle\CFDI\Node\CFDI33\CFDI33;
 use Angle\CFDI\Node\CFDI40\CFDI40;
 use Angle\CFDI\Node\CFDI40\Complement;
 use Angle\CFDI\Node\Complement\Payment20\Payment;
@@ -155,17 +154,17 @@ final class InvoiceTest extends TestCase
             'version' => CFDI40::VERSION_4_0,
             'series' => 'TEST',
             'folio' => '1',
-            'date' => new \DateTime('now'),
-            'paymentMethod' => PaymentMethod::TRANSFER,
+            'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+            'paymentMethod' => null,
             'paymentConditions' => null,
-            'subTotal' => '0.00000',
-            'discount' => '0.00000',
+            'subTotal' => 0.00,
+            'discount' => 0.00,
             'currency' => 'XXX',
             'exchangeRate' => null,
-            'total' => '0.00000',
+            'total' => 0.00,
             'cfdiType' => 'P',
             'paymentType' => null,
-            'postalCode' => '00200',
+            'postalCode' => '06000',
             'signature' => 'unsigned',
             'certificateNumber' => 'unsigned',
             'certificate' => 'unsigned',
@@ -181,150 +180,388 @@ final class InvoiceTest extends TestCase
                 'foreignCountry' => null,
                 'foreignTaxCode' => null,
                 'regime' => '601',
-                'cfdiUse' => CFDIUse::GENERAL_EXPENSE,
+                'cfdiUse' => CFDIUse::PAYMENTS,
                 'postalCode' => '64920',
             ],
             'itemList' => [
-                'items' => [],
+                'items' => [
+                    [
+                        'code' => 84111506,
+                        'quantity' => 1.00000,
+                        'unitCode' => 'ACT',
+                        'description' => 'Pago',
+                        'unitPrice' => 0.00000,
+                        'amount' => 0.00000,
+                        'operationTaxable' => "01",
+                        'discount' => 0.00000,
+                    ]
+                ],
             ],
             Complement::NODE_NAME_EN => [
-                Payments::NODE_NAME_EN => [
-                    Payment::NODE_NAME_EN => [
-                        [
-                            'date' => new \DateTime('now'),
-                            'paymentMethod' => '01',
-                            'currency' => 'MXN',
-                            'exchangeRate' => '1.00000',
-                            'amount' => '10000.00000',
-                            'transactionNumber' => null,
-                            'taxes' => [],
-                            RelatedDocument::NODE_NAME_EN => [
-                                [
-                                    'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
-                                    'series' => '2',
-                                    'folio' => '1',
-                                    'currency' => 'MXN',
-                                    'exchangeRate' => 1,
-                                    'instalmentNumber' => '1',
-                                    'previousBalanceAmount' => '649.00000',
-                                    'paidAmount' => '649.00000',
-                                    'pendingBalanceAmount' => '0.00000',
-                                    'operationTaxable' => null,
-                                    RelatedDocumentTaxes::NODE_NAME_EN => [
-                                        RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
-                                            [RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
-                                                [
-                                                    'base' => '500.00000',
-                                                    'tax' => '002',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.16000',
-                                                    'amount' => '80.00000',
+                Complement::NODE_NAME_EN => [
+                    Payments::NODE_NAME_EN => [
+                        Payment::NODE_NAME_EN => [
+                            [
+                                'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+                                'paymentMethod' => '01',
+                                'currency' => 'MXN',
+                                'exchangeRate' => '1.00000',
+                                'amount' => '10000.00000',
+                                'transactionNumber' => null,
+                                'taxes' => [],
+                                RelatedDocument::NODE_NAME_EN =>
+                                    [
+                                        [
+                                            'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                            'series' => '2',
+                                            'folio' => '1',
+                                            'currency' => 'MXN',
+                                            'exchangeRate' => 1,
+                                            'instalmentNumber' => '1',
+                                            'previousBalanceAmount' => '649.00000',
+                                            'paidAmount' => '649.00000',
+                                            'pendingBalanceAmount' => '0.00000',
+                                            'operationTaxable' => null,
+                                            RelatedDocumentTaxes::NODE_NAME_EN => [
+                                                RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                                    [RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.16000',
+                                                            'amount' => '80.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.00000',
+                                                            'amount' => '0.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.00000',
+                                                            'amount' => '0.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.16000',
+                                                            'amount' => '16.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.00000',
+                                                            'amount' => '0.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.30000',
+                                                            'amount' => '30.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.03000',
+                                                            'amount' => '3.00000',
+                                                        ],
+                                                    ]
+                                                    ],
+                                                RelatedDocumentTaxesRetainedList::NODE_NAME_EN => [
+                                                    RelatedDocumentTaxesRetained::NODE_NAME_EN => [
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.05000',
+                                                            'amount' => '25.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '001',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.02000',
+                                                            'amount' => '10.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.06000',
+                                                            'amount' => '30.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.04000',
+                                                            'amount' => '4.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.05000',
+                                                            'amount' => '5.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '001',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.04000',
+                                                            'amount' => '4.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '001',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.02000',
+                                                            'amount' => '2.00000',
+                                                        ],
+                                                    ],
                                                 ],
-                                                [
-                                                    'base' => '500.00000',
-                                                    'tax' => '002',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.00000',
-                                                    'amount' => '0.00000',
-                                                ],
-                                                [
-                                                    'base' => '500.00000',
-                                                    'tax' => '003',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.00000',
-                                                    'amount' => '0.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '002',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.16000',
-                                                    'amount' => '16.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '003',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.00000',
-                                                    'amount' => '0.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '003',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.30000',
-                                                    'amount' => '30.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '003',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.03000',
-                                                    'amount' => '3.00000',
-                                                ],
-                                            ]
                                             ],
-                                        RelatedDocumentTaxesRetainedList::NODE_NAME_EN => [
-                                            RelatedDocumentTaxesRetained::NODE_NAME_EN => [
-                                                [
-                                                    'base' => '500.00000',
-                                                    'tax' => '002',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.05000',
-                                                    'amount' => '25.00000',
-                                                ],
-                                                [
-                                                    'base' => '500.00000',
-                                                    'tax' => '001',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.02000',
-                                                    'amount' => '10.00000',
-                                                ],
-                                                [
-                                                    'base' => '500.00000',
-                                                    'tax' => '003',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.06000',
-                                                    'amount' => '30.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '002',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.04000',
-                                                    'amount' => '4.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '002',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.05000',
-                                                    'amount' => '5.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '001',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.04000',
-                                                    'amount' => '4.00000',
-                                                ],
-                                                [
-                                                    'base' => '100.00000',
-                                                    'tax' => '001',
-                                                    'factorType' => 'Tasa',
-                                                    'rate' => '0.02000',
-                                                    'amount' => '2.00000',
+                                        ],
+                                        [
+                                            'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                            'series' => '2',
+                                            'folio' => '1',
+                                            'currency' => 'MXN',
+                                            'exchangeRate' => 1,
+                                            'instalmentNumber' => '1',
+                                            'previousBalanceAmount' => '649.00000',
+                                            'paidAmount' => '649.00000',
+                                            'pendingBalanceAmount' => '0.00000',
+                                            'operationTaxable' => null,
+                                            RelatedDocumentTaxes::NODE_NAME_EN => [
+                                                RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                                    [RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.16000',
+                                                            'amount' => '80.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.00000',
+                                                            'amount' => '0.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.00000',
+                                                            'amount' => '0.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.16000',
+                                                            'amount' => '16.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.00000',
+                                                            'amount' => '0.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.30000',
+                                                            'amount' => '30.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.03000',
+                                                            'amount' => '3.00000',
+                                                        ],
+                                                    ]
+                                                    ],
+                                                RelatedDocumentTaxesRetainedList::NODE_NAME_EN => [
+                                                    RelatedDocumentTaxesRetained::NODE_NAME_EN => [
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.05000',
+                                                            'amount' => '25.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '001',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.02000',
+                                                            'amount' => '10.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '500.00000',
+                                                            'tax' => '003',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.06000',
+                                                            'amount' => '30.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.04000',
+                                                            'amount' => '4.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '002',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.05000',
+                                                            'amount' => '5.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '001',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.04000',
+                                                            'amount' => '4.00000',
+                                                        ],
+                                                        [
+                                                            'base' => '100.00000',
+                                                            'tax' => '001',
+                                                            'factorType' => 'Tasa',
+                                                            'rate' => '0.02000',
+                                                            'amount' => '2.00000',
+                                                        ],
+                                                    ],
                                                 ],
                                             ],
                                         ],
                                     ],
-                                ],
                             ],
                         ],
-                    ],
-                ],
+                    ],],
             ],
         ];
+
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
+
+        echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
+        print_r($cfdi);
+        echo PHP_EOL . PHP_EOL;
+
+        echo "## Output XML (reproduced) ## " . PHP_EOL . PHP_EOL;
+        echo $cfdi->toXML();
+        echo PHP_EOL . PHP_EOL;
+    }
+
+    public function testLocalTaxesComplement()
+    {
+        $data = [
+            'version' => 4.0,
+            'series' => 'SegmentoPruebaA',
+            'folio' => 1,
+            'date' => new \DateTime(),
+            'paymentMethod' => '01',
+            'paymentConditions' => null,
+            'subTotal' => 0.00000,
+            'discount' => 0.00000,
+            'currency' => 'MXN',
+            'exchangeRate' => null,
+            'total' => 0.00000,
+            'cfdiType' => 'I',
+            'paymentType' => 'PUE',
+            'postalCode' => '64000',
+            'signature' => 'unsigned',
+            'certificateNumber' => '3',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Issuer',
+                'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            ],
+            'recipient' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Recipient',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::PAYMENTS,
+                'postalCode' => '64920',
+            ],
+            'itemList' => [
+                'items' => [
+                    [
+                        'code' => '01010101',
+                        'quantity' => 1.00000,
+                        'unitCode' => '18',
+                        'description' => 'x',
+                        'unitPrice' => 100.00000,
+                        'amount' => 100.00000,
+                        'operationTaxable' => '02',
+                        'discount' => 0.00000,
+                        'taxes' => [
+                            'transferredList' => [
+                                'transfers' => [
+                                    [
+                                        'base' => 100.00000,
+                                        'tax' => '002',
+                                        'factorType' => 'Tasa',
+                                        'rate' => 0.16000,
+                                        'amount' => 16.00000
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+            'complements' => [
+                'complements' => [
+                    'localTaxes' => [
+                        'localTaxes' => [
+                            'taxesTransferred' => [[
+                                'tax' => 'DSA',
+                                'rate' => 0.10000,
+                                'amount' => 10.00000
+                            ],
+                            ],
+                            'retentions' => [
+                            ]],
+
+                    ]
+                ]
+            ]
+        ];
+
 
         echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
         print_r($data);

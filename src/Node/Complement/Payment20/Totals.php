@@ -3,16 +3,10 @@
 namespace Angle\CFDI\Node\Complement\Payment20;
 
 use Angle\CFDI\CFDIException;
-
 use Angle\CFDI\CFDINode;
-
-use DateTime;
-use DateTimeZone;
-
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use DOMText;
 
 /**
  * @method static Totals createFromDOMNode(DOMNode $node)
@@ -23,21 +17,18 @@ class Totals extends CFDINode
     ##        PRESETS      ##
     #########################
 
-    const NODE_NAME = "Totales";
+    public const NODE_NAME = "Totales";
     public const NODE_NAME_EN = "totals";
 
-    const NODE_NS = "pago20";
-    const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
-    const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
-    const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
-
-    protected static $baseAttributes = [];
+    public const NODE_NS = "pago20";
+    public const NODE_NS_URI = "http://www.sat.gob.mx/Pagos20";
+    public const NODE_NS_NAME = self::NODE_NS . ":" . self::NODE_NAME;
+    public const NODE_NS_URI_NAME = self::NODE_NS_URI . ":" . self::NODE_NAME;
+    public const ATTR_TOTAL_RETAINED_IVA = 'totalRetainedIva';
 
     #########################
     ##     ATTRIBUTES      ##
     #########################
-
-    public const ATTR_TOTAL_RETAINED_IVA = 'totalRetainedIva';
     public const ATTR_TOTAL_RETAINED_ISR = 'totalRetainedIsr';
     public const ATTR_TOTAL_RETAINED_IEPS = 'totalRetainedIeps';
     public const ATTR_TOTAL_TRANSFERRED_BASE_IVA16 = 'totalTransferredBaseIva16';
@@ -48,54 +39,54 @@ class Totals extends CFDINode
     public const ATTR_TOTAL_TRANSFERRED_TAX_IVA0 = 'totalTransferredTaxIva0';
     public const ATTR_TOTAL_TRANSFERRED_BASE_IVA_EXEMPT = 'totalTransferredBaseIvaExempt';
     public const ATTR_TOTAL_PAYMENTS_AMOUNT = 'totalPaymentsAmount';
+    protected static $baseAttributes = [];
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
     #########################
-
     protected static $attributes = [
         // PropertyName => [spanish (official SAT), english]
-        self::ATTR_TOTAL_RETAINED_IVA           => [
+        self::ATTR_TOTAL_RETAINED_IVA => [
             'keywords' => ['TotalRetencionesIVA', self::ATTR_TOTAL_RETAINED_IVA],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_RETAINED_ISR          => [
+        self::ATTR_TOTAL_RETAINED_ISR => [
             'keywords' => ['TotalRetencionesISR', self::ATTR_TOTAL_RETAINED_ISR],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_RETAINED_IEPS           => [
+        self::ATTR_TOTAL_RETAINED_IEPS => [
             'keywords' => ['TotalRetencionesIEPS', self::ATTR_TOTAL_RETAINED_IEPS],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA16           => [
+        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA16 => [
             'keywords' => ['TotalTrasladosBaseIVA16', self::ATTR_TOTAL_TRANSFERRED_BASE_IVA16],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_TAX_IVA16           => [
+        self::ATTR_TOTAL_TRANSFERRED_TAX_IVA16 => [
             'keywords' => ['TotalTrasladosImpuestoIVA16', self::ATTR_TOTAL_TRANSFERRED_TAX_IVA16],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA8          => [
+        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA8 => [
             'keywords' => ['TotalTrasladosBaseIVA8', self::ATTR_TOTAL_TRANSFERRED_BASE_IVA8],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_TAX_IVA8        => [
+        self::ATTR_TOTAL_TRANSFERRED_TAX_IVA8 => [
             'keywords' => ['TotalTrasladosImpuestoIVA8', self::ATTR_TOTAL_TRANSFERRED_TAX_IVA8],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA0           => [
+        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA0 => [
             'keywords' => ['TotalTrasladosBaseIVA0', self::ATTR_TOTAL_TRANSFERRED_BASE_IVA0],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_TAX_IVA0           => [
+        self::ATTR_TOTAL_TRANSFERRED_TAX_IVA0 => [
             'keywords' => ['TotalTrasladosImpuestoIVA0', self::ATTR_TOTAL_TRANSFERRED_TAX_IVA0],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA_EXEMPT          => [
+        self::ATTR_TOTAL_TRANSFERRED_BASE_IVA_EXEMPT => [
             'keywords' => ['TotalTrasladosBaseIVAExento', self::ATTR_TOTAL_TRANSFERRED_BASE_IVA_EXEMPT],
             'type' => CFDINode::ATTR_OPTIONAL
         ],
-        self::ATTR_TOTAL_PAYMENTS_AMOUNT           => [
+        self::ATTR_TOTAL_PAYMENTS_AMOUNT => [
             'keywords' => ['MontoTotalPagos', self::ATTR_TOTAL_PAYMENTS_AMOUNT],
             'type' => CFDINode::ATTR_REQUIRED
         ],
@@ -104,7 +95,6 @@ class Totals extends CFDINode
     protected static $children = [
         // PropertyName => ClassName (full namespace)
     ];
-
 
 
     #########################
