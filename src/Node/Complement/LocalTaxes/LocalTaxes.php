@@ -141,7 +141,10 @@ class LocalTaxes extends CFDINode
         }
     }
 
-
+    public static function getBaseAttributes(): array
+    {
+        return self::$baseAttributes;
+    }
     #########################
     ## CFDI NODE TO DOM TRANSLATION
     #########################

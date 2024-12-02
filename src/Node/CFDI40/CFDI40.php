@@ -421,11 +421,14 @@ class CFDI40 extends CFDINode implements CFDIInterface
         $attributeToAdd = null;
         foreach ($this->complements as $complement) {
             if ($complement->getPaymentComplement()) {
-                $attributeToAdd = Payments::getBaseAttributes()['xsi:schemaLocation'];
+                $attributeToAdd .= ' ' . Payments::getBaseAttributes()['xsi:schemaLocation'];
+            }
+            if ($complement->getLocalTaxes()) {
+                $attributeToAdd .= ' ' . LocalTaxes::getBaseAttributes()['xsi:schemaLocation'];
             }
         }
         if ($attributeToAdd) {
-            $attr['xsi:schemaLocation'] .= ' ' . $attributeToAdd;
+            $attr['xsi:schemaLocation'] .= $attributeToAdd;
         }
 
         return $attr;
