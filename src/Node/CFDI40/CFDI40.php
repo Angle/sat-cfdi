@@ -58,6 +58,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
         'xsi:schemaLocation' => 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd',// TODO: fix this ?
     ];
 
+    private const QR_VERIFICATION_URL = 'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx';
+
 
     #########################
     ## PROPERTY NAME TRANSLATIONS ##
@@ -1138,6 +1140,21 @@ class CFDI40 extends CFDINode implements CFDIInterface
             }
 
         }
+    }
+
+    /**
+     * Builds the SAT verification URL
+     * @return string
+     */
+    public function buildSatVerificationUrl(): string
+    {
+        return self::QR_VERIFICATION_URL . '?' . http_build_query([
+            're' => $this->getIssuerRfc(),
+            'rr' => $this->getRecipientRfc(),
+            'tt' => $this->getTotalAmount(),
+            'id' => $this->getUuid(),
+            'fe' => substr($this->getSignature(), 0, 8),
+        ]);
     }
 
 
