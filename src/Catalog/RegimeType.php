@@ -415,7 +415,8 @@ abstract class RegimeType
         $a = [];
 
         foreach (self::$map as $key => $props) {
-            $a[$props['name']] = $key;
+            $label = $key . ' - ' . $props['name'];
+            $a[$label] = $key;
         }
 
         return $a;
@@ -427,7 +428,8 @@ abstract class RegimeType
 
         foreach (self::$map as $key => $props) {
             if ($props['natural_person']) {
-                $a[$props['name']] = $key;
+                $label = $key . ' - ' . $props['name'];
+                $a[$label] = $key;
             }
         }
 
@@ -440,7 +442,8 @@ abstract class RegimeType
 
         foreach (self::$map as $key => $props) {
             if ($props['legal_entity']) {
-                $a[$props['name']] = $key;
+                $label = $key . ' - ' . $props['name'];
+                $a[$label] = $key;
             }
         }
 

@@ -37,7 +37,8 @@ abstract class PaymentType
                 throw new RuntimeException(sprintf('Language \'%s\' is not registered', $lang));
             }
 
-            $a[$props['name'][$lang]] = $key;
+            $label = $key . ' - ' . $props['name'][$lang];
+            $a[$label] = $key;
         }
 
         return $a;

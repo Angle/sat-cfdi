@@ -36,7 +36,8 @@ abstract class TaxType
         $a = [];
 
         foreach (self::$map as $key => $props) {
-            $a[$props['name']] = $key;
+            $label = $key . ' - ' . $props['name'];
+            $a[$label] = $key;
         }
 
         return $a;
