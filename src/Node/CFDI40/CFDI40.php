@@ -914,8 +914,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 $totalLocalRetainedAmount = Math::add($totalLocalRetainedAmount, $tax->getAmount());
             }
 
-            $this->getLocalTaxes()->setTotalTransferred($totalLocalTransferredAmount);
-            $this->getLocalTaxes()->setTotalRetained($totalLocalRetainedAmount);
+            $this->getLocalTaxes()->setTotalTransferred(Math::round($totalLocalTransferredAmount,2));
+            $this->getLocalTaxes()->setTotalRetained(Math::round($totalLocalRetainedAmount,2));
         }
 
 
