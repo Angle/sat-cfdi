@@ -994,13 +994,13 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
             $it->setQuantity(Math::round($it->getQuantity(), 6));
 
-            $it->setAmount(Math::round($it->getAmount(), 2));
-            $it->setUnitPrice(Math::round($it->getUnitPrice(), 2));
+            $it->setAmount(Math::round($it->getAmount(), 6));
+            $it->setUnitPrice(Math::round($it->getUnitPrice(), 6));
 
             if (Math::equal($it->getDiscount(), '0')) {
                 $it->setDiscount(null);
             } else {
-                $it->setDiscount(Math::round($this->discount, 2));
+                $it->setDiscount(Math::round($this->discount, 6));
             }
 
             if ($it->getTaxes()) {
@@ -1010,8 +1010,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
                         $it->getTaxes()->setTransferredList(NULL);
                     } else {
                         foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
-                            $t->setBase(Math::round($t->getBase(), 2));
-                            $t->setAmount(Math::round($t->getAmount(), 2));
+                            $t->setBase(Math::round($t->getBase(), 6));
+                            $t->setAmount(Math::round($t->getAmount(), 6));
                             $t->setRate(Math::round($t->getRate(), 6));
                         }
                     }
@@ -1023,7 +1023,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
                         $it->getTaxes()->setRetainedList(null);
                     } else {
                         foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $t) {
-                            $t->setAmount(Math::round($t->getAmount(), 2));
+                            $t->setAmount(Math::round($t->getAmount(), 6));
                             $t->setRate(Math::round($t->getRate(), 6));
                         }
                     }
