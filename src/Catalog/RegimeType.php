@@ -83,6 +83,7 @@ abstract class RegimeType
                 CFDIUse::EDUCATION_FEES_AND_TUITION,
                 CFDIUse::PAYMENTS,
                 CFDIUse::PAYROLL,
+                CFDIUse::NO_FISCAL_EFFECTS,
             ],
         ],
         self::ARRENDAMIENTO => [
