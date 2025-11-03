@@ -53,9 +53,9 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
 
     protected static $baseAttributes = [
-        'xmlns:cfdi' => 'http://www.sat.gob.mx/cfd/4',// TODO: fix this ?
+        'xmlns:cfdi' => 'http://www.sat.gob.mx/cfd/4', // TODO: fix this ?
         'xmlns:xsi' => 'http://www.w3.org/2001/XMLSchema-instance',
-        'xsi:schemaLocation' => 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd',// TODO: fix this ?
+        'xsi:schemaLocation' => 'http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd', // TODO: fix this ?
     ];
 
     private const QR_VERIFICATION_URL = 'https://verificacfdi.facturaelectronica.sat.gob.mx/default.aspx';
@@ -357,7 +357,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 $hasPayment = true;
             }
         }
-        if(!$hasPayment) {
+        if (!$hasPayment) {
             $this->calculateTaxesAndTotals();
         }
 
@@ -836,9 +836,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
         $transfers = [];
         $retentions = [];
 
-        $totalTransferredAmount = '0';
-        $totalRetainedAmount = '0';
-
         foreach ($this->itemList->getItems() as $it) {
 
             $subtotal = Math::add($subtotal, $it->getAmount());
@@ -865,7 +862,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     $taxBase = $tax->getBase() ?? '0';
                     $transfers[$key]['base'] = Math::add($transfers[$key]['base'], $taxBase);
                     $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], $taxAmount);
-                    $totalTransferredAmount = Math::add($totalTransferredAmount, $taxAmount);
                 }
             }
 
@@ -883,9 +879,36 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
                     $taxAmount = $tax->getAmount() ?? '0';
                     $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
-                    $totalRetainedAmount = Math::add($totalRetainedAmount, $taxAmount);
                 }
             }
+        }
+
+        //Iterate over the transfers and retentions and round to 2.
+        //(These are the "totals" for each type of retention and transfer taxes)
+        //We will also create the node out of these rounded amounts
+        //We will also calculate the total retained and transferred out of these rounded amounts
+        $totalTransferredAmount = '0';
+        $transferredList = new TaxesTransferredList([]);
+        foreach ($transfers as $k => $t) {
+            $t['base'] = Math::round($t['base'], 2);
+            $t['amount'] = Math::round($t['amount'], 2);
+            $t['rate'] = Math::round($t['rate'], 6);
+
+            $tax = new TaxesTransferred($t);
+            $transferredList->addTransfer($tax);
+
+            $totalTransferredAmount = Math::add($totalTransferredAmount, $t['amount']);
+        }
+
+        $totalRetainedAmount = '0';
+        $retentionList = new TaxesRetainedList([]);
+        foreach ($retentions as $k => $t) {
+            $t['amount'] = Math::round($t['amount'], 2);
+
+            $tax = new TaxesRetained($t);
+            $retentionList->addRetention($tax);
+
+            $totalRetainedAmount = Math::add($totalRetainedAmount, $t['amount']);
         }
 
         // Purge the taxes that amount to 0
@@ -906,6 +929,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
         $totalLocalRetainedAmount = '0';
 
         if ($this->getLocalTaxes()) {
+            //TODO: Verify if we need to round these local taxes 
             foreach ($this->getLocalTaxes()->getTaxesTransferred() as $tax) {
                 $totalLocalTransferredAmount = Math::add($totalLocalTransferredAmount, $tax->getAmount());
             }
@@ -914,9 +938,17 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 $totalLocalRetainedAmount = Math::add($totalLocalRetainedAmount, $tax->getAmount());
             }
 
-            $this->getLocalTaxes()->setTotalTransferred(Math::round($totalLocalTransferredAmount,2));
-            $this->getLocalTaxes()->setTotalRetained(Math::round($totalLocalRetainedAmount,2));
+            $totalLocalTransferredAmount = Math::round($totalLocalTransferredAmount, 2);
+            $totalLocalRetainedAmount = Math::round($totalLocalRetainedAmount, 2);
+            $this->getLocalTaxes()->setTotalTransferred($totalLocalTransferredAmount);
+            $this->getLocalTaxes()->setTotalRetained($totalLocalRetainedAmount, 2);
         }
+
+        //Round the appropriate values
+        $subtotal = Math::round($subtotal, 2);
+        $discount = Math::round($discount, 2);
+        $totalTransferredAmount = Math::round($totalTransferredAmount, 2);
+        $totalRetainedAmount = Math::round($totalRetainedAmount, 2);
 
 
         // Calculate the Total Amount
@@ -927,6 +959,8 @@ class CFDI40 extends CFDINode implements CFDIInterface
         $total = Math::add($total, $totalLocalTransferredAmount);
         $total = Math::sub($total, $totalLocalRetainedAmount);
 
+        $total = Math::round($total, 2);
+
         // Update the CFDI object
         $this->setSubTotal($subtotal);
         $this->setDiscount($discount);
@@ -935,23 +969,10 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
         // Build the Taxes node
         $this->taxes = new Taxes([]);
-        $this->taxes->setTotalTransferredAmount(Math::round($totalTransferredAmount, 2));
-        $this->taxes->setTotalRetainedAmount(Math::round($totalRetainedAmount, 2));
-
-        $transferredList = new TaxesTransferredList([]);
-        foreach ($transfers as $k => $t) {
-            $tax = new TaxesTransferred($t);
-            $transferredList->addTransfer($tax);
-        }
         $this->taxes->setTransferredList($transferredList);
-
-
-        $retentionList = new TaxesRetainedList([]);
-        foreach ($retentions as $k => $t) {
-            $tax = new TaxesRetained($t);
-            $retentionList->addRetention($tax);
-        }
         $this->taxes->setRetainedList($retentionList);
+        $this->taxes->setTotalTransferredAmount($totalTransferredAmount);
+        $this->taxes->setTotalRetainedAmount($totalRetainedAmount);
     }
 
     /**
@@ -1138,7 +1159,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     }
                 }
             }
-
         }
     }
 
@@ -1235,7 +1255,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
 
         // Validate contents
         if (preg_match('/^[a-zA-Z0-0]$/', $series)) {
-
         }
 
         $this->series = $series;
