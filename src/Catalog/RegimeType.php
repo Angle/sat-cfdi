@@ -390,7 +390,7 @@ abstract class RegimeType
             ],
         ],
         self::SIMPLIFICADO_DE_CONFIANZA => [
-            'name'              => 'De los Regímenes Fiscales Preferentes y de las Empresas Multinacionales',
+            'name'              => 'Régimen Simplificado de Confianza',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
