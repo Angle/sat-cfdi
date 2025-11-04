@@ -1021,7 +1021,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
             if (Math::equal($it->getDiscount(), '0')) {
                 $it->setDiscount(null);
             } else {
-                $it->setDiscount(Math::round($this->discount, 6));
+                $it->setDiscount(Math::round($it->getDiscount(), 6));
             }
 
             if ($it->getTaxes()) {
