@@ -1056,7 +1056,13 @@ class CFDI40 extends CFDINode implements CFDIInterface
         if ($this->taxes) {
             // GLOBAL TAXES
             $this->taxes->setTotalTransferredAmount(Math::round($this->taxes->getTotalTransferredAmount(), 2));
+            if (Math::equal($this->taxes->getTotalTransferredAmount(), 0)) {
+                $this->taxes->setTotalTransferredAmount(null);
+            }
             $this->taxes->setTotalRetainedAmount(Math::round($this->taxes->getTotalRetainedAmount(), 2));
+            if (Math::equal($this->taxes->getTotalRetainedAmount(), 0)) {
+                $this->taxes->setTotalRetainedAmount(null);
+            }
 
             // Check the global (total) taxes
             if (empty($this->getTaxes()->getTransferredList()->getTransfers())) {
