@@ -392,7 +392,7 @@ abstract class RegimeType
         self::SIMPLIFICADO_DE_CONFIANZA => [
             'name'              => 'Régimen Simplificado de Confianza',
             'natural_person'    => true,
-            'legal_entity'      => false,
+            'legal_entity'      => true,
             'cfdi_use'          => [
                 CFDIUse::MERCHANDISE_ACQUISITION,
                 CFDIUse::REFUND_DISCOUNT_OR_BONUS,
