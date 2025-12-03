@@ -483,6 +483,150 @@ final class InvoiceTest extends TestCase
         echo PHP_EOL . PHP_EOL;
     }
 
+    public function testComplementPaymentsForeignCurrency(): void
+    {
+        $data = [
+            'version' => CFDI40::VERSION_4_0,
+            'series' => 'TEST',
+            'folio' => '1',
+            'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+            'paymentMethod' => null,
+            'paymentConditions' => null,
+            'subTotal' => 0.00,
+            'discount' => 0.00,
+            'currency' => 'XXX',
+            'exchangeRate' => null,
+            'total' => 0.00,
+            'cfdiType' => 'P',
+            'paymentType' => null,
+            'postalCode' => '06000',
+            'signature' => 'unsigned',
+            'certificateNumber' => 'unsigned',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Issuer',
+                'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            ],
+            'recipient' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Recipient',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::PAYMENTS,
+                'postalCode' => '64920',
+            ],
+            'itemList' => [
+                'items' => [
+                    [
+                        'code' => 84111506,
+                        'quantity' => 1.00000,
+                        'unitCode' => 'ACT',
+                        'description' => 'Pago',
+                        'unitPrice' => 0.00000,
+                        'amount' => 0.00000,
+                        'operationTaxable' => "01",
+                        'discount' => 0.00000,
+                    ]
+                ],
+            ],
+            Complement::NODE_NAME_EN => [
+                Complement::NODE_NAME_EN => [
+                    Payments::NODE_NAME_EN => [
+                        Payment::NODE_NAME_EN => [
+                            [
+                                'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+                                'paymentMethod' => '01',
+                                'currency' => 'MXN',
+                                'exchangeRate' => '1.00000',
+                                'amount' => '921.23',
+                                'transactionNumber' => null,
+                                'taxes' => [],
+                                RelatedDocument::NODE_NAME_EN =>
+                                [
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'USD',
+                                        'exchangeRate' => .045331,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '41.76',
+                                        'paidAmount' => '41.76',
+                                        'pendingBalanceAmount' => '0.00000',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '36',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '5.76',
+                                                    ],
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                            [
+                                'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+                                'paymentMethod' => '01',
+                                'currency' => 'JPY',
+                                'exchangeRate' => '.16',
+                                'amount' => '123',
+                                'transactionNumber' => null,
+                                'taxes' => [],
+                                RelatedDocument::NODE_NAME_EN =>
+                                [
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'JPY',
+                                        'exchangeRate' => .008076,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '1',
+                                        'paidAmount' => '1',
+                                        'pendingBalanceAmount' => '0.00000',
+                                        'operationTaxable' => null,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
+
+        echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
+        print_r($cfdi);
+        echo PHP_EOL . PHP_EOL;
+
+        echo "## Output XML (reproduced) ## " . PHP_EOL . PHP_EOL;
+        echo $cfdi->toXML();
+        echo PHP_EOL . PHP_EOL;
+    }
+
     public function testLocalTaxesComplement()
     {
         $data = [

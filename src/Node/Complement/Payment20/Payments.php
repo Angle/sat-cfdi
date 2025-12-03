@@ -130,6 +130,10 @@ class Payments extends CFDINode implements PaymentsInterface
         $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
+            //Skip the schemalocation locally
+            if ($attr == 'xsi:schemaLocation') {
+                continue;
+            }
             $node->setAttribute($attr, $value);
         }
 
@@ -168,7 +172,7 @@ class Payments extends CFDINode implements PaymentsInterface
         $this->totals = new Totals([]);
         foreach ($this->payments as $payment) {
             $this->totals->setTotalPaymentsAmount(
-                Math::mul(Math::add($this->totals->getTotalPaymentsAmount(), $payment->getAmount()), $payment->getExchangeRate())
+                Math::add($this->totals->getTotalPaymentsAmount(), Math::mul($payment->getAmount(), $payment->getExchangeRate()))
             );
             $tax = $payment->getTaxes();
             if ($tax) {
@@ -177,17 +181,17 @@ class Payments extends CFDINode implements PaymentsInterface
                         switch ($retention->getTax()) {
                             case TaxType::ISR:
                                 $this->totals->setTotalRetainedIsr(
-                                    Math::mul(Math::add($this->totals->getTotalRetainedIsr(), $retention->getAmount()), $payment->getExchangeRate())
+                                    Math::add($this->totals->getTotalRetainedIsr(), Math::mul($retention->getAmount(), $payment->getExchangeRate()))
                                 );
                                 break;
                             case TaxType::IVA:
                                 $this->totals->setTotalRetainedIva(
-                                    Math::mul(Math::add($this->totals->getTotalRetainedIva(), $retention->getAmount()), $payment->getExchangeRate())
+                                    Math::add($this->totals->getTotalRetainedIva(), Math::mul($retention->getAmount(), $payment->getExchangeRate()))
                                 );
                                 break;
                             case TaxType::IEPS:
                                 $this->totals->setTotalRetainedIeps(
-                                    Math::mul(Math::add($this->totals->getTotalRetainedIeps(), $retention->getAmount()), $payment->getExchangeRate())
+                                    Math::add($this->totals->getTotalRetainedIeps(), Math::mul($retention->getAmount(), $payment->getExchangeRate()))
                                 );
                                 break;
                             default:
@@ -203,26 +207,26 @@ class Payments extends CFDINode implements PaymentsInterface
                                 // TODO set this rates as catalog constants
                                 case 0.16:
                                     $this->totals->setTotalTransferredBaseIva16(
-                                        Math::mul(Math::add($this->totals->getTotalTransferredBaseIva16(), $transferred->getBase()), $payment->getExchangeRate())
+                                        Math::add($this->totals->getTotalTransferredBaseIva16(), Math::mul($transferred->getBase(), $payment->getExchangeRate()))
                                     );
                                     $this->totals->setTotalTransferredTaxIva16(
-                                        Math::mul(Math::add($this->totals->getTotalTransferredTaxIva16(), $transferred->getAmount()), $payment->getExchangeRate())
+                                        Math::add($this->totals->getTotalTransferredTaxIva16(), Math::mul($transferred->getAmount(), $payment->getExchangeRate()))
                                     );
                                     break;
                                 case 0.08:
                                     $this->totals->setTotalTransferredBaseIva8(
-                                        Math::mul(Math::add($this->totals->getTotalTransferredBaseIva8(), $transferred->getBase()), $payment->getExchangeRate())
+                                        Math::add($this->totals->getTotalTransferredBaseIva8(), Math::mul($transferred->getBase(), $payment->getExchangeRate()))
                                     );
                                     $this->totals->setTotalTransferredTaxIva8(
-                                        Math::mul(Math::add($this->totals->getTotalTransferredTaxIva8(), $transferred->getAmount()), $payment->getExchangeRate())
+                                        Math::add($this->totals->getTotalTransferredTaxIva8(), Math::mul($transferred->getAmount(), $payment->getExchangeRate()))
                                     );
                                     break;
                                 case 0:
                                     $this->totals->setTotalTransferredBaseIva0(
-                                        Math::mul(Math::add($this->totals->getTotalTransferredBaseIva0(), $transferred->getBase()), $payment->getExchangeRate())
+                                        Math::add($this->totals->getTotalTransferredBaseIva0(), Math::mul($transferred->getBase(), $payment->getExchangeRate()))
                                     );
                                     $this->totals->setTotalTransferredTaxIva0(
-                                        Math::mul(Math::add($this->totals->getTotalTransferredTaxIva0(), $transferred->getAmount()), $payment->getExchangeRate())
+                                        Math::add($this->totals->getTotalTransferredTaxIva0(), Math::mul($transferred->getAmount(), $payment->getExchangeRate()))
                                     );
                                     break;
                                 default:
@@ -231,7 +235,7 @@ class Payments extends CFDINode implements PaymentsInterface
                         }
                         if ($transferred->getFactorType() === TaxFactorType::EXEMPT && TaxType::IVA === $transferred->getTax()) {
                             $this->totals->setTotalTransferredBaseIvaExempt(
-                                $this->totals->getTotalTransferredBaseIvaExempt() + $transferred->getBase()
+                                Math::add($this->totals->getTotalTransferredBaseIvaExempt(), Math::mul($transferred->getBase(), $payment->getExchangeRate()))
                             );
                         }
                     }
@@ -243,7 +247,8 @@ class Payments extends CFDINode implements PaymentsInterface
     /**
      * @return string[]
      */
-    public static function getBaseAttributes() {
+    public static function getBaseAttributes()
+    {
         return self::$baseAttributes;
     }
 
@@ -331,5 +336,4 @@ class Payments extends CFDINode implements PaymentsInterface
         $this->payments = $payments;
         return $this;
     }
-
 }
