@@ -278,7 +278,7 @@ class Payment extends CFDINode implements PaymentInterface
         }
 
         // Taxes Node
-        if($this->taxes) {
+        if ($this->taxes) {
             $taxesNode = $this->taxes->toDOMElement($dom);
             $node->appendChild($taxesNode);
         }
@@ -322,7 +322,7 @@ class Payment extends CFDINode implements PaymentInterface
                         }
 
                         $taxAmount = $tax->getAmount() ?? '0';
-                        $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], $taxAmount);
+                        $retentions[$key]['amount'] = Math::add($retentions[$key]['amount'], Math::div($taxAmount, $document->getExchangeRate()));
                     }
                 }
                 $relatedDocumentTransferredList = $relatedDocumentTaxes->getRelatedDocumentTaxesTransferredList();
@@ -341,8 +341,8 @@ class Payment extends CFDINode implements PaymentInterface
                         }
                         $taxAmount = $tax->getAmount() ?? '0';
                         $taxBase = $tax->getBase() ?? '0';
-                        $transfers[$key]['base'] = Math::add($transfers[$key]['base'], $taxBase);
-                        $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], $taxAmount);
+                        $transfers[$key]['base'] = Math::add($transfers[$key]['base'], Math::div($taxBase, $document->getExchangeRate()));
+                        $transfers[$key]['amount'] = Math::add($transfers[$key]['amount'], Math::div($taxAmount, $document->getExchangeRate()));
                     }
                 }
             }
@@ -362,7 +362,6 @@ class Payment extends CFDINode implements PaymentInterface
             $retentionList->addRetention($tax);
         }
         $this->taxes->setRetainedList($retentionList);
-
     }
 
 
@@ -728,5 +727,4 @@ class Payment extends CFDINode implements PaymentInterface
         $this->taxes = $taxes;
         return $this;
     }
-
 }
