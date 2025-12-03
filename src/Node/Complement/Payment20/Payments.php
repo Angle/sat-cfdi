@@ -130,6 +130,10 @@ class Payments extends CFDINode implements PaymentsInterface
         $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
+            //Skip the schemalocation locally
+            if ($attr == 'xsi:schemaLocation') {
+                continue;
+            }
             $node->setAttribute($attr, $value);
         }
 
@@ -243,7 +247,8 @@ class Payments extends CFDINode implements PaymentsInterface
     /**
      * @return string[]
      */
-    public static function getBaseAttributes() {
+    public static function getBaseAttributes()
+    {
         return self::$baseAttributes;
     }
 
@@ -331,5 +336,4 @@ class Payments extends CFDINode implements PaymentsInterface
         $this->payments = $payments;
         return $this;
     }
-
 }
