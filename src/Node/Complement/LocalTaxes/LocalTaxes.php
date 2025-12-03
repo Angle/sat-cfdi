@@ -154,6 +154,10 @@ class LocalTaxes extends CFDINode
         $node = $dom->createElementNS(self::NODE_NS_URI, self::NODE_NS_NAME);
 
         foreach ($this->getAttributes() as $attr => $value) {
+            //Skip the schemalocation locally
+            if ($attr == 'xsi:schemaLocation') {
+                continue;
+            }
             $node->setAttribute($attr, $value);
         }
 
@@ -243,7 +247,7 @@ class LocalTaxes extends CFDINode
         $this->totalTransferred = $totalTransferred;
         return $this;
     }
-    
+
 
     /**
      * @return LocalTaxesRetained[]
