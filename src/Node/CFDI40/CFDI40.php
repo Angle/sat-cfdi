@@ -1116,7 +1116,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
                         $totals->setTotalTransferredTaxIva16($totals->getTotalTransferredTaxIva16() ? Math::round($totals->getTotalTransferredTaxIva16(), 2) : null);
                     }
                     foreach ($payment20->getPayments() as $payment) {
-                        $payment->setExchangeRate((int)$payment->getExchangeRate());
+                        $payment->setExchangeRate($payment->getExchangeRate(), 6);
                         $payment->setAmount(Math::round($payment->getAmount(), 2));
 
                         if ($payment->getTaxes()) {
