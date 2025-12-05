@@ -351,6 +351,8 @@ class Payment extends CFDINode implements PaymentInterface
         $this->taxes = new Taxes([]);
         $transferredList = new TaxesTransferredList([]);
         foreach ($transfers as $t) {
+            $t['base'] = Math::round($t['base'], 2);
+            $t['amount'] = Math::round($t['amount'], 2);
             $tax = new TaxesTransferred($t);
             $transferredList->addTransfer($tax);
         }
@@ -358,6 +360,7 @@ class Payment extends CFDINode implements PaymentInterface
 
         $retentionList = new TaxesRetainedList([]);
         foreach ($retentions as $t) {
+            $t['amount'] = Math::round($t['amount'], 2);
             $tax = new TaxesRetained($t);
             $retentionList->addRetention($tax);
         }

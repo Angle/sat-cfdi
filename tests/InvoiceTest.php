@@ -869,4 +869,381 @@ final class InvoiceTest extends TestCase
         echo $cfdi->toXML();
         echo PHP_EOL . PHP_EOL;
     }
+
+    public function testComplementPaymentSum(): void
+    {
+        $data = [
+            'version' => CFDI40::VERSION_4_0,
+            'series' => 'TEST',
+            'folio' => '1',
+            'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+            'paymentMethod' => null,
+            'paymentConditions' => null,
+            'subTotal' => 0.00,
+            'discount' => 0.00,
+            'currency' => 'XXX',
+            'exchangeRate' => null,
+            'total' => 0.00,
+            'cfdiType' => 'P',
+            'paymentType' => null,
+            'postalCode' => '06000',
+            'signature' => 'unsigned',
+            'certificateNumber' => 'unsigned',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Issuer',
+                'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            ],
+            'recipient' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Recipient',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::PAYMENTS,
+                'postalCode' => '64920',
+            ],
+            'itemList' => [
+                'items' => [
+                    [
+                        'code' => 84111506,
+                        'quantity' => 1.00000,
+                        'unitCode' => 'ACT',
+                        'description' => 'Pago',
+                        'unitPrice' => 0.00000,
+                        'amount' => 0.00000,
+                        'operationTaxable' => "01",
+                        'discount' => 0.00000,
+                    ]
+                ],
+            ],
+            Complement::NODE_NAME_EN => [
+                Complement::NODE_NAME_EN => [
+                    Payments::NODE_NAME_EN => [
+                        Payment::NODE_NAME_EN => [
+                            [
+                                'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+                                'paymentMethod' => '01',
+                                'currency' => 'MXN',
+                                'exchangeRate' => '1.00000',
+                                'amount' => '10000.00000',
+                                'transactionNumber' => null,
+                                'taxes' => [],
+                                RelatedDocument::NODE_NAME_EN =>
+                                [
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 1,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '9552',
+                                        'paidAmount' => '9552',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '7960.02',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '1273.6',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 1,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '9552',
+                                        'paidAmount' => '9552',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '7960.02',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '1273.6',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 1,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '9552',
+                                        'paidAmount' => '9552',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '7960.02',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '1273.6',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 1,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '1932.0',
+                                        'paidAmount' => '1932.0',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '1610.00',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '257.6',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 1,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '1932.0',
+                                        'paidAmount' => '1932.0',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '1610.00',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '257.6',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 1,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '4775.68',
+                                        'paidAmount' => '4775.68',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '3979.74',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '636.76',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
+
+        echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
+        print_r($cfdi);
+        echo PHP_EOL . PHP_EOL;
+
+        echo "## Output XML (reproduced) ## " . PHP_EOL . PHP_EOL;
+        echo $cfdi->toXML();
+        echo PHP_EOL . PHP_EOL;
+    }
+
+    public function testComplementPaymentForeignCurrencySum(): void
+    {
+        $data = [
+            'version' => CFDI40::VERSION_4_0,
+            'series' => 'TEST',
+            'folio' => '1',
+            'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+            'paymentMethod' => null,
+            'paymentConditions' => null,
+            'subTotal' => 0.00,
+            'discount' => 0.00,
+            'currency' => 'XXX',
+            'exchangeRate' => null,
+            'total' => 0.00,
+            'cfdiType' => 'P',
+            'paymentType' => null,
+            'postalCode' => '06000',
+            'signature' => 'unsigned',
+            'certificateNumber' => 'unsigned',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Issuer',
+                'regime' => RegimeType::SIN_OBLIGACIONES_FISCALES,
+            ],
+            'recipient' => [
+                'rfc' => 'XAXX010101000',
+                'name' => 'Test Recipient',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::PAYMENTS,
+                'postalCode' => '64920',
+            ],
+            'itemList' => [
+                'items' => [
+                    [
+                        'code' => 84111506,
+                        'quantity' => 1.00000,
+                        'unitCode' => 'ACT',
+                        'description' => 'Pago',
+                        'unitPrice' => 0.00000,
+                        'amount' => 0.00000,
+                        'operationTaxable' => "01",
+                        'discount' => 0.00000,
+                    ]
+                ],
+            ],
+            Complement::NODE_NAME_EN => [
+                Complement::NODE_NAME_EN => [
+                    Payments::NODE_NAME_EN => [
+                        Payment::NODE_NAME_EN => [
+                            [
+                                'date' => new \DateTime('now', new \DateTimeZone('America/Monterrey')),
+                                'paymentMethod' => '01',
+                                'currency' => 'MXN',
+                                'exchangeRate' => '19',
+                                'amount' => '10000.00000',
+                                'transactionNumber' => null,
+                                'taxes' => [],
+                                RelatedDocument::NODE_NAME_EN =>
+                                [
+                                    [
+                                        'id' => 'XXXXXXXX-1111-2222-3333-XXXXXXXXXXXX',
+                                        'series' => '2',
+                                        'folio' => '1',
+                                        'currency' => 'MXN',
+                                        'exchangeRate' => 19,
+                                        'instalmentNumber' => '1',
+                                        'previousBalanceAmount' => '7810.35',
+                                        'paidAmount' => '7810.35',
+                                        'pendingBalanceAmount' => '0.00',
+                                        'operationTaxable' => null,
+                                        RelatedDocumentTaxes::NODE_NAME_EN => [
+                                            RelatedDocumentTaxesTransferredList::NODE_NAME_EN =>
+                                            [
+                                                RelatedDocumentTaxesTransferred::NODE_NAME_EN => [
+                                                    [
+                                                        'base' => '6733.06',
+                                                        'tax' => '002',
+                                                        'factorType' => 'Tasa',
+                                                        'rate' => '0.16000',
+                                                        'amount' => '1077.29',
+                                                    ],
+
+                                                ]
+                                            ],
+                                        ],
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        echo "## Input Data Array ## " . PHP_EOL . PHP_EOL;
+        print_r($data);
+        echo PHP_EOL . PHP_EOL;
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
+
+        echo "## Parsed CFDI Object ## " . PHP_EOL . PHP_EOL;
+        print_r($cfdi);
+        echo PHP_EOL . PHP_EOL;
+
+        echo "## Output XML (reproduced) ## " . PHP_EOL . PHP_EOL;
+        echo $cfdi->toXML();
+        echo PHP_EOL . PHP_EOL;
+    }
 }
