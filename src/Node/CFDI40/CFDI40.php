@@ -941,7 +941,7 @@ class CFDI40 extends CFDINode implements CFDIInterface
             $totalLocalTransferredAmount = Math::round($totalLocalTransferredAmount, 2);
             $totalLocalRetainedAmount = Math::round($totalLocalRetainedAmount, 2);
             $this->getLocalTaxes()->setTotalTransferred($totalLocalTransferredAmount);
-            $this->getLocalTaxes()->setTotalRetained($totalLocalRetainedAmount, 2);
+            $this->getLocalTaxes()->setTotalRetained($totalLocalRetainedAmount);
         }
 
         //Round the appropriate values
@@ -1089,10 +1089,12 @@ class CFDI40 extends CFDINode implements CFDIInterface
         if ($this->getLocalTaxes()) {
             foreach ($this->getLocalTaxes()->getTaxesTransferred() as $t) {
                 $t->setAmount(Math::round($t->getAmount(), 2));
+                $t->setRate(Math::round($t->getRate(), 2));
             }
 
             foreach ($this->getLocalTaxes()->getTaxesRetained() as $t) {
                 $t->setAmount(Math::round($t->getAmount(), 2));
+                $t->setRate(Math::round($t->getRate(), 2));
             }
         }
 
