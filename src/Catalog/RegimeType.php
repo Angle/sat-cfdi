@@ -360,7 +360,7 @@ abstract class RegimeType
             ],
         ],
         self::ACTIVIDADES_EMPRESARIALES_EN_PLATAFORMAS_TECNOLOGICAS => [
-            'name'              => 'Hidrocarburos',
+            'name'              => 'Régimen de las Actividades Empresariales con ingresos a través de plataformas tecnológicas',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
