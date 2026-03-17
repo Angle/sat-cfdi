@@ -390,7 +390,7 @@ abstract class RegimeType
             ],
         ],
         self::SIMPLIFICADO_DE_CONFIANZA => [
-            'name'              => 'Régimen Simplificado de Confianza',
+            'name'              => 'RÉGIMEN SIMPLIFICADO DE CONFIANZA',
             'natural_person'    => true,
             'legal_entity'      => true,
             'cfdi_use'          => [
