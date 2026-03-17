@@ -27,7 +27,7 @@ abstract class RegimeType
 
     private static $map = [
         self::GENERAL_DE_LEY_PERSONAS_MORALES => [
-            'name'              => 'General de Ley Personas Morales',
+            'name'              => 'REGIMEN GENERAL DE LEY PERSONAS MORALES',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -47,7 +47,7 @@ abstract class RegimeType
             ],
         ],
         self::PERSONAS_MORALES_CON_FINES_NO_LUCRATIVOS => [
-            'name'              => 'Personas Morales con Fines no Lucrativos',
+            'name'              => 'PERSONAS MORALES CON FINES NO LUCRATIVOS',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -67,7 +67,7 @@ abstract class RegimeType
             ],
         ],
         self::SUELDOS_SALARIOS_Y_ASIMILADOS => [
-            'name'              => 'Sueldos y Salarios e Ingresos Asimilados a Salarios',
+            'name'              => 'RÉGIMEN DE SUELDOS Y SALARIOS E INGRESOS ASIMILADOS A SALARIOS',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -87,7 +87,7 @@ abstract class RegimeType
             ],
         ],
         self::ARRENDAMIENTO => [
-            'name'              => 'Arrendamiento',
+            'name'              => 'RÉGIMEN DE ARRENDAMIENTO',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -117,7 +117,7 @@ abstract class RegimeType
             ],
         ],
         self::ENAJENACION_O_ADQUISICION_DE_BIENES => [
-            'name'              => 'Régimen de Enajenación o Adquisición de Bienes',
+            'name'              => 'RÉGIMEN DE ENAJENACIÓN O ADQUISICIÓN DE BIENES',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -136,7 +136,7 @@ abstract class RegimeType
             ],
         ],
         self::DEMAS_INGRESOS => [
-            'name'              => 'Demás ingresos',
+            'name'              => 'RÉGIMEN DE LOS DEMÁS INGRESOS',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -155,7 +155,7 @@ abstract class RegimeType
             ],
         ],
         self::RESIDENTES_EN_EL_EXTRANJERO => [
-            'name'              => 'Residentes en el Extranjero sin Establecimiento Permanente en México',
+            'name'              => 'RÉGIMEN RESIDENTES EN EL EXTRANJERO SIN ESTABLECIMIENTO PERMANENTE EN MÉXICO',
             'natural_person'    => true,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -164,7 +164,7 @@ abstract class RegimeType
             ],
         ],
         self::INGRESOS_POR_DIVIDENDOS => [
-            'name'              => 'Ingresos por Dividendos (socios y accionistas)',
+            'name'              => 'RÉGIMEN DE INGRESOS POR DIVIDENDOS (SOCIOS Y ACCIONISTAS)',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -183,7 +183,7 @@ abstract class RegimeType
             ],
         ],
         self::PERSONAS_FISICAS_CON_ACTIVIDAD_EMPRESARIAL => [
-            'name'              => 'Personas Físicas con Actividades Empresariales y Profesionales',
+            'name'              => 'RÉGIMEN DE LAS PERSONAS FÍSICAS CON ACTIVIDADES EMPRESARIALES Y PROFESIONALES',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -213,7 +213,7 @@ abstract class RegimeType
             ],
         ],
         self::INGRESOS_POR_INTERESES => [
-            'name'              => 'Ingresos por intereses',
+            'name'              => 'RÉGIMEN DE LOS INGRESOS POR INTERESES',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -232,7 +232,7 @@ abstract class RegimeType
             ],
         ],
         self::INGRESOS_POR_OBTENCION_DE_PREMIOS => [
-            'name'              => 'Régimen de los ingresos por obtención de premios',
+            'name'              => 'RÉGIMEN DE LOS INGRESOS POR OBTENCIÓN DE PREMIOS',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -251,7 +251,7 @@ abstract class RegimeType
             ],
         ],
         self::SIN_OBLIGACIONES_FISCALES => [
-            'name'              => 'Sin obligaciones fiscales',
+            'name'              => 'SIN OBLIGACIONES FISCALES',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -260,7 +260,7 @@ abstract class RegimeType
             ],
         ],
         self::SOCIEDADES_COOPERATIVAS_DE_PRODUCCION_INGRESOS_DIFERIDOS => [
-            'name'              => 'Sociedades Cooperativas de Producción que optan por diferir sus ingresos',
+            'name'              => 'SOCIEDADES COOPERATIVAS DE PRODUCCIÓN QUE OPTAN POR DIFERIR SUS INGRESOS.',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -280,7 +280,7 @@ abstract class RegimeType
             ],
         ],
         self::INCORPORACION_FISCAL => [
-            'name'              => 'Incorporación Fiscal',
+            'name'              => 'RÉGIMEN DE INCORPORACIÓN FISCAL',
             'natural_person'    => true,
             'legal_entity'      => false,
             'cfdi_use'          => [
@@ -300,7 +300,7 @@ abstract class RegimeType
             ],
         ],
         self::ACTIVIDADES_AGRICOLAS_GANADERAS_SILVICOLAS_PESQUERAS => [
-            'name'              => 'Actividades Agrícolas, Ganaderas, Silvícolas y Pesqueras',
+            'name'              => 'RÉGIMEN DE ACTIVIDADES AGRÍCOLAS, GANADERAS, SILVÍCOLAS Y PESQUERAS PM',
             'natural_person'    => true,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -320,7 +320,7 @@ abstract class RegimeType
             ],
         ],
         self::OPCIONAL_PARA_GRUPO_DE_SOCIEDADES => [
-            'name'              => 'Opcional para Grupos de Sociedades',
+            'name'              => 'RÉGIMEN DE OPCIONAL PARA GRUPOS DE SOCIEDADES',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -340,7 +340,7 @@ abstract class RegimeType
             ],
         ],
         self::COORDINADOS => [
-            'name'              => 'Coordinados',
+            'name'              => 'RÉGIMEN DE LOS COORDINADOS',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
@@ -360,7 +360,7 @@ abstract class RegimeType
             ],
         ],
         self::ACTIVIDADES_EMPRESARIALES_EN_PLATAFORMAS_TECNOLOGICAS => [
-            'name'              => 'Régimen de las Actividades Empresariales con ingresos a través de plataformas tecnológicas',
+            'name'              => 'RÉGIMEN DE LAS ACTIVIDADES EMPRESARIALES CON INGRESOS A TRAVÉS DE PLATAFORMAS TECNOLÓGICAS.',
             'natural_person'    => false,
             'legal_entity'      => true,
             'cfdi_use'          => [
