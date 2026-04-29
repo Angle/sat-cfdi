@@ -1151,16 +1151,16 @@ class CFDI40 extends CFDINode implements CFDIInterface
                             $relatedDocument->setPaidAmount(($relatedDocument->getPaidAmount()) ? Math::round($relatedDocument->getPaidAmount(), 2) : null);
                             if ($relatedDocument->getRelatedDocumentTaxes() && $relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesTransferredList()) {
                                 foreach ($relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesTransferredList()->getRelatedDocumentTaxesTransferred() as $transfer) {
-                                    $transfer->setRate(Math::round($transfer->getRate(), 6));
-                                    $transfer->setAmount(Math::round($transfer->getAmount(), 2));
-                                    $transfer->setBase(Math::round($transfer->getBase(), 2));
+                                    // $transfer->setRate(Math::round($transfer->getRate(), 6));
+                                    // $transfer->setAmount(Math::round($transfer->getAmount(), 2));
+                                    // $transfer->setBase(Math::round($transfer->getBase(), 2));
                                 }
                             }
                             if ($relatedDocument->getRelatedDocumentTaxes() && $relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesRetainedList()) {
                                 foreach ($relatedDocument->getRelatedDocumentTaxes()->getRelatedDocumentTaxesRetainedList()->getRelatedDocumentTaxesRetained() as $retention) {
-                                    $retention->setRate(Math::round($retention->getRate(), 6));
-                                    $retention->setAmount(Math::round($retention->getAmount(), 2));
-                                    $retention->setBase(Math::round($retention->getBase(), 2));
+                                    // $retention->setRate(Math::round($retention->getRate(), 6));
+                                    // $retention->setAmount(Math::round($retention->getAmount(), 2));
+                                    // $retention->setBase(Math::round($retention->getBase(), 2));
                                 }
                             }
                         }
