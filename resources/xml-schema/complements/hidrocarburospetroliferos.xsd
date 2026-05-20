@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:hidrocarburospetroliferos="http://www.sat.gob.mx/hidrocarburospetroliferos" xmlns:catHidroYPetro="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/HidrocarburosPetro" targetNamespace="http://www.sat.gob.mx/hidrocarburospetroliferos" elementFormDefault="qualified" attributeFormDefault="unqualified">
-	<xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/HidrocarburosPetro" schemaLocation="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/HidrocarburosPetro/catHidroYPetro.xsd"/>
+	<xs:import namespace="http://www.sat.gob.mx/sitio_internet/cfd/catalogos/HidrocarburosPetro" schemaLocation="anglemx.sat.cfdi.xsd://catalogs/catHidroYPetro.xsd"/>
 	<xs:element name="HidroYPetro">
 		<xs:annotation>
 			<xs:documentation>Complemento concepto para incorporar al Comprobante Fiscal Digital por Internet (CFDI) la información sobre los permisos otorgados por la autoridad competente referentes a operaciones de hidrocarburos y petrolíferos.</xs:documentation>
