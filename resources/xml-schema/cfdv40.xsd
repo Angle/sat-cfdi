@@ -54,6 +54,7 @@
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/valesdedespensa.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/vehiculousado.xsd"/>
 	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/ventavehiculos11.xsd"/>
+	<xs:import schemaLocation="anglemx.sat.cfdi.xsd://complements/hidrocarburospetroliferos.xsd"/>
 
 	<xs:element name="Comprobante">
 		<xs:annotation>

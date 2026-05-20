@@ -4,7 +4,7 @@ namespace Angle\CFDI\Node\CFDI40;
 
 use Angle\CFDI\CFDINode;
 use Angle\CFDI\CFDIException;
-
+use Angle\CFDI\Node\Complement\HydrocarbonsAndPetroleum\HydrocarbonsAndPetroleum;
 use Angle\CFDI\Node\Complement\ThirdParties\ThirdParties;
 use Angle\CFDI\Node\Complement\VehicleSale\VehicleSale;
 
@@ -87,9 +87,13 @@ class ItemComplement extends CFDINode
                     $complement = VehicleSale::createFromDOMNode($node);
                     $this->addComplement($complement);
                     break;
+                case HydrocarbonsAndPetroleum::NODE_NS_NAME:
+                    $complement = HydrocarbonsAndPetroleum::createFromDOMNode($node);
+                    $this->addComplement($complement);
+                    break;
+
                 default:
                     throw new CFDIException(sprintf("Unknown children node '%s' in %s", $node->nodeName, self::NODE_NS_NAME));
-
             }
         }
     }
@@ -160,5 +164,4 @@ class ItemComplement extends CFDINode
     {
         return $this->complements;
     }
-
 }
