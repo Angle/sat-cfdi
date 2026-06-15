@@ -30,7 +30,8 @@
                 xmlns:gceh="http://www.sat.gob.mx/GastosHidrocarburos10"
                 xmlns:ieeh="http://www.sat.gob.mx/IngresosHidrocarburos10"
                 xmlns:cartaporte20="http://www.sat.gob.mx/CartaPorte20"
-                xmlns:pago20="http://www.sat.gob.mx/Pagos20">
+                xmlns:pago20="http://www.sat.gob.mx/Pagos20"
+                xmlns:hidrocarburospetroliferos="http://www.sat.gob.mx/hidrocarburospetroliferos">
 
   <!-- Con el siguiente método se establece que la salida deberá ser en texto -->
   <xsl:output method="text" version="1.0" encoding="UTF-8" indent="no"/>
@@ -83,6 +84,7 @@
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/valesdedespensa.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/vehiculousado.xslt"/>
   <xsl:include href="anglemx.sat.cfdi.xslt://complements/ventavehiculos11.xslt"/>
+  <xsl:include href="anglemx.sat.cfdi.xslt://complements/hidrocarburospetroliferos.xslt"/>
 
   <!-- Aquí iniciamos el procesamiento de la cadena original con su | inicial y el terminador || -->
   <xsl:template match="/">|<xsl:apply-templates select="/cfdi:Comprobante"/>||</xsl:template>
