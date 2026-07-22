@@ -361,8 +361,8 @@ abstract class RegimeType
         ],
         self::ACTIVIDADES_EMPRESARIALES_EN_PLATAFORMAS_TECNOLOGICAS => [
             'name'              => 'RÉGIMEN DE LAS ACTIVIDADES EMPRESARIALES CON INGRESOS A TRAVÉS DE PLATAFORMAS TECNOLÓGICAS.',
-            'natural_person'    => false,
-            'legal_entity'      => true,
+            'natural_person'    => true,
+            'legal_entity'      => false,
             'cfdi_use'          => [
                 CFDIUse::MERCHANDISE_ACQUISITION,
                 CFDIUse::REFUND_DISCOUNT_OR_BONUS,
