@@ -866,14 +866,6 @@ class CFDI40 extends CFDINode implements CFDIInterface
                 }
             }
 
-            //Remove amount and rate fields in exempt transfer if present.
-            //This exempt key comes from the fact that rate is also null in those taxes, a previous cleanup step made sure of it.
-            $exemptKey = TaxType::IVA . '-' . TaxFactorType::EXEMPT . '-';
-            if (array_key_exists($exemptKey, $transfers)) {
-                $transfers[$exemptKey]['amount'] = null;
-                $transfers[$exemptKey]['rate'] = null;
-            }
-
             // Process any Retained taxes
             if ($it->getTaxes() && $it->getTaxes()->getRetainedList()) {
                 foreach ($it->getTaxes()->getRetainedList()->getRetentions() as $tax) {
