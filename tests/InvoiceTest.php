@@ -1246,4 +1246,97 @@ final class InvoiceTest extends TestCase
         echo $cfdi->toXML();
         echo PHP_EOL . PHP_EOL;
     }
+
+    public function testExemptTax()
+    {
+        $data = [
+            'version' => 4.0,
+            'series' => 'SegmentPruebaA',
+            'folio' => 1,
+            'date' => new \DateTime('2026-10-23T18:52:31'),
+            'paymentMethod' => '99',
+            'paymentConditions' => null,
+            'subTotal' => 125.00,
+            'discount' => 0.00000,
+            'currency' => 'MXN',
+            'exchangeRate' => null,
+            'total' => 125.00,
+            'cfdiType' => 'I',
+            'paymentType' => 'PPD',
+            'postalCode' => '64000',
+            'signature' => 'unsigned',
+            'certificateNumber' => '3',
+            'certificate' => 'unsigned',
+            'export' => '01',
+            'issuer' => [
+                'rfc' => 'EKU9003173C9',
+                'name' => 'ESCUELA KEMPER URGATE',
+                'regime' => '601',
+            ],
+            'recipient' => [
+                'rfc' => 'URE180429TM6',
+                'name' => 'UNIVERSIDAD ROBOTICA ESPAÑOLA',
+                'foreignCountry' => null,
+                'foreignTaxCode' => null,
+                'regime' => '601',
+                'cfdiUse' => CFDIUse::MERCHANDISE_ACQUISITION,
+                'postalCode' => '86991',
+            ],
+            'itemList' => [
+                'items' => [
+                    [
+                        'code' => '50211503',
+                        'quantity' => 1.00000,
+                        'unitCode' => 'H87',
+                        'description' => 'Cigarros',
+                        'unitPrice' => 125.000000,
+                        'amount' => 125.000000,
+                        'operationTaxable' => '02',
+                        'discount' => 0.00000,
+                        'taxes' => [
+                            'transferredList' => [
+                                'transfers' => [
+                                    [
+                                        'base' => 125.00000,
+                                        'tax' => '002',
+                                        'factorType' => 'Exento',
+                                        'rate' => 0,
+                                        'amount' => 0
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ]
+                ]
+            ],
+        ];
+
+        try {
+            $cfdi = new CFDI40($data);
+            $cfdi->autoCalculate();
+        } catch (\Exception $e) {
+            $this->fail($e->getMessage());
+            return;
+        }
+
+        $expectedXml = '<?xml version="1.0" encoding="UTF-8"?><cfdi:Comprobante xmlns:cfdi="http://www.sat.gob.mx/cfd/4" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sat.gob.mx/cfd/4 http://www.sat.gob.mx/sitio_internet/cfd/4/cfdv40.xsd" Version="4.0" Serie="SegmentPruebaA" Folio="1" Fecha="2026-10-23T18:52:31" FormaPago="99" SubTotal="125.00" Moneda="MXN" Total="125.00" TipoDeComprobante="I" Exportacion="01" MetodoPago="PPD" LugarExpedicion="64000" Sello="unsigned" NoCertificado="3" Certificado="unsigned"><cfdi:Emisor Rfc="EKU9003173C9" Nombre="ESCUELA KEMPER URGATE" RegimenFiscal="601"/><cfdi:Receptor Rfc="URE180429TM6" Nombre="UNIVERSIDAD ROBOTICA ESPAÑOLA" DomicilioFiscalReceptor="86991" RegimenFiscalReceptor="601" UsoCFDI="G01"/><cfdi:Conceptos><cfdi:Concepto ClaveProdServ="50211503" Cantidad="1" ClaveUnidad="H87" Descripcion="Cigarros" ValorUnitario="125" Importe="125" ObjetoImp="02"><cfdi:Impuestos><cfdi:Traslados><cfdi:Traslado Base="125" Impuesto="002" TipoFactor="Exento"/></cfdi:Traslados></cfdi:Impuestos></cfdi:Concepto></cfdi:Conceptos><cfdi:Impuestos><cfdi:Traslados><cfdi:Traslado Base="125.00" Impuesto="002" TipoFactor="Exento"/></cfdi:Traslados></cfdi:Impuestos></cfdi:Comprobante>';
+        $this->assertXmlEquals($expectedXml, $cfdi->toXML());
+
+
+        $this->assertEquals($cfdi->getTotalAmount(), '125.00');
+        $this->assertInstanceOf(CFDI40::class, $cfdi);
+    }
+
+    private function assertXmlEquals(string $expected, string $actual): void
+    {
+        $canonicalize = function (string $xml): string {
+            $dom = new \DOMDocument('1.0', 'UTF-8');
+            $dom->preserveWhiteSpace = false;
+            $dom->loadXML($xml);
+
+            return $dom->C14N();
+        };
+
+        $this->assertSame($canonicalize($expected), $canonicalize($actual));
+    }
 }

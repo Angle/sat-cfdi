@@ -52,11 +52,11 @@ class TaxesTransferred extends CFDINode
         ],
         'rate'        => [
             'keywords' => ['TasaOCuota', 'rate'],
-            'type' => CFDINode::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
         'amount'        => [
             'keywords' => ['Importe', 'amount'],
-            'type' => CFDINode::ATTR_REQUIRED
+            'type' => CFDINode::ATTR_OPTIONAL
         ],
     ];
 
