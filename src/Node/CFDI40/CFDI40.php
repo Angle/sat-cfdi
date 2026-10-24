@@ -8,7 +8,8 @@ use Angle\CFDI\CFDIException;
 use Angle\CFDI\CFDIInterface;
 
 use Angle\CFDI\Catalog\PaymentType;
-
+use Angle\CFDI\Catalog\TaxFactorType;
+use Angle\CFDI\Catalog\TaxType;
 use Angle\CFDI\Node\Complement\FiscalStamp;
 use Angle\CFDI\Node\Complement\LocalTaxes\LocalTaxes;
 
@@ -891,13 +892,20 @@ class CFDI40 extends CFDINode implements CFDIInterface
         $transferredList = new TaxesTransferredList([]);
         foreach ($transfers as $k => $t) {
             $t['base'] = Math::round($t['base'], 2);
-            $t['amount'] = Math::round($t['amount'], 2);
-            $t['rate'] = Math::round($t['rate'], 6);
+
+            //We skip exempt taxes since we expect amount and rate null
+            if ($t['factorType'] != TaxFactorType::EXEMPT) {
+                $t['amount'] = Math::round($t['amount'], 2);
+                $t['rate'] = Math::round($t['rate'], 6);
+            }
 
             $tax = new TaxesTransferred($t);
             $transferredList->addTransfer($tax);
 
-            $totalTransferredAmount = Math::add($totalTransferredAmount, $t['amount']);
+            //We skip exempt taxes since we expect amount and rate null
+            if ($t['factorType'] != TaxFactorType::EXEMPT) {
+                $totalTransferredAmount = Math::add($totalTransferredAmount, $t['amount']);
+            }
         }
 
         $totalRetainedAmount = '0';
@@ -1032,8 +1040,15 @@ class CFDI40 extends CFDINode implements CFDIInterface
                     } else {
                         foreach ($it->getTaxes()->getTransferredList()->getTransfers() as $t) {
                             $t->setBase(Math::round($t->getBase(), 6));
-                            $t->setAmount(Math::round($t->getAmount(), 6));
-                            $t->setRate(Math::round($t->getRate(), 6));
+                            //We skip exempt taxes since we expect amount and rate null
+                            if ($t->getFactorType() != TaxFactorType::EXEMPT) {
+                                $t->setAmount(Math::round($t->getAmount(), 6));
+                                $t->setRate(Math::round($t->getRate(), 6));
+                            } else {
+                                //This is to prevent workarounds like amount/rate set to 0 from messing up intended xml structure
+                                $t->setAmount(null);
+                                $t->setRate(null);
+                            }
                         }
                     }
                 }
@@ -1070,8 +1085,15 @@ class CFDI40 extends CFDINode implements CFDIInterface
             } else {
                 foreach ($this->getTaxes()->getTransferredList()->getTransfers() as $t) {
                     $t->setBase(Math::round($t->getBase(), 2));
-                    $t->setAmount(Math::round($t->getAmount(), 2));
-                    $t->setRate(Math::round($t->getRate(), 6));
+                    //We skip exempt taxes since we expect amount and rate null
+                    if ($t->getFactorType() != TaxFactorType::EXEMPT) {
+                        $t->setAmount(Math::round($t->getAmount(), 2));
+                        $t->setRate(Math::round($t->getRate(), 6));
+                    } else {
+                        //This is to prevent workarounds like amount/rate set to 0 from messing up intended xml structure
+                        $t->setAmount(null);
+                        $t->setRate(null);
+                    }
                 }
             }
 
